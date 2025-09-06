@@ -1,4 +1,3 @@
-import React, { createContext, useContext, useState } from "react";
 import { Plus, Minus, Search, ZoomIn, ZoomOut } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Card from "../components/Card";
@@ -6,7 +5,7 @@ import Card from "../components/Card";
 // Main Landing Page Component
 const LandingPage = () => {
   return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen">
         <Navbar />
         
         <main className="px-8 py-12">
