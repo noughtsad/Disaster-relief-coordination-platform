@@ -10,12 +10,12 @@ const LandingPage = () => {
         
         <main className="px-8 py-12">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col lg:flex-row gap-12 items-start">s
+            <div className="flex flex-col lg:flex-row gap-12 items-start">
               <div className="flex-1">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <Card 
                     title="Survivor" 
-                    img="https://images.unsplash.com/photo-1584697964194-9d89efad6eb9?auto=format&fit=crop&w=800&q=80"
+                    img="https://www.shutterstock.com/image-photo/survivors-hatay-turkey-stories-miracles-600nw-2265953343.jpg"
                     className="md:col-span-2 h-80"
                   />
                   
