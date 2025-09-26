@@ -19,7 +19,11 @@ export default function FeedbackPage() {
       username: username.trim(),
       feedback: feedback.trim(),
     });
-    console.log(response.data);
+    if (response.data.message === "Feedback saved successfully") {
+      
+      alert('Feedback submitted successfully!');
+    }
+
     setIsSubmitting(false);
   };
 
