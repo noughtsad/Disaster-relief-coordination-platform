@@ -1,87 +1,69 @@
-const http = require("http");
-const fs = require("fs");
+const express = require("express");
+const mongoose = require("mongoose");
+const Feedback = require("./models/Feedback");
 const math = require("./mathModule");
+const dotenv = require("dotenv");
 
-console.log("\n--- Blocking vs Non-Blocking Demo ---");
+const app = express();
+dotenv.config();
+const PORT = process.env.PORT || 5000;
 
-try {
-  const data = fs.readFileSync("feedback.txt", "utf8");
-  console.log("Blocking read:", data);
-} catch (err) {
-  console.log("Blocking read: feedback.txt not found yet");
-}
-
-fs.readFile("feedback.txt", "utf8", (err, data) => {
-  if (err) {
-    console.log("Non-blocking read: feedback.txt not found yet");
-  } else {
-    console.log("Non-blocking read:", data);
-  }
-});
-
-const server = http.createServer((req, res) => {
+app.use(express.json());
+app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.sendStatus(204);
+  next();
+});
 
-  if (req.method === "OPTIONS") {
-    res.writeHead(204);
-    return res.end();
-  }
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
-  if (req.method === "POST" && req.url === "/feedback") {
-    let body = "";
-    req.on("data", (chunk) => {
-      body += chunk.toString();
-    });
-    req.on("end", () => {
-      try {
-        const { username, feedback } = JSON.parse(body);
+app.post("/feedback", async (req, res) => {
+  try {
+    const { name, text, rating, email } = req.body;
 
-        const line = `${username}: ${feedback}\n`;
-        fs.appendFile("feedback.txt", line, (err) => {
-          if (err) {
-            res.writeHead(500, { "Content-Type": "application/json" });
-            return res.end(JSON.stringify({ message: "Error saving feedback" }));
-          }
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ message: "Feedback saved successfully" }));
-        });
-      } catch {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "Invalid JSON" }));
-      }
-    });
-  }
+    if (!name || !text || !rating) {
+      return res
+        .status(400)
+        .json({ message: "Name, text, and rating are required" });
+    }
 
-  else if (req.method === "GET" && req.url === "/feedbacks") {
-    fs.readFile("feedback.txt", "utf8", (err, data) => {
-      if (err) {
-        res.writeHead(200, { "Content-Type": "text/plain" });
-        return res.end("No feedback available yet.");
-      }
-      res.writeHead(200, { "Content-Type": "text/plain" });
-      res.end(data);
-    });
-  }
+    const feedback = new Feedback({ name, text, rating, email });
+    await feedback.save();
 
-  else if (req.method === "GET" && req.url === "/math") {
-    const result = {
-      add: math.add(10, 5),
-      sub: math.sub(10, 5),
-      mul: math.mul(10, 5),
-      div: math.div(10, 5),
-    };
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(result));
-  }
-
-  else {
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Route not found");
+    res.status(201).json({ message: "Feedback saved successfully", feedback });
+  } catch (err) {
+    res.status(500).json({ message: "Error saving feedback", error: err });
   }
 });
 
-server.listen(5000, () => {
-  console.log("Server running at http://localhost:5000/");
+app.get("/feedbacks", async (req, res) => {
+  try {
+    const feedbacks = await Feedback.find().sort({ createdAt: -1 });
+    res.status(200).json(feedbacks);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching feedbacks" });
+  }
+});
+
+app.get("/math", (req, res) => {
+  const result = {
+    add: math.add(10, 5),
+    sub: math.sub(10, 5),
+    mul: math.mul(10, 5),
+    div: math.div(10, 5),
+  };
+  res.json(result);
+});
+
+app.use((req, res) => {
+  res.status(404).send("Route not found");
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}/`);
 });

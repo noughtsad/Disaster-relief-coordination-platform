@@ -1,35 +1,46 @@
 import { useState } from 'react';
-import { Send, User, MessageSquare, CheckCircle } from 'lucide-react';
+import { Send, User, MessageSquare, CheckCircle, Mail, Star } from 'lucide-react';
 import axios from 'axios';
 
 export default function FeedbackPage() {
-  const [username, setUsername] = useState('');
-  const [feedback, setFeedback] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [text, setText] = useState('');
+  const [rating, setRating] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!username.trim() || !feedback.trim()) {
-      alert('Please fill in both username and feedback fields.');
+    if (!name.trim() || !text.trim() || rating === 0) {
+      alert('Please fill in all required fields (Name, Feedback, Rating).');
       return;
     }
 
     setIsSubmitting(true);
-    const response = await axios.post(import.meta.env.VITE_BACKEND_URL + "/feedback", {
-      username: username.trim(),
-      feedback: feedback.trim(),
-    });
-    if (response.data.message === "Feedback saved successfully") {
-      
-      alert('Feedback submitted successfully!');
-    }
+    try {
+      const response = await axios.post(import.meta.env.VITE_BACKEND_URL + "/feedback", {
+        name: name.trim(),
+        email: email.trim(),
+        text: text.trim(),
+        rating,
+      });
 
+      if (response.data.message === "Feedback saved successfully") {
+        setIsSubmitted(true);
+      } else {
+        alert('Something went wrong. Try again.');
+      }
+    } catch {
+      alert('Error submitting feedback.');
+    }
     setIsSubmitting(false);
   };
 
   const handleReset = () => {
-    setUsername('');
-    setFeedback('');
+    setName('');
+    setEmail('');
+    setText('');
+    setRating(0);
     setIsSubmitted(false);
   };
 
@@ -62,41 +73,85 @@ export default function FeedbackPage() {
         </div>
 
         <div className="space-y-6">
+          {/* Name */}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
               <User className="w-4 h-4 inline mr-1" />
-              Username
+              Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
-              placeholder="Enter your username"
+              placeholder="Enter your name"
               maxLength={50}
             />
           </div>
 
+          {/* Email */}
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <Mail className="w-4 h-4 inline mr-1" />
+              Email (optional)
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
+              placeholder="Enter your email"
+              maxLength={100}
+            />
+          </div>
+
+          {/* Feedback */}
           <div>
             <label htmlFor="feedback" className="block text-sm font-medium text-gray-700 mb-2">
               <MessageSquare className="w-4 h-4 inline mr-1" />
-              Feedback
+              Feedback <span className="text-red-500">*</span>
             </label>
             <textarea
               id="feedback"
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
               rows={5}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none resize-none"
               placeholder="Share your thoughts, suggestions, or report any issues..."
               maxLength={500}
             />
             <div className="text-right text-sm text-gray-500 mt-1">
-              {feedback.length}/500 characters
+              {text.length}/500 characters
             </div>
           </div>
 
+          {/* Rating */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <Star className="w-4 h-4 inline mr-1" />
+              Rating <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  className={`w-10 h-10 rounded-full border flex items-center justify-center ${
+                    rating >= star
+                      ? "bg-yellow-400 text-white"
+                      : "border-gray-300 text-gray-400"
+                  }`}
+                >
+                  {star}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Buttons */}
           <div className="flex gap-4">
             <button
               onClick={handleReset}
