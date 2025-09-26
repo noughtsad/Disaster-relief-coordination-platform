@@ -20,6 +20,15 @@ fs.readFile("feedback.txt", "utf8", (err, data) => {
 });
 
 const server = http.createServer((req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") {
+    res.writeHead(204);
+    return res.end();
+  }
+
   if (req.method === "POST" && req.url === "/feedback") {
     let body = "";
     req.on("data", (chunk) => {
@@ -27,9 +36,9 @@ const server = http.createServer((req, res) => {
     });
     req.on("end", () => {
       try {
-        const { name, feedback } = JSON.parse(body);
+        const { username, feedback } = JSON.parse(body);
 
-        const line = `${name}: ${feedback}\n`;
+        const line = `${username}: ${feedback}\n`;
         fs.appendFile("feedback.txt", line, (err) => {
           if (err) {
             res.writeHead(500, { "Content-Type": "application/json" });

@@ -1,25 +1,23 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Home, PlusCircle, List, Info, User } from "lucide-react";
+import Navbar from "../components/Navbar";
+import { ThemeContext } from "../context/ThemeContext";
 
 export default function SurvivorDashboard() {
+  const { theme } = useContext(ThemeContext);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Top Navbar */}
-      <header className="bg-white/90 backdrop-blur border-b border-gray-200 flex justify-between items-center px-6 py-3 shadow-md">
-        <h1 className="text-lg font-bold text-indigo-600">CrisisConnect</h1>
-        <div className="flex items-center space-x-4">
-          <a href="#" className="text-sm text-gray-700 hover:text-gray-900">
-            About
-          </a>
-          <button className="px-4 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition">
-            Donate
-          </button>
-        </div>
-      </header>
+      <Navbar />
 
       <div className="flex flex-1">
         {/* Sidebar */}
-        <aside className="w-64 bg-white/90 backdrop-blur border-r border-gray-200 p-6 flex flex-col shadow-md">
+        <aside className={`w-64 backdrop-blur border-r p-6 flex flex-col shadow-md ${
+          theme === "light" 
+            ? "bg-white/90 border-gray-200" 
+            : "bg-gray-900/90 border-gray-700"
+        }`}>
           {/* Profile */}
           <div className="flex items-center space-x-3 mb-8">
             <img
@@ -28,8 +26,12 @@ export default function SurvivorDashboard() {
               className="w-12 h-12 rounded-full object-cover"
             />
             <div>
-              <p className="font-semibold text-gray-900">Emily Carter</p>
-              <span className="text-xs text-gray-500">Survivor</span>
+              <p className={`font-semibold ${theme === "light" ? "text-gray-900" : "text-white"}`}>
+                Emily Carter
+              </p>
+              <span className={`text-xs ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>
+                Survivor
+              </span>
             </div>
           </div>
 
@@ -44,28 +46,44 @@ export default function SurvivorDashboard() {
             </a>
             <a
               href="#"
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition"
+              className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition ${
+                theme === "light"
+                  ? "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                  : "text-gray-300 hover:bg-indigo-900/30 hover:text-indigo-400"
+              }`}
             >
               <PlusCircle size={18} />
               <span>Report Need</span>
             </a>
             <a
               href="#"
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition"
+              className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition ${
+                theme === "light"
+                  ? "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                  : "text-gray-300 hover:bg-indigo-900/30 hover:text-indigo-400"
+              }`}
             >
               <List size={18} />
               <span>Requests</span>
             </a>
             <a
               href="#"
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition"
+              className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition ${
+                theme === "light"
+                  ? "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                  : "text-gray-300 hover:bg-indigo-900/30 hover:text-indigo-400"
+              }`}
             >
               <Info size={18} />
               <span>Emergency Info</span>
             </a>
             <a
               href="#"
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition"
+              className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition ${
+                theme === "light"
+                  ? "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                  : "text-gray-300 hover:bg-indigo-900/30 hover:text-indigo-400"
+              }`}
             >
               <User size={18} />
               <span>Profile</span>
@@ -75,48 +93,76 @@ export default function SurvivorDashboard() {
 
         {/* Main Dashboard */}
         <main className="flex-1 p-8">
-          <h2 className="text-2xl font-bold text-white drop-shadow mb-6">
+          <h2 className={`text-2xl font-bold drop-shadow mb-6 ${
+            theme === "light" ? "text-black" : "text-white"
+          }`}>
             Dashboard
           </h2>
 
           {/* Requests Table */}
-          <div className="bg-white/95 backdrop-blur border border-gray-200 rounded-xl overflow-hidden mb-8 shadow-lg">
-            <div className="p-4 border-b border-gray-200 bg-gray-50">
-              <h3 className="font-semibold text-lg text-indigo-700">
+          <div className={`backdrop-blur border rounded-xl overflow-hidden mb-8 shadow-lg ${
+            theme === "light"
+              ? "bg-white/95 border-gray-200"
+              : "bg-gray-900/95 border-gray-700"
+          }`}>
+            <div className={`p-4 border-b ${
+              theme === "light"
+                ? "border-gray-200 bg-gray-50"
+                : "border-gray-700 bg-gray-800"
+            }`}>
+              <h3 className={`font-semibold text-lg ${
+                theme === "light" ? "text-indigo-700" : "text-indigo-400"
+              }`}>
                 Your Requests
               </h3>
             </div>
             <table className="w-full text-sm text-left">
-              <thead className="bg-gray-100 text-gray-700 font-medium">
+              <thead className={`font-medium ${
+                theme === "light"
+                  ? "bg-gray-100 text-gray-700"
+                  : "bg-gray-800 text-gray-300"
+              }`}>
                 <tr>
                   <th className="px-6 py-3">Request</th>
                   <th className="px-6 py-3">Status</th>
                   <th className="px-6 py-3">Date</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr className="border-t">
+              <tbody className={theme === "light" ? "text-gray-900" : "text-gray-100"}>
+                <tr className={`border-t ${theme === "light" ? "border-gray-200" : "border-gray-700"}`}>
                   <td className="px-6 py-3">Shelter</td>
                   <td className="px-6 py-3">
-                    <span className="px-2 py-1 rounded bg-gray-100 text-gray-700 text-xs">
+                    <span className={`px-2 py-1 rounded text-xs ${
+                      theme === "light"
+                        ? "bg-gray-100 text-gray-700"
+                        : "bg-gray-700 text-gray-300"
+                    }`}>
                       Pending
                     </span>
                   </td>
                   <td className="px-6 py-3">01-01-2025</td>
                 </tr>
-                <tr className="border-t">
+                <tr className={`border-t ${theme === "light" ? "border-gray-200" : "border-gray-700"}`}>
                   <td className="px-6 py-3">Food</td>
                   <td className="px-6 py-3">
-                    <span className="px-2 py-1 rounded bg-green-100 text-green-700 text-xs">
+                    <span className={`px-2 py-1 rounded text-xs ${
+                      theme === "light"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-green-900/50 text-green-400"
+                    }`}>
                       Approved
                     </span>
                   </td>
                   <td className="px-6 py-3">01-01-2025</td>
                 </tr>
-                <tr className="border-t">
+                <tr className={`border-t ${theme === "light" ? "border-gray-200" : "border-gray-700"}`}>
                   <td className="px-6 py-3">Medical Supplies</td>
                   <td className="px-6 py-3">
-                    <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs">
+                    <span className={`px-2 py-1 rounded text-xs ${
+                      theme === "light"
+                        ? "bg-blue-100 text-blue-700"
+                        : "bg-blue-900/50 text-blue-400"
+                    }`}>
                       Completed
                     </span>
                   </td>
@@ -127,15 +173,23 @@ export default function SurvivorDashboard() {
           </div>
 
           {/* Emergency Information */}
-          <h3 className="font-semibold text-lg text-white drop-shadow mb-4">
+          <h3 className={`font-semibold text-lg drop-shadow mb-4 ${
+            theme === "light" ? "text-black" : "text-white"
+          }`}>
             Emergency Information
           </h3>
           <div className="grid md:grid-cols-2 gap-6">
             {/* Emergency Contacts */}
-            <div className="bg-white/95 backdrop-blur border border-gray-200 rounded-xl p-5 flex flex-col justify-between shadow-lg">
+            <div className={`backdrop-blur border rounded-xl p-5 flex flex-col justify-between shadow-lg ${
+              theme === "light"
+                ? "bg-white/95 border-gray-200"
+                : "bg-gray-900/95 border-gray-700"
+            }`}>
               <div>
-                <h4 className="font-medium text-gray-900">Emergency Contacts</h4>
-                <p className="text-sm text-gray-600 mb-4">
+                <h4 className={`font-medium ${theme === "light" ? "text-gray-900" : "text-white"}`}>
+                  Emergency Contacts
+                </h4>
+                <p className={`text-sm mb-4 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
                   Important phone numbers for emergency services.
                 </p>
               </div>
@@ -145,10 +199,16 @@ export default function SurvivorDashboard() {
             </div>
 
             {/* Safety Tips */}
-            <div className="bg-white/95 backdrop-blur border border-gray-200 rounded-xl p-5 flex flex-col justify-between shadow-lg">
+            <div className={`backdrop-blur border rounded-xl p-5 flex flex-col justify-between shadow-lg ${
+              theme === "light"
+                ? "bg-white/95 border-gray-200"
+                : "bg-gray-900/95 border-gray-700"
+            }`}>
               <div>
-                <h4 className="font-medium text-gray-900">Safety Tips</h4>
-                <p className="text-sm text-gray-600 mb-4">
+                <h4 className={`font-medium ${theme === "light" ? "text-gray-900" : "text-white"}`}>
+                  Safety Tips
+                </h4>
+                <p className={`text-sm mb-4 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
                   Essential safety guidelines during and after a disaster.
                 </p>
               </div>
