@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { Sun, Moon } from "lucide-react";
 import { ThemeContext } from "../context/ThemeContext";
 
-const Navbar = () => {
+const Navbar = ({ isLoggedIn = false }) => {
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   return (
@@ -17,24 +17,58 @@ const Navbar = () => {
 
       <div className="flex items-center gap-6">
         {/* Navigation Buttons */}
-        <button
-          className={`px-6 py-3 rounded-lg font-medium transition-colors shadow-sm ${
-            theme === "light"
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "bg-blue-500 text-gray-900 hover:bg-blue-400"
-          }`}
-        >
-          Register
-        </button>
-        <button
-          className={`px-6 py-3 font-medium transition-colors ${
-            theme === "light"
-              ? "text-gray-700 hover:text-gray-900"
-              : "text-gray-300 hover:text-white"
-          }`}
-        >
-          Login
-        </button>
+        {isLoggedIn ? (
+          <>
+            <button
+              className={`px-6 py-3 font-medium transition-colors ${
+                theme === "light"
+                  ? "text-gray-700 hover:text-gray-900"
+                  : "text-gray-300 hover:text-white"
+              }`}
+            >
+              Dashboard
+            </button>
+            <button
+              className={`px-6 py-3 font-medium transition-colors ${
+                theme === "light"
+                  ? "text-gray-700 hover:text-gray-900"
+                  : "text-gray-300 hover:text-white"
+              }`}
+            >
+              Profile
+            </button>
+            <button
+              className={`px-6 py-3 rounded-lg font-medium transition-colors shadow-sm ${
+                theme === "light"
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  : "bg-red-500 text-gray-900 hover:bg-red-400"
+              }`}
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              className={`px-6 py-3 rounded-lg font-medium transition-colors shadow-sm ${
+                theme === "light"
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-blue-500 text-gray-900 hover:bg-blue-400"
+              }`}
+            >
+              Register
+            </button>
+            <button
+              className={`px-6 py-3 font-medium transition-colors ${
+                theme === "light"
+                  ? "text-gray-700 hover:text-gray-900"
+                  : "text-gray-300 hover:text-white"
+              }`}
+            >
+              Login
+            </button>
+          </>
+        )}
         <button
           className={`px-6 py-3 font-medium transition-colors ${
             theme === "light"
