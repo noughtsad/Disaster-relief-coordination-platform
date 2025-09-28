@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 import { Home, PlusCircle, List, Info, User } from "lucide-react";
-import Navbar from "../components/Navbar";
-import { ThemeContext } from "../context/ThemeContext";
+import Navbar from "../../components/Navbar";
+import { ThemeContext } from "../../context/ThemeContext";
 
 export default function SurvivorDashboard() {
   const { theme } = useContext(ThemeContext);
