@@ -1,9 +1,9 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const Feedback = require("./models/Feedback");
-const math = require("./mathModule");
-const dotenv = require("dotenv");
-const authRoutes = require("./routes/auth");
+import express from "express";
+import mongoose from "mongoose";
+import Feedback from "./models/Feedback.js";
+import * as math from "./mathModule.js";
+import dotenv from "dotenv";
+import authRoutes from "./routes/auth.js";
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 5000;

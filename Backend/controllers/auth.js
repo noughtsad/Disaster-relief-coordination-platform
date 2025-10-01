@@ -1,6 +1,6 @@
-const bcrypt = require("bcrypt");
-const User = require("../models/User.js");
-const { signJwt, verifyJwt } = require("../utils/jwt.js");
+import bcrypt from "bcrypt";
+import User from "../models/User.js";
+import { signJwt, verifyJwt } from "../utils/jwt.js";
 
 const COOKIE_NAME = process.env.COOKIE_NAME || "token";
 const COOKIE_OPTIONS = {
