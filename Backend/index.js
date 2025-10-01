@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Feedback = require("./models/Feedback");
 const math = require("./mathModule");
 const dotenv = require("dotenv");
-
+const authRoutes = require("./routes/auth");
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 5000;
@@ -59,6 +59,8 @@ app.get("/math", (req, res) => {
   };
   res.json(result);
 });
+
+app.use("/auth", authRoutes);
 
 app.use((req, res) => {
   res.status(404).send("Route not found");
