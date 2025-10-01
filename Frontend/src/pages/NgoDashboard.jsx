@@ -22,76 +22,213 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
-  Send
+  Send,
 } from "lucide-react";
+import Navbar from "../components/Navbar";
 
-// Mock Theme Context
-const ThemeContext = React.createContext({ theme: 'light' });
+import { ThemeContext } from "../context/ThemeContext";
 
 const NgoDashboard = () => {
   const { theme } = useContext(ThemeContext);
-  const [activeSection, setActiveSection] = useState('home');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [activeSection, setActiveSection] = useState("home");
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Mock data
   const donations = [
-    { id: 1, donor: 'John Smith', amount: 5000, type: 'Money', date: '2024-01-15', campaign: 'Flood Relief', status: 'Received' },
-    { id: 2, donor: 'Sarah Johnson', amount: 2500, type: 'Money', date: '2024-01-10', campaign: 'Earthquake Recovery', status: 'Pending' },
-    { id: 3, donor: 'Local Store', amount: 50, type: 'Food Items', date: '2024-01-08', campaign: 'Hurricane Assistance', status: 'Received' }
+    {
+      id: 1,
+      donor: "John Smith",
+      amount: 5000,
+      type: "Money",
+      date: "2024-01-15",
+      campaign: "Flood Relief",
+      status: "Received",
+    },
+    {
+      id: 2,
+      donor: "Sarah Johnson",
+      amount: 2500,
+      type: "Money",
+      date: "2024-01-10",
+      campaign: "Earthquake Recovery",
+      status: "Pending",
+    },
+    {
+      id: 3,
+      donor: "Local Store",
+      amount: 50,
+      type: "Food Items",
+      date: "2024-01-08",
+      campaign: "Hurricane Assistance",
+      status: "Received",
+    },
   ];
 
   const requests = [
-    { id: 1, title: 'Emergency Shelter Materials', location: 'District A', urgency: 'High', requested: '100 tents', status: 'Open', date: '2024-01-12' },
-    { id: 2, title: 'Medical Supplies', location: 'District B', urgency: 'Critical', requested: 'First aid kits, medicines', status: 'In Progress', date: '2024-01-10' },
-    { id: 3, title: 'Food Distribution', location: 'District C', urgency: 'Medium', requested: '500 food packets', status: 'Completed', date: '2024-01-05' }
+    {
+      id: 1,
+      title: "Emergency Shelter Materials",
+      location: "District A",
+      urgency: "High",
+      requested: "100 tents",
+      status: "Open",
+      date: "2024-01-12",
+    },
+    {
+      id: 2,
+      title: "Medical Supplies",
+      location: "District B",
+      urgency: "Critical",
+      requested: "First aid kits, medicines",
+      status: "In Progress",
+      date: "2024-01-10",
+    },
+    {
+      id: 3,
+      title: "Food Distribution",
+      location: "District C",
+      urgency: "Medium",
+      requested: "500 food packets",
+      status: "Completed",
+      date: "2024-01-05",
+    },
   ];
 
   const communications = [
-    { id: 1, type: 'Email', recipient: 'Donors Group', subject: 'Monthly Impact Report', date: '2024-01-15', status: 'Sent' },
-    { id: 2, type: 'SMS', recipient: 'Volunteers', subject: 'Upcoming Event Notification', date: '2024-01-14', status: 'Scheduled' },
-    { id: 3, type: 'Newsletter', recipient: 'All Subscribers', subject: 'January Newsletter', date: '2024-01-12', status: 'Draft' }
+    {
+      id: 1,
+      type: "Email",
+      recipient: "Donors Group",
+      subject: "Monthly Impact Report",
+      date: "2024-01-15",
+      status: "Sent",
+    },
+    {
+      id: 2,
+      type: "SMS",
+      recipient: "Volunteers",
+      subject: "Upcoming Event Notification",
+      date: "2024-01-14",
+      status: "Scheduled",
+    },
+    {
+      id: 3,
+      type: "Newsletter",
+      recipient: "All Subscribers",
+      subject: "January Newsletter",
+      date: "2024-01-12",
+      status: "Draft",
+    },
   ];
 
   const HomeSection = () => (
     <div>
-      <h1 className={`text-3xl font-bold mb-6 ${theme === "light" ? "text-gray-900" : "text-white"}`}>
+      <h1
+        className={`text-3xl font-bold mb-6 ${
+          theme === "light" ? "text-gray-900" : "text-white"
+        }`}
+      >
         Welcome back, Relief United
       </h1>
-      
+
       {/* Quick Stats */}
       <div className="grid grid-cols-4 gap-6 mb-8">
-        <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
+        <div
+          className={`p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className={theme === "light" ? "text-gray-600" : "text-gray-400"}>Total Donations</p>
-              <h2 className={`text-2xl font-bold mt-2 ${theme === "light" ? "text-gray-900" : "text-white"}`}>$125,000</h2>
+              <p
+                className={
+                  theme === "light" ? "text-gray-600" : "text-gray-400"
+                }
+              >
+                Total Donations
+              </p>
+              <h2
+                className={`text-2xl font-bold mt-2 ${
+                  theme === "light" ? "text-gray-900" : "text-white"
+                }`}
+              >
+                $125,000
+              </h2>
             </div>
             <DollarSign className="w-10 h-10 text-green-500" />
           </div>
         </div>
-        <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
+        <div
+          className={`p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className={theme === "light" ? "text-gray-600" : "text-gray-400"}>Active Campaigns</p>
-              <h2 className={`text-2xl font-bold mt-2 ${theme === "light" ? "text-gray-900" : "text-white"}`}>8</h2>
+              <p
+                className={
+                  theme === "light" ? "text-gray-600" : "text-gray-400"
+                }
+              >
+                Active Campaigns
+              </p>
+              <h2
+                className={`text-2xl font-bold mt-2 ${
+                  theme === "light" ? "text-gray-900" : "text-white"
+                }`}
+              >
+                8
+              </h2>
             </div>
             <Heart className="w-10 h-10 text-red-500" />
           </div>
         </div>
-        <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
+        <div
+          className={`p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className={theme === "light" ? "text-gray-600" : "text-gray-400"}>Volunteers</p>
-              <h2 className={`text-2xl font-bold mt-2 ${theme === "light" ? "text-gray-900" : "text-white"}`}>245</h2>
+              <p
+                className={
+                  theme === "light" ? "text-gray-600" : "text-gray-400"
+                }
+              >
+                Volunteers
+              </p>
+              <h2
+                className={`text-2xl font-bold mt-2 ${
+                  theme === "light" ? "text-gray-900" : "text-white"
+                }`}
+              >
+                245
+              </h2>
             </div>
             <Users className="w-10 h-10 text-blue-500" />
           </div>
         </div>
-        <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
+        <div
+          className={`p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className={theme === "light" ? "text-gray-600" : "text-gray-400"}>Pending Requests</p>
-              <h2 className={`text-2xl font-bold mt-2 ${theme === "light" ? "text-gray-900" : "text-white"}`}>12</h2>
+              <p
+                className={
+                  theme === "light" ? "text-gray-600" : "text-gray-400"
+                }
+              >
+                Pending Requests
+              </p>
+              <h2
+                className={`text-2xl font-bold mt-2 ${
+                  theme === "light" ? "text-gray-900" : "text-white"
+                }`}
+              >
+                12
+              </h2>
             </div>
             <AlertCircle className="w-10 h-10 text-orange-500" />
           </div>
@@ -100,30 +237,92 @@ const NgoDashboard = () => {
 
       {/* Recent Activities */}
       <div className="grid grid-cols-2 gap-6">
-        <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
-          <h3 className={`text-lg font-semibold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}>Recent Donations</h3>
+        <div
+          className={`p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
+          <h3
+            className={`text-lg font-semibold mb-4 ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            Recent Donations
+          </h3>
           <div className="space-y-3">
-            {donations.slice(0, 3).map(donation => (
-              <div key={donation.id} className={`flex justify-between items-center p-3 rounded ${theme === "light" ? "bg-gray-50" : "bg-gray-800"}`}>
+            {donations.slice(0, 3).map((donation) => (
+              <div
+                key={donation.id}
+                className={`flex justify-between items-center p-3 rounded ${
+                  theme === "light" ? "bg-gray-50" : "bg-gray-800"
+                }`}
+              >
                 <div>
-                  <p className={`font-medium ${theme === "light" ? "text-gray-900" : "text-white"}`}>{donation.donor}</p>
-                  <p className={`text-sm ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>{donation.campaign}</p>
+                  <p
+                    className={`font-medium ${
+                      theme === "light" ? "text-gray-900" : "text-white"
+                    }`}
+                  >
+                    {donation.donor}
+                  </p>
+                  <p
+                    className={`text-sm ${
+                      theme === "light" ? "text-gray-600" : "text-gray-400"
+                    }`}
+                  >
+                    {donation.campaign}
+                  </p>
                 </div>
-                <span className="text-green-600 font-semibold">${donation.amount}</span>
+                <span className="text-green-600 font-semibold">
+                  ${donation.amount}
+                </span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
-          <h3 className={`text-lg font-semibold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}>Urgent Requests</h3>
+        <div
+          className={`p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
+          <h3
+            className={`text-lg font-semibold mb-4 ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            Urgent Requests
+          </h3>
           <div className="space-y-3">
-            {requests.filter(req => req.urgency === 'High' || req.urgency === 'Critical').map(request => (
-              <div key={request.id} className={`p-3 rounded border-l-4 ${request.urgency === 'Critical' ? 'border-red-500' : 'border-orange-500'} ${theme === "light" ? "bg-gray-50" : "bg-gray-800"}`}>
-                <p className={`font-medium ${theme === "light" ? "text-gray-900" : "text-white"}`}>{request.title}</p>
-                <p className={`text-sm ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>{request.location}</p>
-              </div>
-            ))}
+            {requests
+              .filter(
+                (req) => req.urgency === "High" || req.urgency === "Critical"
+              )
+              .map((request) => (
+                <div
+                  key={request.id}
+                  className={`p-3 rounded border-l-4 ${
+                    request.urgency === "Critical"
+                      ? "border-red-500"
+                      : "border-orange-500"
+                  } ${theme === "light" ? "bg-gray-50" : "bg-gray-800"}`}
+                >
+                  <p
+                    className={`font-medium ${
+                      theme === "light" ? "text-gray-900" : "text-white"
+                    }`}
+                  >
+                    {request.title}
+                  </p>
+                  <p
+                    className={`text-sm ${
+                      theme === "light" ? "text-gray-600" : "text-gray-400"
+                    }`}
+                  >
+                    {request.location}
+                  </p>
+                </div>
+              ))}
           </div>
         </div>
       </div>
@@ -133,7 +332,11 @@ const NgoDashboard = () => {
   const ManageDonationsSection = () => (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className={`text-3xl font-bold ${theme === "light" ? "text-gray-900" : "text-white"}`}>
+        <h1
+          className={`text-3xl font-bold ${
+            theme === "light" ? "text-gray-900" : "text-white"
+          }`}
+        >
           Manage Donations
         </h1>
         <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
@@ -151,42 +354,127 @@ const NgoDashboard = () => {
             placeholder="Search donations..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full pl-10 pr-4 py-2 border rounded-lg ${theme === "light" ? "bg-white border-gray-300" : "bg-gray-800 border-gray-600 text-white"}`}
+            className={`w-full pl-10 pr-4 py-2 border rounded-lg ${
+              theme === "light"
+                ? "bg-white border-gray-300"
+                : "bg-gray-800 border-gray-600 text-white"
+            }`}
           />
         </div>
-        <button className={`px-4 py-2 border rounded-lg flex items-center gap-2 ${theme === "light" ? "border-gray-300 hover:bg-gray-50" : "border-gray-600 hover:bg-gray-700 text-white"}`}>
+        <button
+          className={`px-4 py-2 border rounded-lg flex items-center gap-2 ${
+            theme === "light"
+              ? "border-gray-300 hover:bg-gray-50"
+              : "border-gray-600 hover:bg-gray-700 text-white"
+          }`}
+        >
           <Filter className="w-4 h-4" />
           Filter
         </button>
       </div>
 
       {/* Donations Table */}
-      <div className={`rounded-xl shadow overflow-hidden ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
+      <div
+        className={`rounded-xl shadow overflow-hidden ${
+          theme === "light" ? "bg-white" : "bg-gray-900"
+        }`}
+      >
         <table className="w-full">
-          <thead className={`${theme === "light" ? "bg-gray-50" : "bg-gray-800"}`}>
+          <thead
+            className={`${theme === "light" ? "bg-gray-50" : "bg-gray-800"}`}
+          >
             <tr>
-              <th className={`px-6 py-3 text-left text-sm font-medium ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>Donor</th>
-              <th className={`px-6 py-3 text-left text-sm font-medium ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>Amount/Items</th>
-              <th className={`px-6 py-3 text-left text-sm font-medium ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>Campaign</th>
-              <th className={`px-6 py-3 text-left text-sm font-medium ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>Date</th>
-              <th className={`px-6 py-3 text-left text-sm font-medium ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>Status</th>
-              <th className={`px-6 py-3 text-left text-sm font-medium ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>Actions</th>
+              <th
+                className={`px-6 py-3 text-left text-sm font-medium ${
+                  theme === "light" ? "text-gray-500" : "text-gray-400"
+                }`}
+              >
+                Donor
+              </th>
+              <th
+                className={`px-6 py-3 text-left text-sm font-medium ${
+                  theme === "light" ? "text-gray-500" : "text-gray-400"
+                }`}
+              >
+                Amount/Items
+              </th>
+              <th
+                className={`px-6 py-3 text-left text-sm font-medium ${
+                  theme === "light" ? "text-gray-500" : "text-gray-400"
+                }`}
+              >
+                Campaign
+              </th>
+              <th
+                className={`px-6 py-3 text-left text-sm font-medium ${
+                  theme === "light" ? "text-gray-500" : "text-gray-400"
+                }`}
+              >
+                Date
+              </th>
+              <th
+                className={`px-6 py-3 text-left text-sm font-medium ${
+                  theme === "light" ? "text-gray-500" : "text-gray-400"
+                }`}
+              >
+                Status
+              </th>
+              <th
+                className={`px-6 py-3 text-left text-sm font-medium ${
+                  theme === "light" ? "text-gray-500" : "text-gray-400"
+                }`}
+              >
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody className={`divide-y ${theme === "light" ? "divide-gray-200" : "divide-gray-700"}`}>
-            {donations.map(donation => (
+          <tbody
+            className={`divide-y ${
+              theme === "light" ? "divide-gray-200" : "divide-gray-700"
+            }`}
+          >
+            {donations.map((donation) => (
               <tr key={donation.id}>
-                <td className={`px-6 py-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}>{donation.donor}</td>
-                <td className={`px-6 py-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}>
-                  {donation.type === 'Money' ? `$${donation.amount}` : `${donation.amount} ${donation.type}`}
+                <td
+                  className={`px-6 py-4 ${
+                    theme === "light" ? "text-gray-900" : "text-white"
+                  }`}
+                >
+                  {donation.donor}
                 </td>
-                <td className={`px-6 py-4 ${theme === "light" ? "text-gray-600" : "text-gray-300"}`}>{donation.campaign}</td>
-                <td className={`px-6 py-4 ${theme === "light" ? "text-gray-600" : "text-gray-300"}`}>{donation.date}</td>
+                <td
+                  className={`px-6 py-4 ${
+                    theme === "light" ? "text-gray-900" : "text-white"
+                  }`}
+                >
+                  {donation.type === "Money"
+                    ? `$${donation.amount}`
+                    : `${donation.amount} ${donation.type}`}
+                </td>
+                <td
+                  className={`px-6 py-4 ${
+                    theme === "light" ? "text-gray-600" : "text-gray-300"
+                  }`}
+                >
+                  {donation.campaign}
+                </td>
+                <td
+                  className={`px-6 py-4 ${
+                    theme === "light" ? "text-gray-600" : "text-gray-300"
+                  }`}
+                >
+                  {donation.date}
+                </td>
                 <td className="px-6 py-4">
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    donation.status === 'Received' ? 'bg-green-100 text-green-800' : 
-                    donation.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 text-xs rounded-full ${
+                      donation.status === "Received"
+                        ? "bg-green-100 text-green-800"
+                        : donation.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
                     {donation.status}
                   </span>
                 </td>
@@ -214,7 +502,11 @@ const NgoDashboard = () => {
   const ViewRequestsSection = () => (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className={`text-3xl font-bold ${theme === "light" ? "text-gray-900" : "text-white"}`}>
+        <h1
+          className={`text-3xl font-bold ${
+            theme === "light" ? "text-gray-900" : "text-white"
+          }`}
+        >
           View Requests
         </h1>
         <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
@@ -225,38 +517,73 @@ const NgoDashboard = () => {
 
       {/* Request Cards */}
       <div className="grid gap-6">
-        {requests.map(request => (
-          <div key={request.id} className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
+        {requests.map((request) => (
+          <div
+            key={request.id}
+            className={`p-6 rounded-xl shadow ${
+              theme === "light" ? "bg-white" : "bg-gray-900"
+            }`}
+          >
             <div className="flex justify-between items-start mb-4">
               <div className="flex-1">
-                <h3 className={`text-xl font-semibold mb-2 ${theme === "light" ? "text-gray-900" : "text-white"}`}>
+                <h3
+                  className={`text-xl font-semibold mb-2 ${
+                    theme === "light" ? "text-gray-900" : "text-white"
+                  }`}
+                >
                   {request.title}
                 </h3>
                 <div className="flex items-center gap-4 mb-2">
                   <div className="flex items-center gap-1">
                     <MapPin className="w-4 h-4 text-gray-400" />
-                    <span className={`text-sm ${theme === "light" ? "text-gray-600" : "text-gray-300"}`}>{request.location}</span>
+                    <span
+                      className={`text-sm ${
+                        theme === "light" ? "text-gray-600" : "text-gray-300"
+                      }`}
+                    >
+                      {request.location}
+                    </span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4 text-gray-400" />
-                    <span className={`text-sm ${theme === "light" ? "text-gray-600" : "text-gray-300"}`}>{request.date}</span>
+                    <span
+                      className={`text-sm ${
+                        theme === "light" ? "text-gray-600" : "text-gray-300"
+                      }`}
+                    >
+                      {request.date}
+                    </span>
                   </div>
                 </div>
-                <p className={`${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>{request.requested}</p>
+                <p
+                  className={`${
+                    theme === "light" ? "text-gray-700" : "text-gray-300"
+                  }`}
+                >
+                  {request.requested}
+                </p>
               </div>
               <div className="flex flex-col items-end gap-2">
-                <span className={`px-3 py-1 text-xs rounded-full ${
-                  request.urgency === 'Critical' ? 'bg-red-100 text-red-800' :
-                  request.urgency === 'High' ? 'bg-orange-100 text-orange-800' :
-                  'bg-blue-100 text-blue-800'
-                }`}>
+                <span
+                  className={`px-3 py-1 text-xs rounded-full ${
+                    request.urgency === "Critical"
+                      ? "bg-red-100 text-red-800"
+                      : request.urgency === "High"
+                      ? "bg-orange-100 text-orange-800"
+                      : "bg-blue-100 text-blue-800"
+                  }`}
+                >
                   {request.urgency} Priority
                 </span>
-                <span className={`px-3 py-1 text-xs rounded-full ${
-                  request.status === 'Completed' ? 'bg-green-100 text-green-800' :
-                  request.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-gray-100 text-gray-800'
-                }`}>
+                <span
+                  className={`px-3 py-1 text-xs rounded-full ${
+                    request.status === "Completed"
+                      ? "bg-green-100 text-green-800"
+                      : request.status === "In Progress"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-gray-100 text-gray-800"
+                  }`}
+                >
                   {request.status}
                 </span>
               </div>
@@ -265,7 +592,13 @@ const NgoDashboard = () => {
               <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                 View Details
               </button>
-              <button className={`px-4 py-2 border rounded hover:bg-gray-50 ${theme === "light" ? "border-gray-300" : "border-gray-600 hover:bg-gray-700 text-white"}`}>
+              <button
+                className={`px-4 py-2 border rounded hover:bg-gray-50 ${
+                  theme === "light"
+                    ? "border-gray-300"
+                    : "border-gray-600 hover:bg-gray-700 text-white"
+                }`}
+              >
                 Edit
               </button>
               <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
@@ -281,7 +614,11 @@ const NgoDashboard = () => {
   const CommunicationsSection = () => (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className={`text-3xl font-bold ${theme === "light" ? "text-gray-900" : "text-white"}`}>
+        <h1
+          className={`text-3xl font-bold ${
+            theme === "light" ? "text-gray-900" : "text-white"
+          }`}
+        >
           Communications
         </h1>
         <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
@@ -292,28 +629,76 @@ const NgoDashboard = () => {
 
       {/* Communication Types */}
       <div className="grid grid-cols-3 gap-6 mb-8">
-        <div className={`p-6 rounded-xl shadow text-center ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
+        <div
+          className={`p-6 rounded-xl shadow text-center ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
           <Mail className="w-12 h-12 text-blue-500 mx-auto mb-3" />
-          <h3 className={`text-lg font-semibold mb-2 ${theme === "light" ? "text-gray-900" : "text-white"}`}>Email Campaigns</h3>
-          <p className={`text-sm mb-4 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Send newsletters and updates</p>
+          <h3
+            className={`text-lg font-semibold mb-2 ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            Email Campaigns
+          </h3>
+          <p
+            className={`text-sm mb-4 ${
+              theme === "light" ? "text-gray-600" : "text-gray-400"
+            }`}
+          >
+            Send newsletters and updates
+          </p>
           <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
             Create Email
           </button>
         </div>
-        
-        <div className={`p-6 rounded-xl shadow text-center ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
+
+        <div
+          className={`p-6 rounded-xl shadow text-center ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
           <MessageSquare className="w-12 h-12 text-green-500 mx-auto mb-3" />
-          <h3 className={`text-lg font-semibold mb-2 ${theme === "light" ? "text-gray-900" : "text-white"}`}>SMS Alerts</h3>
-          <p className={`text-sm mb-4 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Quick notifications to volunteers</p>
+          <h3
+            className={`text-lg font-semibold mb-2 ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            SMS Alerts
+          </h3>
+          <p
+            className={`text-sm mb-4 ${
+              theme === "light" ? "text-gray-600" : "text-gray-400"
+            }`}
+          >
+            Quick notifications to volunteers
+          </p>
           <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
             Send SMS
           </button>
         </div>
-        
-        <div className={`p-6 rounded-xl shadow text-center ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
+
+        <div
+          className={`p-6 rounded-xl shadow text-center ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
           <Users className="w-12 h-12 text-purple-500 mx-auto mb-3" />
-          <h3 className={`text-lg font-semibold mb-2 ${theme === "light" ? "text-gray-900" : "text-white"}`}>Social Media</h3>
-          <p className={`text-sm mb-4 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Share updates and campaigns</p>
+          <h3
+            className={`text-lg font-semibold mb-2 ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            Social Media
+          </h3>
+          <p
+            className={`text-sm mb-4 ${
+              theme === "light" ? "text-gray-600" : "text-gray-400"
+            }`}
+          >
+            Share updates and campaigns
+          </p>
           <button className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
             Post Update
           </button>
@@ -321,29 +706,76 @@ const NgoDashboard = () => {
       </div>
 
       {/* Recent Communications */}
-      <div className={`rounded-xl shadow overflow-hidden ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
-        <div className={`px-6 py-4 border-b ${theme === "light" ? "border-gray-200" : "border-gray-700"}`}>
-          <h3 className={`text-lg font-semibold ${theme === "light" ? "text-gray-900" : "text-white"}`}>Recent Communications</h3>
+      <div
+        className={`rounded-xl shadow overflow-hidden ${
+          theme === "light" ? "bg-white" : "bg-gray-900"
+        }`}
+      >
+        <div
+          className={`px-6 py-4 border-b ${
+            theme === "light" ? "border-gray-200" : "border-gray-700"
+          }`}
+        >
+          <h3
+            className={`text-lg font-semibold ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            Recent Communications
+          </h3>
         </div>
         <div className="divide-y divide-gray-200">
-          {communications.map(comm => (
-            <div key={comm.id} className={`p-6 flex justify-between items-center ${theme === "light" ? "" : "divide-gray-700"}`}>
+          {communications.map((comm) => (
+            <div
+              key={comm.id}
+              className={`p-6 flex justify-between items-center ${
+                theme === "light" ? "" : "divide-gray-700"
+              }`}
+            >
               <div className="flex items-center gap-4">
-                {comm.type === 'Email' && <Mail className="w-5 h-5 text-blue-500" />}
-                {comm.type === 'SMS' && <MessageSquare className="w-5 h-5 text-green-500" />}
-                {comm.type === 'Newsletter' && <Users className="w-5 h-5 text-purple-500" />}
+                {comm.type === "Email" && (
+                  <Mail className="w-5 h-5 text-blue-500" />
+                )}
+                {comm.type === "SMS" && (
+                  <MessageSquare className="w-5 h-5 text-green-500" />
+                )}
+                {comm.type === "Newsletter" && (
+                  <Users className="w-5 h-5 text-purple-500" />
+                )}
                 <div>
-                  <h4 className={`font-medium ${theme === "light" ? "text-gray-900" : "text-white"}`}>{comm.subject}</h4>
-                  <p className={`text-sm ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>To: {comm.recipient}</p>
+                  <h4
+                    className={`font-medium ${
+                      theme === "light" ? "text-gray-900" : "text-white"
+                    }`}
+                  >
+                    {comm.subject}
+                  </h4>
+                  <p
+                    className={`text-sm ${
+                      theme === "light" ? "text-gray-600" : "text-gray-400"
+                    }`}
+                  >
+                    To: {comm.recipient}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <span className={`text-sm ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>{comm.date}</span>
-                <span className={`px-2 py-1 text-xs rounded-full ${
-                  comm.status === 'Sent' ? 'bg-green-100 text-green-800' :
-                  comm.status === 'Scheduled' ? 'bg-blue-100 text-blue-800' :
-                  'bg-yellow-100 text-yellow-800'
-                }`}>
+                <span
+                  className={`text-sm ${
+                    theme === "light" ? "text-gray-500" : "text-gray-400"
+                  }`}
+                >
+                  {comm.date}
+                </span>
+                <span
+                  className={`px-2 py-1 text-xs rounded-full ${
+                    comm.status === "Sent"
+                      ? "bg-green-100 text-green-800"
+                      : comm.status === "Scheduled"
+                      ? "bg-blue-100 text-blue-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
                   {comm.status}
                 </span>
               </div>
@@ -356,75 +788,241 @@ const NgoDashboard = () => {
 
   const ProfileSection = () => (
     <div>
-      <h1 className={`text-3xl font-bold mb-6 ${theme === "light" ? "text-gray-900" : "text-white"}`}>
+      <h1
+        className={`text-3xl font-bold mb-6 ${
+          theme === "light" ? "text-gray-900" : "text-white"
+        }`}
+      >
         Organization Profile
       </h1>
 
       <div className="grid grid-cols-2 gap-6">
         {/* Basic Information */}
-        <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
-          <h3 className={`text-lg font-semibold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}>Basic Information</h3>
+        <div
+          className={`p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
+          <h3
+            className={`text-lg font-semibold mb-4 ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            Basic Information
+          </h3>
           <div className="space-y-4">
             <div>
-              <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>Organization Name</label>
-              <input type="text" value="Relief United" className={`w-full px-3 py-2 border rounded-lg ${theme === "light" ? "border-gray-300" : "border-gray-600 bg-gray-800 text-white"}`} />
+              <label
+                className={`block text-sm font-medium mb-1 ${
+                  theme === "light" ? "text-gray-700" : "text-gray-300"
+                }`}
+              >
+                Organization Name
+              </label>
+              <input
+                type="text"
+                value="Relief United"
+                className={`w-full px-3 py-2 border rounded-lg ${
+                  theme === "light"
+                    ? "border-gray-300"
+                    : "border-gray-600 bg-gray-800 text-white"
+                }`}
+              />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>Registration Number</label>
-              <input type="text" value="NGO-2024-001" className={`w-full px-3 py-2 border rounded-lg ${theme === "light" ? "border-gray-300" : "border-gray-600 bg-gray-800 text-white"}`} />
+              <label
+                className={`block text-sm font-medium mb-1 ${
+                  theme === "light" ? "text-gray-700" : "text-gray-300"
+                }`}
+              >
+                Registration Number
+              </label>
+              <input
+                type="text"
+                value="NGO-2024-001"
+                className={`w-full px-3 py-2 border rounded-lg ${
+                  theme === "light"
+                    ? "border-gray-300"
+                    : "border-gray-600 bg-gray-800 text-white"
+                }`}
+              />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>Email</label>
-              <input type="email" value="contact@reliefunited.org" className={`w-full px-3 py-2 border rounded-lg ${theme === "light" ? "border-gray-300" : "border-gray-600 bg-gray-800 text-white"}`} />
+              <label
+                className={`block text-sm font-medium mb-1 ${
+                  theme === "light" ? "text-gray-700" : "text-gray-300"
+                }`}
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                value="contact@reliefunited.org"
+                className={`w-full px-3 py-2 border rounded-lg ${
+                  theme === "light"
+                    ? "border-gray-300"
+                    : "border-gray-600 bg-gray-800 text-white"
+                }`}
+              />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>Phone</label>
-              <input type="tel" value="+1 (555) 123-4567" className={`w-full px-3 py-2 border rounded-lg ${theme === "light" ? "border-gray-300" : "border-gray-600 bg-gray-800 text-white"}`} />
+              <label
+                className={`block text-sm font-medium mb-1 ${
+                  theme === "light" ? "text-gray-700" : "text-gray-300"
+                }`}
+              >
+                Phone
+              </label>
+              <input
+                type="tel"
+                value="+1 (555) 123-4567"
+                className={`w-full px-3 py-2 border rounded-lg ${
+                  theme === "light"
+                    ? "border-gray-300"
+                    : "border-gray-600 bg-gray-800 text-white"
+                }`}
+              />
             </div>
           </div>
         </div>
 
         {/* Address & Location */}
-        <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
-          <h3 className={`text-lg font-semibold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}>Address & Location</h3>
+        <div
+          className={`p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
+          <h3
+            className={`text-lg font-semibold mb-4 ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            Address & Location
+          </h3>
           <div className="space-y-4">
             <div>
-              <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>Street Address</label>
-              <input type="text" value="123 Relief Street" className={`w-full px-3 py-2 border rounded-lg ${theme === "light" ? "border-gray-300" : "border-gray-600 bg-gray-800 text-white"}`} />
+              <label
+                className={`block text-sm font-medium mb-1 ${
+                  theme === "light" ? "text-gray-700" : "text-gray-300"
+                }`}
+              >
+                Street Address
+              </label>
+              <input
+                type="text"
+                value="123 Relief Street"
+                className={`w-full px-3 py-2 border rounded-lg ${
+                  theme === "light"
+                    ? "border-gray-300"
+                    : "border-gray-600 bg-gray-800 text-white"
+                }`}
+              />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>City</label>
-              <input type="text" value="Hope City" className={`w-full px-3 py-2 border rounded-lg ${theme === "light" ? "border-gray-300" : "border-gray-600 bg-gray-800 text-white"}`} />
+              <label
+                className={`block text-sm font-medium mb-1 ${
+                  theme === "light" ? "text-gray-700" : "text-gray-300"
+                }`}
+              >
+                City
+              </label>
+              <input
+                type="text"
+                value="Hope City"
+                className={`w-full px-3 py-2 border rounded-lg ${
+                  theme === "light"
+                    ? "border-gray-300"
+                    : "border-gray-600 bg-gray-800 text-white"
+                }`}
+              />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>State/Province</label>
-              <input type="text" value="Relief State" className={`w-full px-3 py-2 border rounded-lg ${theme === "light" ? "border-gray-300" : "border-gray-600 bg-gray-800 text-white"}`} />
+              <label
+                className={`block text-sm font-medium mb-1 ${
+                  theme === "light" ? "text-gray-700" : "text-gray-300"
+                }`}
+              >
+                State/Province
+              </label>
+              <input
+                type="text"
+                value="Relief State"
+                className={`w-full px-3 py-2 border rounded-lg ${
+                  theme === "light"
+                    ? "border-gray-300"
+                    : "border-gray-600 bg-gray-800 text-white"
+                }`}
+              />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>ZIP Code</label>
-              <input type="text" value="12345" className={`w-full px-3 py-2 border rounded-lg ${theme === "light" ? "border-gray-300" : "border-gray-600 bg-gray-800 text-white"}`} />
+              <label
+                className={`block text-sm font-medium mb-1 ${
+                  theme === "light" ? "text-gray-700" : "text-gray-300"
+                }`}
+              >
+                ZIP Code
+              </label>
+              <input
+                type="text"
+                value="12345"
+                className={`w-full px-3 py-2 border rounded-lg ${
+                  theme === "light"
+                    ? "border-gray-300"
+                    : "border-gray-600 bg-gray-800 text-white"
+                }`}
+              />
             </div>
           </div>
         </div>
 
         {/* Mission & Description */}
-        <div className={`col-span-2 p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
-          <h3 className={`text-lg font-semibold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}>Mission & Description</h3>
+        <div
+          className={`col-span-2 p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
+          <h3
+            className={`text-lg font-semibold mb-4 ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            Mission & Description
+          </h3>
           <div className="space-y-4">
             <div>
-              <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>Mission Statement</label>
-              <textarea 
-                rows={3} 
+              <label
+                className={`block text-sm font-medium mb-1 ${
+                  theme === "light" ? "text-gray-700" : "text-gray-300"
+                }`}
+              >
+                Mission Statement
+              </label>
+              <textarea
+                rows={3}
                 value="To provide immediate relief and long-term support to communities affected by natural disasters and humanitarian crises."
-                className={`w-full px-3 py-2 border rounded-lg ${theme === "light" ? "border-gray-300" : "border-gray-600 bg-gray-800 text-white"}`}
+                className={`w-full px-3 py-2 border rounded-lg ${
+                  theme === "light"
+                    ? "border-gray-300"
+                    : "border-gray-600 bg-gray-800 text-white"
+                }`}
               />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>Organization Description</label>
-              <textarea 
-                rows={4} 
+              <label
+                className={`block text-sm font-medium mb-1 ${
+                  theme === "light" ? "text-gray-700" : "text-gray-300"
+                }`}
+              >
+                Organization Description
+              </label>
+              <textarea
+                rows={4}
                 value="Relief United is a non-profit organization dedicated to providing humanitarian aid and disaster relief services. We work with local communities, government agencies, and international partners to deliver effective relief solutions."
-                className={`w-full px-3 py-2 border rounded-lg ${theme === "light" ? "border-gray-300" : "border-gray-600 bg-gray-800 text-white"}`}
+                className={`w-full px-3 py-2 border rounded-lg ${
+                  theme === "light"
+                    ? "border-gray-300"
+                    : "border-gray-600 bg-gray-800 text-white"
+                }`}
               />
             </div>
           </div>
@@ -435,7 +1033,13 @@ const NgoDashboard = () => {
         <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
           Save Changes
         </button>
-        <button className={`px-6 py-2 border rounded-lg ${theme === "light" ? "border-gray-300 hover:bg-gray-50" : "border-gray-600 hover:bg-gray-700 text-white"}`}>
+        <button
+          className={`px-6 py-2 border rounded-lg ${
+            theme === "light"
+              ? "border-gray-300 hover:bg-gray-50"
+              : "border-gray-600 hover:bg-gray-700 text-white"
+          }`}
+        >
           Cancel
         </button>
       </div>
@@ -444,58 +1048,151 @@ const NgoDashboard = () => {
 
   const ImpactTrackingSection = () => (
     <div>
-      <p className={`mb-6 ${theme === "light" ? "text-gray-600" : "text-gray-300"}`}>
-        Monitor the progress and effectiveness of your relief efforts in real-time.
+      <p
+        className={`mb-6 ${
+          theme === "light" ? "text-gray-600" : "text-gray-300"
+        }`}
+      >
+        Monitor the progress and effectiveness of your relief efforts in
+        real-time.
       </p>
 
       {/* Overall Impact */}
       <div className="grid grid-cols-3 gap-6 mb-8">
-        <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
-          <p className={theme === "light" ? "text-gray-600" : "text-gray-400"}>Beneficiaries Served</p>
-          <h2 className={`text-2xl font-bold mt-2 ${theme === "light" ? "text-gray-900" : "text-white"}`}>12,500</h2>
+        <div
+          className={`p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
+          <p className={theme === "light" ? "text-gray-600" : "text-gray-400"}>
+            Beneficiaries Served
+          </p>
+          <h2
+            className={`text-2xl font-bold mt-2 ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            12,500
+          </h2>
         </div>
-        <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
-          <p className={theme === "light" ? "text-gray-600" : "text-gray-400"}>Resources Distributed</p>
-          <h2 className={`text-2xl font-bold mt-2 ${theme === "light" ? "text-gray-900" : "text-white"}`}>500 Tons</h2>
+        <div
+          className={`p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
+          <p className={theme === "light" ? "text-gray-600" : "text-gray-400"}>
+            Resources Distributed
+          </p>
+          <h2
+            className={`text-2xl font-bold mt-2 ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            500 Tons
+          </h2>
         </div>
-        <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
-          <p className={theme === "light" ? "text-gray-600" : "text-gray-400"}>Progress Towards Goals</p>
-          <h2 className={`text-2xl font-bold mt-2 ${theme === "light" ? "text-gray-900" : "text-white"}`}>75%</h2>
+        <div
+          className={`p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
+          <p className={theme === "light" ? "text-gray-600" : "text-gray-400"}>
+            Progress Towards Goals
+          </p>
+          <h2
+            className={`text-2xl font-bold mt-2 ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            75%
+          </h2>
         </div>
       </div>
 
       {/* Campaign Performance */}
       <div className="grid grid-cols-2 gap-6 mb-8">
-        <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
-          <p className={`mb-2 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
+        <div
+          className={`p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
+          <p
+            className={`mb-2 ${
+              theme === "light" ? "text-gray-600" : "text-gray-400"
+            }`}
+          >
             Beneficiaries Reached by Campaign
           </p>
-          <h2 className={`text-2xl font-bold ${theme === "light" ? "text-gray-900" : "text-white"}`}>5,000</h2>
+          <h2
+            className={`text-2xl font-bold ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            5,000
+          </h2>
           <p className="text-green-600 text-sm mt-1">Total +15%</p>
           <div className="flex space-x-4 mt-4">
             <div className="flex flex-col items-center">
               <div className="w-8 h-24 bg-blue-200 rounded"></div>
-              <p className={`text-sm mt-2 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Campaign A</p>
+              <p
+                className={`text-sm mt-2 ${
+                  theme === "light" ? "text-gray-600" : "text-gray-400"
+                }`}
+              >
+                Campaign A
+              </p>
             </div>
             <div className="flex flex-col items-center">
               <div className="w-8 h-16 bg-blue-400 rounded"></div>
-              <p className={`text-sm mt-2 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Campaign B</p>
+              <p
+                className={`text-sm mt-2 ${
+                  theme === "light" ? "text-gray-600" : "text-gray-400"
+                }`}
+              >
+                Campaign B
+              </p>
             </div>
             <div className="flex flex-col items-center">
               <div className="w-8 h-20 bg-blue-600 rounded"></div>
-              <p className={`text-sm mt-2 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>Campaign C</p>
+              <p
+                className={`text-sm mt-2 ${
+                  theme === "light" ? "text-gray-600" : "text-gray-400"
+                }`}
+              >
+                Campaign C
+              </p>
             </div>
           </div>
         </div>
 
-        <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
-          <p className={`mb-2 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
+        <div
+          className={`p-6 rounded-xl shadow ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
+          <p
+            className={`mb-2 ${
+              theme === "light" ? "text-gray-600" : "text-gray-400"
+            }`}
+          >
             Resource Distribution Over Time
           </p>
-          <h2 className={`text-2xl font-bold ${theme === "light" ? "text-gray-900" : "text-white"}`}>200 Tons</h2>
+          <h2
+            className={`text-2xl font-bold ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            200 Tons
+          </h2>
           <p className="text-green-600 text-sm mt-1">Last 6 Months +10%</p>
           <div className="h-32 flex items-end mt-4">
-            <div className={`w-full border-b flex justify-between text-xs ${theme === "light" ? "border-gray-200 text-gray-500" : "border-gray-600 text-gray-400"}`}>
+            <div
+              className={`w-full border-b flex justify-between text-xs ${
+                theme === "light"
+                  ? "border-gray-200 text-gray-500"
+                  : "border-gray-600 text-gray-400"
+              }`}
+            >
               <span>Jan</span>
               <span>Feb</span>
               <span>Mar</span>
@@ -508,11 +1205,27 @@ const NgoDashboard = () => {
       </div>
 
       {/* Detailed Reports */}
-      <div className={`p-6 rounded-xl shadow ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
-        <h2 className={`text-lg font-bold mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}>Detailed Reports</h2>
+      <div
+        className={`p-6 rounded-xl shadow ${
+          theme === "light" ? "bg-white" : "bg-gray-900"
+        }`}
+      >
+        <h2
+          className={`text-lg font-bold mb-4 ${
+            theme === "light" ? "text-gray-900" : "text-white"
+          }`}
+        >
+          Detailed Reports
+        </h2>
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className={`border-b ${theme === "light" ? "text-gray-600 border-gray-200" : "text-gray-400 border-gray-700"}`}>
+            <tr
+              className={`border-b ${
+                theme === "light"
+                  ? "text-gray-600 border-gray-200"
+                  : "text-gray-400 border-gray-700"
+              }`}
+            >
               <th className="py-2">Campaign</th>
               <th>Beneficiaries Served</th>
               <th>Resources Distributed</th>
@@ -520,24 +1233,42 @@ const NgoDashboard = () => {
               <th>Status</th>
             </tr>
           </thead>
-          <tbody className={theme === "light" ? "text-gray-900" : "text-gray-100"}>
-            <tr className={`border-b ${theme === "light" ? "border-gray-200" : "border-gray-700"}`}>
+          <tbody
+            className={theme === "light" ? "text-gray-900" : "text-gray-100"}
+          >
+            <tr
+              className={`border-b ${
+                theme === "light" ? "border-gray-200" : "border-gray-700"
+              }`}
+            >
               <td className="py-3">Campaign A: Flood Relief</td>
               <td>5,000</td>
               <td>200 Tons</td>
               <td>
-                <div className={`w-32 h-2 rounded ${theme === "light" ? "bg-gray-200" : "bg-gray-700"}`}>
+                <div
+                  className={`w-32 h-2 rounded ${
+                    theme === "light" ? "bg-gray-200" : "bg-gray-700"
+                  }`}
+                >
                   <div className="bg-blue-600 h-2 rounded w-3/4"></div>
                 </div>
               </td>
               <td>Active</td>
             </tr>
-            <tr className={`border-b ${theme === "light" ? "border-gray-200" : "border-gray-700"}`}>
+            <tr
+              className={`border-b ${
+                theme === "light" ? "border-gray-200" : "border-gray-700"
+              }`}
+            >
               <td className="py-3">Campaign B: Earthquake Recovery</td>
               <td>4,500</td>
               <td>150 Tons</td>
               <td>
-                <div className={`w-32 h-2 rounded ${theme === "light" ? "bg-gray-200" : "bg-gray-700"}`}>
+                <div
+                  className={`w-32 h-2 rounded ${
+                    theme === "light" ? "bg-gray-200" : "bg-gray-700"
+                  }`}
+                >
                   <div className="bg-blue-600 h-2 rounded w-3/5"></div>
                 </div>
               </td>
@@ -548,7 +1279,11 @@ const NgoDashboard = () => {
               <td>3,000</td>
               <td>150 Tons</td>
               <td>
-                <div className={`w-32 h-2 rounded ${theme === "light" ? "bg-gray-200" : "bg-gray-700"}`}>
+                <div
+                  className={`w-32 h-2 rounded ${
+                    theme === "light" ? "bg-gray-200" : "bg-gray-700"
+                  }`}
+                >
                   <div className="bg-blue-600 h-2 rounded w-[90%]"></div>
                 </div>
               </td>
@@ -561,18 +1296,18 @@ const NgoDashboard = () => {
   );
 
   const renderSection = () => {
-    switch(activeSection) {
-      case 'home':
+    switch (activeSection) {
+      case "home":
         return <HomeSection />;
-      case 'donations':
+      case "donations":
         return <ManageDonationsSection />;
-      case 'requests':
+      case "requests":
         return <ViewRequestsSection />;
-      case 'impact':
+      case "impact":
         return <ImpactTrackingSection />;
-      case 'communications':
+      case "communications":
         return <CommunicationsSection />;
-      case 'profile':
+      case "profile":
         return <ProfileSection />;
       default:
         return <HomeSection />;
@@ -580,99 +1315,147 @@ const NgoDashboard = () => {
   };
 
   return (
-    <div className={`flex h-screen ${theme === "light" ? "bg-gray-50" : "bg-gray-800"}`}>
-      {/* Sidebar */}
-      <aside className={`w-64 shadow-md flex flex-col ${theme === "light" ? "bg-white" : "bg-gray-900"}`}>
-        <div className={`flex items-center px-6 py-4 border-b ${theme === "light" ? "border-gray-200" : "border-gray-700"}`}>
-          <img
-            src="https://i.pravatar.cc/50?img=12"
-            alt="NGO Logo"
-            className="w-10 h-10 rounded-full"
-          />
-          <div className="ml-3">
-            <h2 className={`font-semibold ${theme === "light" ? "text-gray-900" : "text-white"}`}>Relief United</h2>
+    <div className="min-h-screen flex flex-col">
+      <Navbar isLoggedIn={true} />
+      <div
+        className={`flex h-screen ${
+          theme === "light" ? "bg-gray-50" : "bg-gray-800"
+        }`}
+      >
+        {/* Sidebar */}
+        <aside
+          className={`w-64 backdrop-blur border-r p-6 flex flex-col shadow-md ${
+            theme === "light"
+              ? "bg-white/90 border-gray-200"
+              : "bg-gray-900/90 border-gray-700"
+          }`}
+        >
+          {" "}
+          <div
+            className={`flex items-center px-6 py-4 border-b ${
+              theme === "light" ? "border-gray-200" : "border-gray-700"
+            }`}
+          >
+            <img
+              src="https://i.pravatar.cc/50?img=12"
+              alt="NGO Logo"
+              className="w-10 h-10 rounded-full"
+            />
+            <div className="ml-3">
+              <h2
+                className={`font-semibold ${
+                  theme === "light" ? "text-gray-900" : "text-white"
+                }`}
+              >
+                Relief United
+              </h2>
+            </div>
           </div>
-        </div>
-        <nav className="flex-1 px-4 py-6 space-y-4">
-          <button
-            onClick={() => setActiveSection('home')}
-            className={`w-full flex items-center text-left hover:text-blue-600 ${
-              activeSection === 'home' ? 'text-blue-600 font-semibold' : 
-              theme === "light" ? "text-gray-700" : "text-gray-300"
-            }`}
-          >
-            <Home className="w-5 h-5 mr-3" /> Home
-          </button>
-          <button
-            onClick={() => setActiveSection('donations')}
-            className={`w-full flex items-center text-left hover:text-blue-600 ${
-              activeSection === 'donations' ? 'text-blue-600 font-semibold' : 
-              theme === "light" ? "text-gray-700" : "text-gray-300"
-            }`}
-          >
-            <Heart className="w-5 h-5 mr-3" /> Manage Donations
-          </button>
-          <button
-            onClick={() => setActiveSection('requests')}
-            className={`w-full flex items-center text-left hover:text-blue-600 ${
-              activeSection === 'requests' ? 'text-blue-600 font-semibold' : 
-              theme === "light" ? "text-gray-700" : "text-gray-300"
-            }`}
-          >
-            <List className="w-5 h-5 mr-3" /> View Requests
-          </button>
-          <button
-            onClick={() => setActiveSection('impact')}
-            className={`w-full flex items-center text-left hover:text-blue-600 ${
-              activeSection === 'impact' ? 'text-blue-600 font-semibold' : 
-              theme === "light" ? "text-gray-700" : "text-gray-300"
-            }`}
-          >
-            <BarChart2 className="w-5 h-5 mr-3" /> Impact Tracking
-          </button>
-          <button
-            onClick={() => setActiveSection('communications')}
-            className={`w-full flex items-center text-left hover:text-blue-600 ${
-              activeSection === 'communications' ? 'text-blue-600 font-semibold' : 
-              theme === "light" ? "text-gray-700" : "text-gray-300"
-            }`}
-          >
-            <MessageSquare className="w-5 h-5 mr-3" /> Communications
-          </button>
-          <button
-            onClick={() => setActiveSection('profile')}
-            className={`w-full flex items-center text-left hover:text-blue-600 ${
-              activeSection === 'profile' ? 'text-blue-600 font-semibold' : 
-              theme === "light" ? "text-gray-700" : "text-gray-300"
-            }`}
-          >
-            <User className="w-5 h-5 mr-3" /> Profile
-          </button>
-        </nav>
-        <div className="p-4">
-          <button className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-            New Campaign
-          </button>
-          <p className={`text-sm mt-3 text-center ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>
-            Help and Docs
-          </p>
-        </div>
-      </aside>
+          <nav className="flex-1 px-4 py-6 space-y-4">
+            <button
+              onClick={() => setActiveSection("home")}
+              className={`w-full flex items-center text-left hover:text-blue-600 ${
+                activeSection === "home"
+                  ? "text-blue-600 font-semibold"
+                  : theme === "light"
+                  ? "text-gray-700"
+                  : "text-gray-300"
+              }`}
+            >
+              <Home className="w-5 h-5 mr-3" /> Home
+            </button>
+            <button
+              onClick={() => setActiveSection("donations")}
+              className={`w-full flex items-center text-left hover:text-blue-600 ${
+                activeSection === "donations"
+                  ? "text-blue-600 font-semibold"
+                  : theme === "light"
+                  ? "text-gray-700"
+                  : "text-gray-300"
+              }`}
+            >
+              <Heart className="w-5 h-5 mr-3" /> Manage Donations
+            </button>
+            <button
+              onClick={() => setActiveSection("requests")}
+              className={`w-full flex items-center text-left hover:text-blue-600 ${
+                activeSection === "requests"
+                  ? "text-blue-600 font-semibold"
+                  : theme === "light"
+                  ? "text-gray-700"
+                  : "text-gray-300"
+              }`}
+            >
+              <List className="w-5 h-5 mr-3" /> View Requests
+            </button>
+            <button
+              onClick={() => setActiveSection("impact")}
+              className={`w-full flex items-center text-left hover:text-blue-600 ${
+                activeSection === "impact"
+                  ? "text-blue-600 font-semibold"
+                  : theme === "light"
+                  ? "text-gray-700"
+                  : "text-gray-300"
+              }`}
+            >
+              <BarChart2 className="w-5 h-5 mr-3" /> Impact Tracking
+            </button>
+            <button
+              onClick={() => setActiveSection("communications")}
+              className={`w-full flex items-center text-left hover:text-blue-600 ${
+                activeSection === "communications"
+                  ? "text-blue-600 font-semibold"
+                  : theme === "light"
+                  ? "text-gray-700"
+                  : "text-gray-300"
+              }`}
+            >
+              <MessageSquare className="w-5 h-5 mr-3" /> Communications
+            </button>
+            <button
+              onClick={() => setActiveSection("profile")}
+              className={`w-full flex items-center text-left hover:text-blue-600 ${
+                activeSection === "profile"
+                  ? "text-blue-600 font-semibold"
+                  : theme === "light"
+                  ? "text-gray-700"
+                  : "text-gray-300"
+              }`}
+            >
+              <User className="w-5 h-5 mr-3" /> Profile
+            </button>
+          </nav>
+          <div className="p-4">
+            <button className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              New Campaign
+            </button>
+            <p
+              className={`text-sm mt-3 text-center ${
+                theme === "light" ? "text-gray-500" : "text-gray-400"
+              }`}
+            >
+              Help and Docs
+            </p>
+          </div>
+        </aside>
 
-      {/* Main Dashboard */}
-      <main className="flex-1 p-8 overflow-y-auto">
-        {renderSection()}
-      </main>
+        {/* Main Dashboard */}
+        <main className="flex-1 p-8 overflow-y-auto">{renderSection()}</main>
+      </div>
     </div>
   );
 };
 
 // Mock Provider for demo
 const App = () => {
-  const [theme, setTheme] = useState('light');
-  
+  const [theme, setTheme] = useState("light");
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
       <NgoDashboard />
     </ThemeContext.Provider>
   );
