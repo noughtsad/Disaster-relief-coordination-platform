@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { setUser, setLoading, setError, clearError, logout } from '../store/appSlice';
 
 // Login Component
 const LoginComponent = ({ formData, handleInputChange, handleLogin, handleGoogleSignIn }) => (
@@ -195,7 +198,11 @@ const SignupComponent = ({ formData, handleInputChange, handleSignup, handleGoog
 
 // Main Auth Component
 export default function CrisisConnectAuth() {
-  const [isLogin, setIsLogin] = useState(true);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated, loading, error } = useSelector((state) => state.app);
+
+  const [isLoginMode, setIsLoginMode] = useState(true); // Local state for toggling login/signup form
   const [formData, setFormData] = useState({
     userType: "survivor",
     name: "",
@@ -205,6 +212,17 @@ export default function CrisisConnectAuth() {
     confirmPassword: "",
   });
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Redirect based on user type or a default dashboard
+      navigate('/survivorDashboard'); // Placeholder for now
+    }
+    if (error) {
+      // Optionally clear error after some time or user interaction
+      // setTimeout(() => dispatch(clearError()), 5000);
+    }
+  }, [isAuthenticated, error, navigate, dispatch]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -213,20 +231,51 @@ export default function CrisisConnectAuth() {
     }));
   };
 
-  const handleLogin = () => {
-    console.log("Login data:", formData);
+  const handleLogin = async () => {
+    dispatch(setLoading(true));
+    dispatch(clearError());
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (formData.email === "test@example.com" && formData.password === "password") {
+        dispatch(setUser({ email: formData.email, userType: "survivor" }));
+        localStorage.setItem('token', 'dummy-token'); // Store token
+      } else {
+        throw new Error("Invalid credentials");
+      }
+    } catch (err) {
+      dispatch(setError(err.message));
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 
-  const handleSignup = () => {
-    console.log("Signup data:", formData);
+  const handleSignup = async () => {
+    dispatch(setLoading(true));
+    dispatch(clearError());
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (formData.password !== formData.confirmPassword) {
+        throw new Error("Passwords do not match");
+      }
+      // Assuming successful signup
+      dispatch(setUser({ email: formData.email, userType: formData.userType }));
+      localStorage.setItem('token', 'dummy-token'); // Store token
+    } catch (err) {
+      dispatch(setError(err.message));
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 
   const handleGoogleSignIn = () => {
     console.log("Google sign in clicked");
+    // Implement Google sign-in logic, dispatching Redux actions
   };
 
   const toggleAuthMode = () => {
-    setIsLogin(!isLogin);
+    setIsLoginMode(!isLoginMode);
     setFormData({
       userType: "survivor",
       name: "",
@@ -235,6 +284,7 @@ export default function CrisisConnectAuth() {
       password: "",
       confirmPassword: "",
     });
+    dispatch(clearError()); // Clear any previous errors when toggling
   };
 
   return (
@@ -249,17 +299,17 @@ export default function CrisisConnectAuth() {
           {/* Auth Toggle */}
           <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
             <button
-              onClick={() => setIsLogin(true)}
+              onClick={() => setIsLoginMode(true)}
               className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${
-                isLogin ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"
+                isLoginMode ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"
               }`}
             >
               Login
             </button>
             <button
-              onClick={() => setIsLogin(false)}
+              onClick={() => setIsLoginMode(false)}
               className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${
-                !isLogin ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"
+                !isLoginMode ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"
               }`}
             >
               Sign Up
@@ -269,7 +319,10 @@ export default function CrisisConnectAuth() {
 
         {/* Form Section */}
         <div className="px-6 pb-6">
-          {isLogin ? (
+          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+          {loading && <p className="text-blue-500 text-center mb-4">Loading...</p>}
+
+          {isLoginMode ? (
             <LoginComponent
               formData={formData}
               handleInputChange={handleInputChange}
@@ -288,12 +341,12 @@ export default function CrisisConnectAuth() {
           {/* Bottom Toggle Text */}
           <div className="text-center mt-4">
             <span className="text-xs text-gray-600">
-              {isLogin ? "Don't have an account? " : "Already have an account? "}
+              {isLoginMode ? "Don't have an account? " : "Already have an account? "}
               <button
                 onClick={toggleAuthMode}
                 className="text-blue-600 font-medium hover:text-blue-700 transition-colors"
               >
-                {isLogin ? "Sign up" : "Login"}
+                {isLoginMode ? "Sign up" : "Login"}
               </button>
             </span>
           </div>

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { 
   Home, 
   PlusCircle, 
@@ -22,14 +22,20 @@ import {
   Building,
   Truck
 } from "lucide-react";
-
+import { useSelector, useDispatch } from 'react-redux';
+import { addRequest, setLoading as setRequestLoading, setError as setRequestError, clearError as clearRequestError } from '../store/requestSlice';
+import { setProfile, setLoading as setProfileLoading, setError as setProfileError, clearError as clearProfileError } from '../store/profileSlice';
 import Navbar from "../components/Navbar";
 import { ThemeContext } from "../context/ThemeContext";
 
 export default function SurvivorDashboard() {
   const { theme } = useContext(ThemeContext);
+  const dispatch = useDispatch();
+  const { requests, loading: requestsLoading, error: requestsError } = useSelector((state) => state.requests);
+  const { profile, loading: profileLoading, error: profileError } = useSelector((state) => state.profile);
+  const { user } = useSelector((state) => state.app); // Assuming user info is in appSlice
+
   const [activeSection, setActiveSection] = useState('home');
-  const [showReportForm, setShowReportForm] = useState(false);
   const [newRequest, setNewRequest] = useState({
     type: '',
     urgency: '',
@@ -38,22 +44,7 @@ export default function SurvivorDashboard() {
     contactInfo: ''
   });
 
-  // Mock data
-  const [requests, setRequests] = useState([
-    { id: 1, type: 'Shelter', status: 'Pending', date: '01-01-2025', urgency: 'High', description: 'Need temporary shelter for family of 4' },
-    { id: 2, type: 'Food', status: 'Approved', date: '01-01-2025', urgency: 'Medium', description: 'Food supplies for 1 week' },
-    { id: 3, type: 'Medical Supplies', status: 'Completed', date: '01-01-2025', urgency: 'High', description: 'First aid kit and medications' }
-  ]);
-
-  const [profile, setProfile] = useState({
-    name: 'Emily Carter',
-    phone: '+1 (555) 123-4567',
-    email: 'emily.carter@email.com',
-    address: '123 Main St, City, State 12345',
-    emergencyContact: 'John Carter - +1 (555) 987-6543',
-    medicalInfo: 'No known allergies'
-  });
-
+  // Mock data for camps and alerts (can be moved to Redux if needed globally)
   const [camps, setCamps] = useState([
     { id: 1, name: 'Community Relief Center', address: '123 Main St', services: ['Shelter', 'Food', 'Medical'], capacity: '80/100', distance: '2 miles' },
     { id: 2, name: 'Emergency Aid Station', address: '456 Oak Ave', services: ['Supplies', 'Information'], capacity: 'Full', distance: '5 miles' },
@@ -64,6 +55,15 @@ export default function SurvivorDashboard() {
       { id: 1, title: 'Flash Flood Warning', severity: 'High', time: '2 hours ago', details: 'A flash flood warning is in effect for your area. Move to higher ground immediately.' },
       { id: 2, title: 'Boil Water Advisory', severity: 'Medium', time: '8 hours ago', details: 'A boil water advisory is in effect. Boil all water before consumption.' }
   ]);
+
+  useEffect(() => {
+    // Optionally, fetch initial data for profile and requests here
+    // dispatch(fetchProfile());
+    // dispatch(fetchRequests());
+    if (user && user.name && profile.name !== user.name) {
+      dispatch(setProfile({ name: user.name, email: user.email }));
+    }
+  }, [dispatch, user, profile.name]);
 
   const HomeSection = () => (
     <div>
@@ -238,19 +238,31 @@ export default function SurvivorDashboard() {
   );
 
   const ReportNeedSection = () => {
-    const handleSubmitRequest = () => {
+    const handleSubmitRequest = async () => {
       if (newRequest.type && newRequest.urgency && newRequest.description) {
-        const request = {
-          id: requests.length + 1,
-          type: newRequest.type,
-          status: 'Pending',
-          date: new Date().toLocaleDateString(),
-          urgency: newRequest.urgency,
-          description: newRequest.description
-        };
-        setRequests([...requests, request]);
-        setNewRequest({ type: '', urgency: '', description: '', location: '', contactInfo: '' });
-        alert('Request submitted successfully!');
+        dispatch(setRequestLoading(true));
+        dispatch(clearRequestError());
+        try {
+          // Simulate API call
+          await new Promise(resolve => setTimeout(resolve, 500));
+          const request = {
+            id: requests.length + 1, // This should ideally come from backend
+            type: newRequest.type,
+            status: 'Pending',
+            date: new Date().toLocaleDateString(),
+            urgency: newRequest.urgency,
+            description: newRequest.description,
+            location: newRequest.location,
+            contactInfo: newRequest.contactInfo,
+          };
+          dispatch(addRequest(request));
+          setNewRequest({ type: '', urgency: '', description: '', location: '', contactInfo: '' });
+          alert('Request submitted successfully!');
+        } catch (err) {
+          dispatch(setRequestError(err.message));
+        } finally {
+          dispatch(setRequestLoading(false));
+        }
       }
     };
 
@@ -587,11 +599,26 @@ export default function SurvivorDashboard() {
 
   const ProfileSection = () => {
     const [isEditing, setIsEditing] = useState(false);
-    const [editProfile, setEditProfile] = useState({...profile});
+    const [editProfile, setEditProfile] = useState({...profile}); // Local state for editing
 
-    const handleSave = () => {
-      setProfile({...editProfile});
-      setIsEditing(false);
+    useEffect(() => {
+      setEditProfile(profile); // Sync local edit state with Redux profile when profile changes
+    }, [profile]);
+
+    const handleSave = async () => {
+      dispatch(setProfileLoading(true));
+      dispatch(clearProfileError());
+      try {
+        // Simulate API call to update profile
+        await new Promise(resolve => setTimeout(resolve, 500));
+        dispatch(setProfile(editProfile)); // Dispatch action to update Redux store
+        setIsEditing(false);
+        alert('Profile updated successfully!');
+      } catch (err) {
+        dispatch(setProfileError(err.message));
+      } finally {
+        dispatch(setProfileLoading(false));
+      }
     };
 
     return (
@@ -783,7 +810,7 @@ export default function SurvivorDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar isLoggedIn={true} />
+      <Navbar /> {/* isLoggedIn prop removed */}
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside className={`w-64 backdrop-blur border-r p-6 flex flex-col shadow-md ${
@@ -800,10 +827,10 @@ export default function SurvivorDashboard() {
             />
             <div>
               <p className={`font-semibold ${theme === "light" ? "text-gray-900" : "text-white"}`}>
-                Emily Carter
+                {profile.name}
               </p>
               <span className={`text-xs ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>
-                Survivor
+                {user?.userType || 'Survivor'} {/* Display user type from Redux appSlice */}
               </span>
             </div>
           </div>

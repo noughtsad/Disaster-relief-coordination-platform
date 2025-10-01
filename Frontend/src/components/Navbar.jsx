@@ -1,9 +1,15 @@
 import { useContext } from "react";
 import { Sun, Moon } from "lucide-react";
 import { ThemeContext } from "../context/ThemeContext";
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../store/appSlice';
 
-const Navbar = ({ isLoggedIn = false }) => {
+const Navbar = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state) => state.app);
 
   return (
     <nav
@@ -17,9 +23,10 @@ const Navbar = ({ isLoggedIn = false }) => {
 
       <div className="flex items-center gap-6">
         {/* Navigation Buttons */}
-        {isLoggedIn ? (
+        {isAuthenticated ? (
           <>
             <button
+              onClick={() => navigate('/survivorDashboard')} // Assuming a generic dashboard for now
               className={`px-6 py-3 font-medium transition-colors ${
                 theme === "light"
                   ? "text-gray-700 hover:text-gray-900"
@@ -29,6 +36,7 @@ const Navbar = ({ isLoggedIn = false }) => {
               Dashboard
             </button>
             <button
+              onClick={() => navigate('/profile')} // Assuming a profile page
               className={`px-6 py-3 font-medium transition-colors ${
                 theme === "light"
                   ? "text-gray-700 hover:text-gray-900"
@@ -38,6 +46,11 @@ const Navbar = ({ isLoggedIn = false }) => {
               Profile
             </button>
             <button
+              onClick={() => {
+                dispatch(logout());
+                localStorage.removeItem('token'); // Clear token on logout
+                navigate('/'); // Redirect to landing page
+              }}
               className={`px-6 py-3 rounded-lg font-medium transition-colors shadow-sm ${
                 theme === "light"
                   ? "bg-red-600 text-white hover:bg-red-700"
@@ -50,6 +63,7 @@ const Navbar = ({ isLoggedIn = false }) => {
         ) : (
           <>
             <button
+              onClick={() => navigate('/signup')}
               className={`px-6 py-3 rounded-lg font-medium transition-colors shadow-sm ${
                 theme === "light"
                   ? "bg-blue-600 text-white hover:bg-blue-700"
@@ -59,6 +73,7 @@ const Navbar = ({ isLoggedIn = false }) => {
               Register
             </button>
             <button
+              onClick={() => navigate('/signup')} // Login is part of the signup page
               className={`px-6 py-3 font-medium transition-colors ${
                 theme === "light"
                   ? "text-gray-700 hover:text-gray-900"

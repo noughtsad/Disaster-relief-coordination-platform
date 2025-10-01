@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Home,
   Heart,
@@ -24,102 +24,40 @@ import {
   AlertCircle,
   Send,
 } from "lucide-react";
+import { useSelector, useDispatch } from 'react-redux';
+import { updateRequestStatus, setLoading as setRequestLoading, setError as setRequestError, clearError as clearRequestError } from '../store/requestSlice';
 import Navbar from "../components/Navbar";
 
 import { ThemeContext } from "../context/ThemeContext";
 
-const NgoDashboard = () => {
+export default function NgoDashboard() {
   const { theme } = useContext(ThemeContext);
+  const dispatch = useDispatch();
+  const { requests, loading: requestsLoading, error: requestsError } = useSelector((state) => state.requests);
+  const { donations, loading: donationsLoading, error: donationsError } = useSelector((state) => state.donations);
+  const { communications, loading: communicationsLoading, error: communicationsError } = useSelector((state) => state.communications);
+  const { user } = useSelector((state) => state.app); // Assuming user info is in appSlice
+
   const [activeSection, setActiveSection] = useState("home");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Mock data
-  const donations = [
-    {
-      id: 1,
-      donor: "John Smith",
-      amount: 5000,
-      type: "Money",
-      date: "2024-01-15",
-      campaign: "Flood Relief",
-      status: "Received",
-    },
-    {
-      id: 2,
-      donor: "Sarah Johnson",
-      amount: 2500,
-      type: "Money",
-      date: "2024-01-10",
-      campaign: "Earthquake Recovery",
-      status: "Pending",
-    },
-    {
-      id: 3,
-      donor: "Local Store",
-      amount: 50,
-      type: "Food Items",
-      date: "2024-01-08",
-      campaign: "Hurricane Assistance",
-      status: "Received",
-    },
-  ];
+  // Placeholder for NGO profile data (can be moved to Redux profileSlice if needed)
+  const ngoProfile = {
+    name: "Relief United",
+    registrationNumber: "NGO-2024-001",
+    email: "contact@reliefunited.org",
+    phone: "+1 (555) 123-4567",
+    address: "123 Relief Street, Hope City, Relief State 12345",
+    mission: "To provide immediate relief and long-term support to communities affected by natural disasters and humanitarian crises.",
+    description: "Relief United is a non-profit organization dedicated to providing humanitarian aid and disaster relief services. We work with local communities, government agencies, and international partners to deliver effective relief solutions."
+  };
 
-  const requests = [
-    {
-      id: 1,
-      title: "Emergency Shelter Materials",
-      location: "District A",
-      urgency: "High",
-      requested: "100 tents",
-      status: "Open",
-      date: "2024-01-12",
-    },
-    {
-      id: 2,
-      title: "Medical Supplies",
-      location: "District B",
-      urgency: "Critical",
-      requested: "First aid kits, medicines",
-      status: "In Progress",
-      date: "2024-01-10",
-    },
-    {
-      id: 3,
-      title: "Food Distribution",
-      location: "District C",
-      urgency: "Medium",
-      requested: "500 food packets",
-      status: "Completed",
-      date: "2024-01-05",
-    },
-  ];
-
-  const communications = [
-    {
-      id: 1,
-      type: "Email",
-      recipient: "Donors Group",
-      subject: "Monthly Impact Report",
-      date: "2024-01-15",
-      status: "Sent",
-    },
-    {
-      id: 2,
-      type: "SMS",
-      recipient: "Volunteers",
-      subject: "Upcoming Event Notification",
-      date: "2024-01-14",
-      status: "Scheduled",
-    },
-    {
-      id: 3,
-      type: "Newsletter",
-      recipient: "All Subscribers",
-      subject: "January Newsletter",
-      date: "2024-01-12",
-      status: "Draft",
-    },
-  ];
+  useEffect(() => {
+    // Optionally, fetch initial data for donations, requests, communications here
+    // dispatch(fetchDonations());
+    // dispatch(fetchRequests());
+    // dispatch(fetchCommunications());
+  }, [dispatch]);
 
   const HomeSection = () => (
     <div>
@@ -499,117 +437,140 @@ const NgoDashboard = () => {
     </div>
   );
 
-  const ViewRequestsSection = () => (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1
-          className={`text-3xl font-bold ${
-            theme === "light" ? "text-gray-900" : "text-white"
-          }`}
-        >
-          View Requests
-        </h1>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
-          <Plus className="w-4 h-4" />
-          New Request
-        </button>
-      </div>
+  const ViewRequestsSection = () => {
+    const handleMarkComplete = async (id) => {
+      dispatch(setRequestLoading(true));
+      dispatch(clearRequestError());
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 500));
+        dispatch(updateRequestStatus({ id, status: 'Completed' }));
+        alert('Request marked as complete!');
+      } catch (err) {
+        dispatch(setRequestError(err.message));
+      } finally {
+        dispatch(setRequestLoading(false));
+      }
+    };
 
-      {/* Request Cards */}
-      <div className="grid gap-6">
-        {requests.map((request) => (
-          <div
-            key={request.id}
-            className={`p-6 rounded-xl shadow ${
-              theme === "light" ? "bg-white" : "bg-gray-900"
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <h1
+            className={`text-3xl font-bold ${
+              theme === "light" ? "text-gray-900" : "text-white"
             }`}
           >
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex-1">
-                <h3
-                  className={`text-xl font-semibold mb-2 ${
-                    theme === "light" ? "text-gray-900" : "text-white"
-                  }`}
-                >
-                  {request.title}
-                </h3>
-                <div className="flex items-center gap-4 mb-2">
-                  <div className="flex items-center gap-1">
-                    <MapPin className="w-4 h-4 text-gray-400" />
-                    <span
-                      className={`text-sm ${
-                        theme === "light" ? "text-gray-600" : "text-gray-300"
-                      }`}
-                    >
-                      {request.location}
-                    </span>
+            View Requests
+          </h1>
+          {/* New Request button might navigate to a form or modal */}
+          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            New Request
+          </button>
+        </div>
+
+        {/* Request Cards */}
+        <div className="grid gap-6">
+          {requests.map((request) => (
+            <div
+              key={request.id}
+              className={`p-6 rounded-xl shadow ${
+                theme === "light" ? "bg-white" : "bg-gray-900"
+              }`}
+            >
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex-1">
+                  <h3
+                    className={`text-xl font-semibold mb-2 ${
+                      theme === "light" ? "text-gray-900" : "text-white"
+                    }`}
+                  >
+                    {request.type} {/* Using type from requestSlice */}
+                  </h3>
+                  <div className="flex items-center gap-4 mb-2">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4 text-gray-400" />
+                      <span
+                        className={`text-sm ${
+                          theme === "light" ? "text-gray-600" : "text-gray-300"
+                        }`}
+                      >
+                        {request.location}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4 text-gray-400" />
+                      <span
+                        className={`text-sm ${
+                          theme === "light" ? "text-gray-600" : "text-gray-300"
+                        }`}
+                      >
+                        {request.date}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4 text-gray-400" />
-                    <span
-                      className={`text-sm ${
-                        theme === "light" ? "text-gray-600" : "text-gray-300"
-                      }`}
-                    >
-                      {request.date}
-                    </span>
-                  </div>
+                  <p
+                    className={`${
+                      theme === "light" ? "text-gray-700" : "text-gray-300"
+                    }`}
+                  >
+                    {request.description} {/* Using description from requestSlice */}
+                  </p>
                 </div>
-                <p
-                  className={`${
-                    theme === "light" ? "text-gray-700" : "text-gray-300"
-                  }`}
-                >
-                  {request.requested}
-                </p>
+                <div className="flex flex-col items-end gap-2">
+                  <span
+                    className={`px-3 py-1 text-xs rounded-full ${
+                      request.urgency === "High"
+                        ? "bg-red-100 text-red-800"
+                        : request.urgency === "Medium"
+                        ? "bg-orange-100 text-orange-800"
+                        : "bg-blue-100 text-blue-800"
+                    }`}
+                  >
+                    {request.urgency} Priority
+                  </span>
+                  <span
+                    className={`px-3 py-1 text-xs rounded-full ${
+                      request.status === "Completed"
+                        ? "bg-green-100 text-green-800"
+                        : request.status === "Approved"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    {request.status}
+                  </span>
+                </div>
               </div>
-              <div className="flex flex-col items-end gap-2">
-                <span
-                  className={`px-3 py-1 text-xs rounded-full ${
-                    request.urgency === "Critical"
-                      ? "bg-red-100 text-red-800"
-                      : request.urgency === "High"
-                      ? "bg-orange-100 text-orange-800"
-                      : "bg-blue-100 text-blue-800"
+              <div className="flex gap-2">
+                <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                  View Details
+                </button>
+                <button
+                  className={`px-4 py-2 border rounded hover:bg-gray-50 ${
+                    theme === "light"
+                      ? "border-gray-300"
+                      : "border-gray-600 hover:bg-gray-700 text-white"
                   }`}
                 >
-                  {request.urgency} Priority
-                </span>
-                <span
-                  className={`px-3 py-1 text-xs rounded-full ${
-                    request.status === "Completed"
-                      ? "bg-green-100 text-green-800"
-                      : request.status === "In Progress"
-                      ? "bg-yellow-100 text-yellow-800"
-                      : "bg-gray-100 text-gray-800"
-                  }`}
-                >
-                  {request.status}
-                </span>
+                  Edit
+                </button>
+                {request.status !== 'Completed' && (
+                  <button
+                    onClick={() => handleMarkComplete(request.id)}
+                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                  >
+                    Mark Complete
+                  </button>
+                )}
               </div>
             </div>
-            <div className="flex gap-2">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                View Details
-              </button>
-              <button
-                className={`px-4 py-2 border rounded hover:bg-gray-50 ${
-                  theme === "light"
-                    ? "border-gray-300"
-                    : "border-gray-600 hover:bg-gray-700 text-white"
-                }`}
-              >
-                Edit
-              </button>
-              <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                Mark Complete
-              </button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const CommunicationsSection = () => (
     <div>
@@ -786,265 +747,271 @@ const NgoDashboard = () => {
     </div>
   );
 
-  const ProfileSection = () => (
-    <div>
-      <h1
-        className={`text-3xl font-bold mb-6 ${
-          theme === "light" ? "text-gray-900" : "text-white"
-        }`}
-      >
-        Organization Profile
-      </h1>
-
-      <div className="grid grid-cols-2 gap-6">
-        {/* Basic Information */}
-        <div
-          className={`p-6 rounded-xl shadow ${
-            theme === "light" ? "bg-white" : "bg-gray-900"
+  const ProfileSection = () => {
+    // For NGO profile, we might want to use a dedicated slice or fetch from backend
+    // For now, using a local mock and displaying from it.
+    // If editing is needed, it would follow a similar pattern to SurvivorDashboard's profile.
+    return (
+      <div>
+        <h1
+          className={`text-3xl font-bold mb-6 ${
+            theme === "light" ? "text-gray-900" : "text-white"
           }`}
         >
-          <h3
-            className={`text-lg font-semibold mb-4 ${
-              theme === "light" ? "text-gray-900" : "text-white"
+          Organization Profile
+        </h1>
+
+        <div className="grid grid-cols-2 gap-6">
+          {/* Basic Information */}
+          <div
+            className={`p-6 rounded-xl shadow ${
+              theme === "light" ? "bg-white" : "bg-gray-900"
             }`}
           >
-            Basic Information
-          </h3>
-          <div className="space-y-4">
-            <div>
-              <label
-                className={`block text-sm font-medium mb-1 ${
-                  theme === "light" ? "text-gray-700" : "text-gray-300"
-                }`}
-              >
-                Organization Name
-              </label>
-              <input
-                type="text"
-                value="Relief United"
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === "light"
-                    ? "border-gray-300"
-                    : "border-gray-600 bg-gray-800 text-white"
-                }`}
-              />
+            <h3
+              className={`text-lg font-semibold mb-4 ${
+                theme === "light" ? "text-gray-900" : "text-white"
+              }`}
+            >
+              Basic Information
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    theme === "light" ? "text-gray-700" : "text-gray-300"
+                  }`}
+                >
+                  Organization Name
+                </label>
+                <input
+                  type="text"
+                  value={ngoProfile.name}
+                  readOnly
+                  className={`w-full px-3 py-2 border rounded-lg ${
+                    theme === "light"
+                      ? "border-gray-200 bg-gray-50"
+                      : "border-gray-700 bg-gray-800 text-gray-300"
+                  }`}
+                />
+              </div>
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    theme === "light" ? "text-gray-700" : "text-gray-300"
+                  }`}
+                >
+                  Registration Number
+                </label>
+                <input
+                  type="text"
+                  value={ngoProfile.registrationNumber}
+                  readOnly
+                  className={`w-full px-3 py-2 border rounded-lg ${
+                    theme === "light"
+                      ? "border-gray-200 bg-gray-50"
+                      : "border-gray-700 bg-gray-800 text-gray-300"
+                  }`}
+                />
+              </div>
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    theme === "light" ? "text-gray-700" : "text-gray-300"
+                  }`}
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={ngoProfile.email}
+                  readOnly
+                  className={`w-full px-3 py-2 border rounded-lg ${
+                    theme === "light"
+                      ? "border-gray-200 bg-gray-50"
+                      : "border-gray-700 bg-gray-800 text-gray-300"
+                  }`}
+                />
+              </div>
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    theme === "light" ? "text-gray-700" : "text-gray-300"
+                  }`}
+                >
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  value={ngoProfile.phone}
+                  readOnly
+                  className={`w-full px-3 py-2 border rounded-lg ${
+                    theme === "light"
+                      ? "border-gray-200 bg-gray-50"
+                      : "border-gray-700 bg-gray-800 text-gray-300"
+                  }`}
+                />
+              </div>
             </div>
-            <div>
-              <label
-                className={`block text-sm font-medium mb-1 ${
-                  theme === "light" ? "text-gray-700" : "text-gray-300"
-                }`}
-              >
-                Registration Number
-              </label>
-              <input
-                type="text"
-                value="NGO-2024-001"
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === "light"
-                    ? "border-gray-300"
-                    : "border-gray-600 bg-gray-800 text-white"
-                }`}
-              />
+          </div>
+
+          {/* Address & Location */}
+          <div
+            className={`p-6 rounded-xl shadow ${
+              theme === "light" ? "bg-white" : "bg-gray-900"
+            }`}
+          >
+            <h3
+              className={`text-lg font-semibold mb-4 ${
+                theme === "light" ? "text-gray-900" : "text-white"
+              }`}
+            >
+              Address & Location
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    theme === "light" ? "text-gray-700" : "text-gray-300"
+                  }`}
+                >
+                  Street Address
+                </label>
+                <input
+                  type="text"
+                  value={ngoProfile.address.split(',')[0]}
+                  readOnly
+                  className={`w-full px-3 py-2 border rounded-lg ${
+                    theme === "light"
+                      ? "border-gray-200 bg-gray-50"
+                      : "border-gray-700 bg-gray-800 text-gray-300"
+                  }`}
+                />
+              </div>
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    theme === "light" ? "text-gray-700" : "text-gray-300"
+                  }`}
+                >
+                  City
+                </label>
+                <input
+                  type="text"
+                  value={ngoProfile.address.split(',')[1]?.trim()}
+                  readOnly
+                  className={`w-full px-3 py-2 border rounded-lg ${
+                    theme === "light"
+                      ? "border-gray-200 bg-gray-50"
+                      : "border-gray-700 bg-gray-800 text-gray-300"
+                  }`}
+                />
+              </div>
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    theme === "light" ? "text-gray-700" : "text-gray-300"
+                  }`}
+                >
+                  State/Province
+                </label>
+                <input
+                  type="text"
+                  value={ngoProfile.address.split(',')[2]?.trim().split(' ')[0]}
+                  readOnly
+                  className={`w-full px-3 py-2 border rounded-lg ${
+                    theme === "light"
+                      ? "border-gray-200 bg-gray-50"
+                      : "border-gray-700 bg-gray-800 text-gray-300"
+                  }`}
+                />
+              </div>
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    theme === "light" ? "text-gray-700" : "text-gray-300"
+                  }`}
+                >
+                  ZIP Code
+                </label>
+                <input
+                  type="text"
+                  value={ngoProfile.address.split(',')[2]?.trim().split(' ')[1]}
+                  readOnly
+                  className={`w-full px-3 py-2 border rounded-lg ${
+                    theme === "light"
+                      ? "border-gray-200 bg-gray-50"
+                      : "border-gray-700 bg-gray-800 text-gray-300"
+                  }`}
+                />
+              </div>
             </div>
-            <div>
-              <label
-                className={`block text-sm font-medium mb-1 ${
-                  theme === "light" ? "text-gray-700" : "text-gray-300"
-                }`}
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                value="contact@reliefunited.org"
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === "light"
-                    ? "border-gray-300"
-                    : "border-gray-600 bg-gray-800 text-white"
-                }`}
-              />
-            </div>
-            <div>
-              <label
-                className={`block text-sm font-medium mb-1 ${
-                  theme === "light" ? "text-gray-700" : "text-gray-300"
-                }`}
-              >
-                Phone
-              </label>
-              <input
-                type="tel"
-                value="+1 (555) 123-4567"
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === "light"
-                    ? "border-gray-300"
-                    : "border-gray-600 bg-gray-800 text-white"
-                }`}
-              />
+          </div>
+
+          {/* Mission & Description */}
+          <div
+            className={`col-span-2 p-6 rounded-xl shadow ${
+              theme === "light" ? "bg-white" : "bg-gray-900"
+            }`}
+          >
+            <h3
+              className={`text-lg font-semibold mb-4 ${
+                theme === "light" ? "text-gray-900" : "text-white"
+              }`}
+            >
+              Mission & Description
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    theme === "light" ? "text-gray-700" : "text-gray-300"
+                  }`}
+                >
+                  Mission Statement
+                </label>
+                <textarea
+                  rows={3}
+                  value={ngoProfile.mission}
+                  readOnly
+                  className={`w-full px-3 py-2 border rounded-lg ${
+                    theme === "light"
+                      ? "border-gray-200 bg-gray-50"
+                      : "border-gray-700 bg-gray-800 text-gray-300"
+                  }`}
+                />
+              </div>
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-1 ${
+                    theme === "light" ? "text-gray-700" : "text-gray-300"
+                  }`}
+                >
+                  Organization Description
+                </label>
+                <textarea
+                  rows={4}
+                  value={ngoProfile.description}
+                  readOnly
+                  className={`w-full px-3 py-2 border rounded-lg ${
+                    theme === "light"
+                      ? "border-gray-200 bg-gray-50"
+                      : "border-gray-700 bg-gray-800 text-gray-300"
+                  }`}
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Address & Location */}
-        <div
-          className={`p-6 rounded-xl shadow ${
-            theme === "light" ? "bg-white" : "bg-gray-900"
-          }`}
-        >
-          <h3
-            className={`text-lg font-semibold mb-4 ${
-              theme === "light" ? "text-gray-900" : "text-white"
-            }`}
-          >
-            Address & Location
-          </h3>
-          <div className="space-y-4">
-            <div>
-              <label
-                className={`block text-sm font-medium mb-1 ${
-                  theme === "light" ? "text-gray-700" : "text-gray-300"
-                }`}
-              >
-                Street Address
-              </label>
-              <input
-                type="text"
-                value="123 Relief Street"
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === "light"
-                    ? "border-gray-300"
-                    : "border-gray-600 bg-gray-800 text-white"
-                }`}
-              />
-            </div>
-            <div>
-              <label
-                className={`block text-sm font-medium mb-1 ${
-                  theme === "light" ? "text-gray-700" : "text-gray-300"
-                }`}
-              >
-                City
-              </label>
-              <input
-                type="text"
-                value="Hope City"
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === "light"
-                    ? "border-gray-300"
-                    : "border-gray-600 bg-gray-800 text-white"
-                }`}
-              />
-            </div>
-            <div>
-              <label
-                className={`block text-sm font-medium mb-1 ${
-                  theme === "light" ? "text-gray-700" : "text-gray-300"
-                }`}
-              >
-                State/Province
-              </label>
-              <input
-                type="text"
-                value="Relief State"
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === "light"
-                    ? "border-gray-300"
-                    : "border-gray-600 bg-gray-800 text-white"
-                }`}
-              />
-            </div>
-            <div>
-              <label
-                className={`block text-sm font-medium mb-1 ${
-                  theme === "light" ? "text-gray-700" : "text-gray-300"
-                }`}
-              >
-                ZIP Code
-              </label>
-              <input
-                type="text"
-                value="12345"
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === "light"
-                    ? "border-gray-300"
-                    : "border-gray-600 bg-gray-800 text-white"
-                }`}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Mission & Description */}
-        <div
-          className={`col-span-2 p-6 rounded-xl shadow ${
-            theme === "light" ? "bg-white" : "bg-gray-900"
-          }`}
-        >
-          <h3
-            className={`text-lg font-semibold mb-4 ${
-              theme === "light" ? "text-gray-900" : "text-white"
-            }`}
-          >
-            Mission & Description
-          </h3>
-          <div className="space-y-4">
-            <div>
-              <label
-                className={`block text-sm font-medium mb-1 ${
-                  theme === "light" ? "text-gray-700" : "text-gray-300"
-                }`}
-              >
-                Mission Statement
-              </label>
-              <textarea
-                rows={3}
-                value="To provide immediate relief and long-term support to communities affected by natural disasters and humanitarian crises."
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === "light"
-                    ? "border-gray-300"
-                    : "border-gray-600 bg-gray-800 text-white"
-                }`}
-              />
-            </div>
-            <div>
-              <label
-                className={`block text-sm font-medium mb-1 ${
-                  theme === "light" ? "text-gray-700" : "text-gray-300"
-                }`}
-              >
-                Organization Description
-              </label>
-              <textarea
-                rows={4}
-                value="Relief United is a non-profit organization dedicated to providing humanitarian aid and disaster relief services. We work with local communities, government agencies, and international partners to deliver effective relief solutions."
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === "light"
-                    ? "border-gray-300"
-                    : "border-gray-600 bg-gray-800 text-white"
-                }`}
-              />
-            </div>
-          </div>
+        <div className="mt-6 flex gap-4">
+          <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            Edit Profile {/* This would trigger an edit mode */}
+          </button>
         </div>
       </div>
-
-      <div className="mt-6 flex gap-4">
-        <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          Save Changes
-        </button>
-        <button
-          className={`px-6 py-2 border rounded-lg ${
-            theme === "light"
-              ? "border-gray-300 hover:bg-gray-50"
-              : "border-gray-600 hover:bg-gray-700 text-white"
-          }`}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
+    );
+  };
 
   const ImpactTrackingSection = () => (
     <div>
@@ -1316,7 +1283,7 @@ const NgoDashboard = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar isLoggedIn={true} />
+      <Navbar /> {/* isLoggedIn prop removed */}
       <div
         className={`flex h-screen ${
           theme === "light" ? "bg-gray-50" : "bg-gray-800"
@@ -1347,7 +1314,7 @@ const NgoDashboard = () => {
                   theme === "light" ? "text-gray-900" : "text-white"
                 }`}
               >
-                Relief United
+                {ngoProfile.name}
               </h2>
             </div>
           </div>
@@ -1445,20 +1412,3 @@ const NgoDashboard = () => {
     </div>
   );
 };
-
-// Mock Provider for demo
-const App = () => {
-  const [theme, setTheme] = useState("light");
-
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
-  };
-
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
-      <NgoDashboard />
-    </ThemeContext.Provider>
-  );
-};
-
-export default App;
