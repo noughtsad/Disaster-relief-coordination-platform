@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { motion } from "framer-motion";
 import { ThemeContext } from "../context/ThemeContext";
 import Navbar from "../components/Navbar";
 

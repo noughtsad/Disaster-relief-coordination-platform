@@ -2,11 +2,12 @@ import React, { useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
+  updateProfile,
   setLoading,
   setError,
   clearError,
-  updateProfile,
 } from "../store/appSlice";
+import { setNgoProfile } from '../store/ngoSlice';
 import { ThemeContext } from "../context/ThemeContext";
 import Navbar from "../components/Navbar";
 import { User, Building } from "lucide-react";
@@ -65,19 +66,19 @@ export default function UserTypeSelectionPage() {
           dispatch(setError("Please fill in all required NGO details."));
           return;
         }
-        const response = await axios.post(
+        const userTypeUpdateResponse = await axios.post(
           import.meta.env.VITE_BACKEND_URL + "/auth/updateUserType",
-          { userId: user._id, userType: "NGO", ngoDetails },
+          { userId: user._id, userType: "NGO" },
           {
             headers: { "Content-Type": "application/json" },
             withCredentials: true,
           }
         );
         dispatch(
-          updateProfile({ ...user, userType: response.data.user.userType })
+          updateProfile({ ...user, userType: userTypeUpdateResponse.data.user.userType })
         );
 
-        const data = await axios.post(
+        const ngoDetailsResponse = await axios.post(
           import.meta.env.VITE_BACKEND_URL + "/ngo",
           {
             ngoName: ngoDetails.ngoName,
@@ -85,19 +86,21 @@ export default function UserTypeSelectionPage() {
             ngoLongitude: ngoDetails.ngoLongitude,
             ngoContact: ngoDetails.ngoContact,
             ngoDescription: ngoDetails.ngoDescription,
+            owner: user._id,
           },
           {
             headers: { "Content-Type": "application/json" },
             withCredentials: true,
           }
         );
+        dispatch(setNgoProfile(ngoDetailsResponse.data.ngo));
         navigate("/ngoDashboard");
       }
     } catch (err) {
       console.error(err);
       dispatch(
         setError(
-          err.response.data.message ||
+          err.response?.data?.message ||
             "Failed to set user type or save NGO details."
         )
       );

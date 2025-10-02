@@ -18,7 +18,7 @@ export async function createNgo(req, res) {
     });
 
     await newNgo.save();
-    return res.status(201).json(newNgo);
+    return res.status(201).json({ ngo: newNgo });
   } catch (error) {
     console.error("Error creating NGO:", error);
     return res.status(500).json({ message: "Server error", error: error.message });

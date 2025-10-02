@@ -33,30 +33,17 @@ import { ThemeContext } from "../context/ThemeContext";
 export default function NgoDashboard() {
   const { theme } = useContext(ThemeContext);
   const dispatch = useDispatch();
-  const { requests,} = useSelector((state) => state.requests);
-  const { donations} = useSelector((state) => state.donations);
+  const { requests } = useSelector((state) => state.requests);
+  const { donations } = useSelector((state) => state.donations);
   const { communications } = useSelector((state) => state.communications);
+  const { ngoProfile } = useSelector((state) => state.ngo);
+  const { user } = useSelector((state) => state.app);
 
   const [activeSection, setActiveSection] = useState("home");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Placeholder for NGO profile data (can be moved to Redux profileSlice if needed)
-  const ngoProfile = {
-    name: "Relief United",
-    registrationNumber: "NGO-2024-001",
-    email: "contact@reliefunited.org",
-    phone: "+1 (555) 123-4567",
-    address: "123 Relief Street, Hope City, Relief State 12345",
-    mission: "To provide immediate relief and long-term support to communities affected by natural disasters and humanitarian crises.",
-    description: "Relief United is a non-profit organization dedicated to providing humanitarian aid and disaster relief services. We work with local communities, government agencies, and international partners to deliver effective relief solutions."
-  };
-
   useEffect(() => {
-    // Optionally, fetch initial data for donations, requests, communications here
-    // dispatch(fetchDonations());
-    // dispatch(fetchRequests());
-    // dispatch(fetchCommunications());
-  }, [dispatch]);
+  }, [dispatch, ngoProfile.ngoName, user?._id]);
 
   const HomeSection = () => (
     <div>
@@ -65,7 +52,7 @@ export default function NgoDashboard() {
           theme === "light" ? "text-gray-900" : "text-white"
         }`}
       >
-        Welcome back, Relief United
+        Welcome back, {ngoProfile.ngoName || 'NGO'}
       </h1>
 
       {/* Quick Stats */}
@@ -747,9 +734,6 @@ export default function NgoDashboard() {
   );
 
   const ProfileSection = () => {
-    // For NGO profile, we might want to use a dedicated slice or fetch from backend
-    // For now, using a local mock and displaying from it.
-    // If editing is needed, it would follow a similar pattern to SurvivorDashboard's profile.
     return (
       <div>
         <h1
@@ -785,7 +769,7 @@ export default function NgoDashboard() {
                 </label>
                 <input
                   type="text"
-                  value={ngoProfile.name}
+                  value={ngoProfile.ngoName}
                   readOnly
                   className={`w-full px-3 py-2 border rounded-lg ${
                     theme === "light"
@@ -800,11 +784,11 @@ export default function NgoDashboard() {
                     theme === "light" ? "text-gray-700" : "text-gray-300"
                   }`}
                 >
-                  Registration Number
+                  Owner Name
                 </label>
                 <input
                   type="text"
-                  value={ngoProfile.registrationNumber}
+                  value={user?.name || 'N/A'}
                   readOnly
                   className={`w-full px-3 py-2 border rounded-lg ${
                     theme === "light"
@@ -819,11 +803,11 @@ export default function NgoDashboard() {
                     theme === "light" ? "text-gray-700" : "text-gray-300"
                   }`}
                 >
-                  Email
+                  Owner Email
                 </label>
                 <input
                   type="email"
-                  value={ngoProfile.email}
+                  value={user?.email || 'N/A'}
                   readOnly
                   className={`w-full px-3 py-2 border rounded-lg ${
                     theme === "light"
@@ -838,11 +822,11 @@ export default function NgoDashboard() {
                     theme === "light" ? "text-gray-700" : "text-gray-300"
                   }`}
                 >
-                  Phone
+                  Contact Information
                 </label>
                 <input
-                  type="tel"
-                  value={ngoProfile.phone}
+                  type="text"
+                  value={ngoProfile.ngoContact}
                   readOnly
                   className={`w-full px-3 py-2 border rounded-lg ${
                     theme === "light"
@@ -865,7 +849,7 @@ export default function NgoDashboard() {
                 theme === "light" ? "text-gray-900" : "text-white"
               }`}
             >
-              Address & Location
+              Location
             </h3>
             <div className="space-y-4">
               <div>
@@ -874,11 +858,11 @@ export default function NgoDashboard() {
                     theme === "light" ? "text-gray-700" : "text-gray-300"
                   }`}
                 >
-                  Street Address
+                  Latitude
                 </label>
                 <input
                   type="text"
-                  value={ngoProfile.address.split(',')[0]}
+                  value={ngoProfile.ngoLatitude}
                   readOnly
                   className={`w-full px-3 py-2 border rounded-lg ${
                     theme === "light"
@@ -893,49 +877,11 @@ export default function NgoDashboard() {
                     theme === "light" ? "text-gray-700" : "text-gray-300"
                   }`}
                 >
-                  City
+                  Longitude
                 </label>
                 <input
                   type="text"
-                  value={ngoProfile.address.split(',')[1]?.trim()}
-                  readOnly
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    theme === "light"
-                      ? "border-gray-200 bg-gray-50"
-                      : "border-gray-700 bg-gray-800 text-gray-300"
-                  }`}
-                />
-              </div>
-              <div>
-                <label
-                  className={`block text-sm font-medium mb-1 ${
-                    theme === "light" ? "text-gray-700" : "text-gray-300"
-                  }`}
-                >
-                  State/Province
-                </label>
-                <input
-                  type="text"
-                  value={ngoProfile.address.split(',')[2]?.trim().split(' ')[0]}
-                  readOnly
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    theme === "light"
-                      ? "border-gray-200 bg-gray-50"
-                      : "border-gray-700 bg-gray-800 text-gray-300"
-                  }`}
-                />
-              </div>
-              <div>
-                <label
-                  className={`block text-sm font-medium mb-1 ${
-                    theme === "light" ? "text-gray-700" : "text-gray-300"
-                  }`}
-                >
-                  ZIP Code
-                </label>
-                <input
-                  type="text"
-                  value={ngoProfile.address.split(',')[2]?.trim().split(' ')[1]}
+                  value={ngoProfile.ngoLongitude}
                   readOnly
                   className={`w-full px-3 py-2 border rounded-lg ${
                     theme === "light"
@@ -958,28 +904,9 @@ export default function NgoDashboard() {
                 theme === "light" ? "text-gray-900" : "text-white"
               }`}
             >
-              Mission & Description
+              Description
             </h3>
             <div className="space-y-4">
-              <div>
-                <label
-                  className={`block text-sm font-medium mb-1 ${
-                    theme === "light" ? "text-gray-700" : "text-gray-300"
-                  }`}
-                >
-                  Mission Statement
-                </label>
-                <textarea
-                  rows={3}
-                  value={ngoProfile.mission}
-                  readOnly
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    theme === "light"
-                      ? "border-gray-200 bg-gray-50"
-                      : "border-gray-700 bg-gray-800 text-gray-300"
-                  }`}
-                />
-              </div>
               <div>
                 <label
                   className={`block text-sm font-medium mb-1 ${
@@ -990,7 +917,7 @@ export default function NgoDashboard() {
                 </label>
                 <textarea
                   rows={4}
-                  value={ngoProfile.description}
+                  value={ngoProfile.ngoDescription}
                   readOnly
                   className={`w-full px-3 py-2 border rounded-lg ${
                     theme === "light"
@@ -1313,8 +1240,11 @@ export default function NgoDashboard() {
                   theme === "light" ? "text-gray-900" : "text-white"
                 }`}
               >
-                {ngoProfile.name}
+                {ngoProfile.ngoName || 'NGO Name'}
               </h2>
+              <span className={`text-xs ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>
+                {user?.name || 'NGO Owner'}
+              </span>
             </div>
           </div>
           <nav className="flex-1 px-4 py-6 space-y-4">
