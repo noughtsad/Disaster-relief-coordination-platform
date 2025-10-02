@@ -11,7 +11,6 @@ const SignupPage = () => {
   const { isAuthenticated, loading, error } = useSelector((state) => state.app);
 
   const [formData, setFormData] = useState({
-    userType: "survivor",
     name: "",
     phone: "",
     email: "",
