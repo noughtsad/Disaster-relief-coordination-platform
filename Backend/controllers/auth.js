@@ -12,8 +12,8 @@ const COOKIE_OPTIONS = {
 
 export async function signup(req, res) {
   const { email, password, name, userType, phone } = req.body;
-  if (!email || !password || !name || !userType || !phone)
-    return res.status(400).json({ message: "Email, password, name, userType, and phone are required" });
+  if (!email || !password || !name || !phone)
+    return res.status(400).json({ message: "Email, password, name, and phone are required" });
 
   const existing = await User.findOne({ email });
   if (existing)
@@ -90,4 +90,21 @@ export async function googleAuth(req, res) {
     console.error(err);
     res.status(500).json({ message: "Google authentication failed" });
   }
+}
+
+export async function updateUserType(req, res) {
+  const { userId, userType } = req.body;
+  if (!userId || !userType) {
+    return res.status(400).json({ message: "User ID and user type are required" });
+  }
+  if (!['Survivor', 'Volunteer', 'NGO', 'Local Authority'].includes(userType)) {
+    return res.status(400).json({ message: "Invalid user type" });
+  }
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  user.userType = userType;
+  await user.save();
+  return res.json({ message: "User type updated", user: { id: user._id, email: user.email, name: user.name, userType: user.userType, phone: user.phone } });
 }

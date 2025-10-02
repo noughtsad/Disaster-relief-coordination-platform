@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { signup, login, logout, me, googleAuth } from "../controllers/auth.js";
+import { signup, login, logout, me, googleAuth, updateUserType } from "../controllers/auth.js";
 import passport from "../utils/passport.js";
 
 const router = Router();
@@ -8,7 +8,7 @@ router.post("/signup", signup);
 router.post("/login", login);
 router.post("/logout", logout);
 router.get("/me", me);
-
+router.post("/updateUserType", updateUserType);
 
 router.get(
   "/google",

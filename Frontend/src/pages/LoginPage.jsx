@@ -8,13 +8,21 @@ import axios from "axios";
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isAuthenticated, loading, error } = useSelector((state) => state.app);
+  const { isAuthenticated, loading, error, user } = useSelector((state) => state.app);
 
   const [formData, setFormData] = useState({ email: "", password: "" });
 
   useEffect(() => {
-    if (isAuthenticated) navigate("/survivorDashboard");
-  }, [isAuthenticated, navigate]);
+    if (isAuthenticated) {
+      if (!user?.userType) {
+        navigate("/select-user-type");
+      } else if (user.userType === "Survivor") {
+        navigate("/survivorDashboard");
+      } else if (user.userType === "NGO") {
+        navigate("/ngoDashboard");
+      }
+    }
+  }, [isAuthenticated, navigate, user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +44,13 @@ const LoginPage = () => {
       });
       dispatch(setUser(response.data.user));
       dispatch(setIsAuthenticated(true));
-      navigate("/survivorDashboard");
+      if (!response.data.user.userType) {
+        navigate("/select-user-type");
+      } else if (response.data.user.userType === "Survivor") {
+        navigate("/survivorDashboard");
+      } else if (response.data.user.userType === "NGO") {
+        navigate("/ngoDashboard");
+      }
     } catch (err) {
       dispatch(setError(err.response?.data?.message || "Login failed"));
     } finally {

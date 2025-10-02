@@ -7,6 +7,7 @@ import SurvivorDashboard from './pages/SurvivorDashboard';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ThemeProvider, { ThemeContext } from './context/ThemeContext';
 import LoginPage from './pages/LoginPage';
+import UserTypeSelectionPage from './pages/UserTypeSelectionPage';
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />
+  },
+  {
+    path: '/select-user-type',
+    element: <UserTypeSelectionPage />
   }
 ]);
 
