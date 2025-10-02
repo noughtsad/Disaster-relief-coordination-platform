@@ -1,67 +1,218 @@
 import { Plus, Minus, Search, ZoomIn, ZoomOut } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { motion } from 'framer-motion';
 import Navbar from "../components/Navbar";
 import Card from "../components/Card";
 
 // Main Landing Page Component
 const LandingPage = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state) => state.app);
+
+  const handleCardClick = (userType) => {
+    if (userType === 'volunteer') {
+      // Always navigate to volunteer page regardless of authentication
+      navigate('/volunteer');
+    } else if (isAuthenticated) {
+      // If already authenticated, redirect to appropriate dashboard
+      const currentUserType = localStorage.getItem('userType');
+      if (currentUserType === 'ngo') {
+        navigate('/ngoDashboard');
+      } else {
+        navigate('/survivorDashboard');
+      }
+    } else {
+      // If not authenticated, go to signup and store the intended user type
+      navigate('/signup', { state: { defaultUserType: userType } });
+    }
+  };
+
+  const handleInlineButtonClick = (userType) => {
+    if (userType === 'volunteer') {
+      // Always navigate to volunteer page regardless of authentication
+      navigate('/volunteer');
+    } else if (isAuthenticated) {
+      // If already authenticated, redirect to appropriate dashboard
+      const currentUserType = localStorage.getItem('userType');
+      if (currentUserType === 'ngo') {
+        navigate('/ngoDashboard');
+      } else {
+        navigate('/survivorDashboard');
+      }
+    } else {
+      // If not authenticated, go to signup with the selected user type
+      navigate('/signup', { state: { defaultUserType: userType } });
+    }
+  };
+
   return (
-      <div className="min-h-screen">
+      <motion.div 
+        className="min-h-screen"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
         <Navbar />
         
         <main className="px-8 py-12">
-          <div className="max-w-7xl mx-auto">
+          <motion.div 
+            className="max-w-7xl mx-auto"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             <div className="flex flex-col lg:flex-row gap-12 items-start">
-              <div className="flex-1">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <Card 
-                    title="Survivor" 
-                    img="https://www.shutterstock.com/image-photo/survivors-hatay-turkey-stories-miracles-600nw-2265953343.jpg"
-                    className="md:col-span-2 h-80"
-                  />
+              <motion.div 
+                className="flex-1"
+                initial={{ x: -50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                <motion.div 
+                  className="grid grid-cols-1 md:grid-cols-2 gap-8"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    visible: {
+                      opacity: 1,
+                      transition: {
+                        staggerChildren: 0.2
+                      }
+                    }
+                  }}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <motion.div 
+                    onClick={() => handleCardClick('survivor')}
+                    className="cursor-pointer md:col-span-2"
+                    variants={{
+                      hidden: { y: 50, opacity: 0 },
+                      visible: { y: 0, opacity: 1 }
+                    }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      transition: { duration: 0.2 }
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Card 
+                      title="Survivor" 
+                      img="https://www.shutterstock.com/image-photo/survivors-hatay-turkey-stories-miracles-600nw-2265953343.jpg"
+                      className="h-80"
+                    />
+                  </motion.div>
                   
-                  <Card 
-                    title="Volunteers" 
-                    img="https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=800&q=80"
-                    className="h-64"
-                  />
-                  <Card 
-                    title="NGOs" 
-                    img="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80"
-                    className="h-64"
-                  />
-                </div>
-              </div>
+                  <motion.div 
+                    onClick={() => handleCardClick('volunteer')}
+                    className="cursor-pointer"
+                    variants={{
+                      hidden: { y: 50, opacity: 0 },
+                      visible: { y: 0, opacity: 1 }
+                    }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      transition: { duration: 0.2 }
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Card 
+                      title="Volunteers" 
+                      img="https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=800&q=80"
+                      className="h-64"
+                    />
+                  </motion.div>
+                  
+                  <motion.div 
+                    onClick={() => handleCardClick('ngo')}
+                    className="cursor-pointer"
+                    variants={{
+                      hidden: { y: 50, opacity: 0 },
+                      visible: { y: 0, opacity: 1 }
+                    }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      transition: { duration: 0.2 }
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Card 
+                      title="NGOs" 
+                      img="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80"
+                      className="h-64"
+                    />
+                  </motion.div>
+                </motion.div>
+              </motion.div>
               
-              <div className="lg:w-96 bg-white rounded-2xl p-8 shadow-lg">
-                <h2 className="text-4xl font-bold text-gray-800 mb-6">Need Help?</h2>
+              <motion.div 
+                className="lg:w-96 bg-white rounded-2xl p-8 shadow-lg"
+                initial={{ x: 50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+              >
+                <motion.h2 
+                  className="text-4xl font-bold text-gray-800 mb-6"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 0.8 }}
+                >
+                  Need Help?
+                </motion.h2>
                 
-                <p className="text-lg font-semibold text-gray-700 mb-6">If you are:</p>
+                <motion.p 
+                  className="text-lg font-semibold text-gray-700 mb-6"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 1.0 }}
+                >
+                  If you are:
+                </motion.p>
                 
-                <div className="space-y-4 mb-8">
+                <motion.div 
+                  className="space-y-4 mb-8"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 1.2 }}
+                >
                   <p className="text-gray-600 leading-relaxed">
                     In need of help click on{" "}
-                    <button className="text-blue-600 font-bold underline hover:text-blue-800 transition-colors">
+                    <button 
+                      onClick={() => handleInlineButtonClick('survivor')}
+                      className="text-blue-600 font-bold underline hover:text-blue-800 transition-colors"
+                    >
                       survivor
                     </button>
                   </p>
                   
                   <p className="text-gray-600 leading-relaxed">
                     An individual wishing to help out, click on{" "}
-                    <button className="text-blue-600 font-bold underline hover:text-blue-800 transition-colors">
+                    <button 
+                      onClick={() => handleInlineButtonClick('volunteer')}
+                      className="text-blue-600 font-bold underline hover:text-blue-800 transition-colors"
+                    >
                       volunteering
                     </button>
                   </p>
                   
                   <p className="text-gray-600 leading-relaxed">
                     Registering as an NGO, click{" "}
-                    <button className="text-blue-600 font-bold underline hover:text-blue-800 transition-colors">
+                    <button 
+                      onClick={() => handleInlineButtonClick('ngo')}
+                      className="text-blue-600 font-bold underline hover:text-blue-800 transition-colors"
+                    >
                       NGOs
                     </button>
                   </p>
-                </div>
+                </motion.div>
                 
                 {/* Contact Section */}
-                <div className="border-t border-gray-200 pt-6">
+                <motion.div 
+                  className="border-t border-gray-200 pt-6"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 1.4 }}
+                >
                   <h3 className="text-xl font-bold text-gray-800 mb-4">
                     We are available 24/7 reach out at:
                   </h3>
@@ -81,12 +232,12 @@ const LandingPage = () => {
                       <span className="font-medium text-gray-700">crisis@connect.org</span>
                     </div>
                   </div>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </main>
-      </div>
+      </motion.div>
   );
 };
 

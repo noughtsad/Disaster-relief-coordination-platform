@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { setUser, setLoading, setError, clearError } from "../store/appSlice";
+import { Eye, EyeOff, Mail, Lock, ArrowLeft } from 'lucide-react';
+import Navbar from '../components/Navbar';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -9,9 +11,19 @@ const LoginPage = () => {
   const { isAuthenticated, loading, error } = useSelector((state) => state.app);
 
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) navigate("/survivorDashboard");
+    if (isAuthenticated) {
+      const userType = localStorage.getItem('userType');
+      if (userType === 'ngo') {
+        navigate('/ngoDashboard');
+      } else if (userType === 'volunteer') {
+        navigate('/volunteer');
+      } else {
+        navigate('/survivorDashboard');
+      }
+    }
   }, [isAuthenticated, navigate]);
 
   const handleInputChange = (e) => {
@@ -20,16 +32,46 @@ const LoginPage = () => {
   };
 
   const handleLogin = async () => {
+    if (!formData.email || !formData.password) {
+      dispatch(setError('Email and password are required'));
+      return;
+    }
+
     dispatch(setLoading(true));
     dispatch(clearError());
+    
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      if (formData.email === "test@example.com" && formData.password === "password") {
-        dispatch(setUser({ email: formData.email, userType: "survivor" }));
-        localStorage.setItem("token", "dummy-token");
-      } else throw new Error("Invalid credentials");
-    } catch (err) {
-      dispatch(setError(err.message));
+      const response = await fetch('http://localhost:5000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userType', data.user.userType);
+        
+        dispatch(setUser(data.user));
+        
+        if (data.user.userType === 'ngo') {
+          navigate('/ngoDashboard');
+        } else if (data.user.userType === 'volunteer') {
+          navigate('/volunteer');
+        } else {
+          navigate('/survivorDashboard');
+        }
+      } else {
+        dispatch(setError(data.message || 'Invalid credentials'));
+      }
+    } catch (error) {
+      dispatch(setError('Network error. Please try again.'));
     } finally {
       dispatch(setLoading(false));
     }
@@ -40,71 +82,105 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-        <h1 className="text-2xl font-bold text-center mb-6">Welcome Back</h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      <Navbar />
+      
+      <div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <button
+              onClick={() => navigate('/')}
+              className="mb-4 text-gray-600 hover:text-gray-800 flex items-center gap-2 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Home
+            </button>
 
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        {loading && <p className="text-blue-500 text-center mb-4">Loading...</p>}
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
+              <p className="mt-2 text-gray-600">Sign in to your CrisisConnect account</p>
+            </div>
 
-        {/* Email */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            placeholder="example@email.com"
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-200 transition-all"
-          />
-        </div>
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+            )}
 
-        {/* Password */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            placeholder="Enter your password"
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-200 transition-all"
-          />
-        </div>
+            <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-6">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  Email Address
+                </label>
+                <div className="mt-1 relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="pl-10 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your email"
+                  />
+                </div>
+              </div>
 
-        {/* Login Button */}
-        <button
-          onClick={handleLogin}
-          className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all mb-3"
-        >
-          Login
-        </button>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <div className="mt-1 relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="pl-10 pr-10 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
 
-        {/* OR Divider */}
-        <div className="relative text-center my-4">
-          <span className="text-xs font-medium text-gray-500 bg-white px-2">OR</span>
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
+              >
+                {loading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Signing In...
+                  </div>
+                ) : (
+                  'Sign In'
+                )}
+              </button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Don't have an account?{" "}
+                <Link
+                  to="/signup"
+                  className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
+                >
+                  Sign up here
+                </Link>
+              </p>
+            </div>
           </div>
-        </div>
-
-        {/* Google Login */}
-        <button
-          onClick={handleGoogleSignIn}
-          className="w-full bg-white text-gray-700 py-2.5 rounded-lg text-sm font-medium border border-gray-300 hover:bg-gray-50 transition-all"
-        >
-          Sign in with Google
-        </button>
-
-        {/* Bottom link */}
-        <div className="text-center mt-4">
-          <span className="text-xs text-gray-600">
-            Don’t have an account?{" "}
-            <a href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
-              Sign Up
-            </a>
-          </span>
         </div>
       </div>
     </div>

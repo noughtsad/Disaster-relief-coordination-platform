@@ -2,14 +2,26 @@ import { useContext } from "react";
 import { Sun, Moon } from "lucide-react";
 import { ThemeContext } from "../context/ThemeContext";
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { logout } from '../store/appSlice';
 
 const Navbar = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated } = useSelector((state) => state.app);
+
+  // Check if user is on dashboard pages where logo shouldn't navigate away
+  const isDashboardPage = location.pathname === '/volunteer' || 
+                          location.pathname === '/survivorDashboard' || 
+                          location.pathname === '/ngoDashboard';
+
+  const handleLogoClick = () => {
+    if (!isDashboardPage) {
+      navigate('/');
+    }
+  };
 
   return (
     <nav
@@ -19,14 +31,32 @@ const Navbar = () => {
           : "bg-gray-900 text-white"
       }`}
     >
-      <h1 className="text-3xl font-bold">CrisisConnect</h1>
+      <h1 
+        onClick={handleLogoClick}
+        className={`text-3xl font-bold ${
+          isDashboardPage 
+            ? 'cursor-default' 
+            : 'cursor-pointer hover:text-blue-600 transition-colors'
+        }`}
+      >
+        CrisisConnect
+      </h1>
 
       <div className="flex items-center gap-6">
-
+        {/* Navigation Buttons */}
         {isAuthenticated ? (
           <>
             <button
-              onClick={() => navigate('/survivorDashboard')}
+              onClick={() => {
+                const userType = localStorage.getItem('userType');
+                if (userType === 'ngo') {
+                  navigate('/ngoDashboard');
+                } else if (userType === 'volunteer') {
+                  navigate('/volunteer');
+                } else {
+                  navigate('/survivorDashboard');
+                }
+              }}
               className={`px-6 py-3 font-medium transition-colors ${
                 theme === "light"
                   ? "text-gray-700 hover:text-gray-900"
@@ -34,6 +64,16 @@ const Navbar = () => {
               }`}
             >
               Dashboard
+            </button>
+            <button
+              onClick={() => navigate('/volunteer')}
+              className={`px-6 py-3 font-medium transition-colors ${
+                theme === "light"
+                  ? "text-gray-700 hover:text-gray-900"
+                  : "text-gray-300 hover:text-white"
+              }`}
+            >
+              Volunteer
             </button>
             <button
               onClick={() => navigate('/profile')}
@@ -49,6 +89,7 @@ const Navbar = () => {
               onClick={() => {
                 dispatch(logout());
                 localStorage.removeItem('token');
+                localStorage.removeItem('userType');
                 navigate('/');
               }}
               className={`px-6 py-3 rounded-lg font-medium transition-colors shadow-sm ${
@@ -73,7 +114,7 @@ const Navbar = () => {
               Register
             </button>
             <button
-              onClick={() => navigate('/signup')}
+              onClick={() => navigate('/login')}
               className={`px-6 py-3 font-medium transition-colors ${
                 theme === "light"
                   ? "text-gray-700 hover:text-gray-900"
@@ -85,6 +126,17 @@ const Navbar = () => {
           </>
         )}
         <button
+          onClick={() => navigate('/donate')}
+          className={`px-6 py-3 rounded-lg font-medium transition-colors shadow-sm ${
+            theme === "light"
+              ? "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-blue-500 text-gray-900 hover:bg-blue-400"
+          }`}
+        >
+          Donate
+        </button>
+        <button
+          onClick={() => navigate('/about')}
           className={`px-6 py-3 font-medium transition-colors ${
             theme === "light"
               ? "text-gray-700 hover:text-gray-900"
