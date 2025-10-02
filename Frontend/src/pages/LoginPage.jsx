@@ -11,6 +11,7 @@ const LoginPage = () => {
   const { isAuthenticated, loading, error, user } = useSelector((state) => state.app);
 
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -30,8 +31,14 @@ const LoginPage = () => {
   };
 
   const handleLogin = async () => {
+    if (!formData.email || !formData.password) {
+      dispatch(setError('Email and password are required'));
+      return;
+    }
+
     dispatch(setLoading(true));
     dispatch(clearError());
+    
     try {
       const response = await axios.post(import.meta.env.VITE_BACKEND_URL + "/auth/login", {
         email: formData.email,

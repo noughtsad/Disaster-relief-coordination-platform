@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { setUser, setLoading, setError, clearError, setIsAuthenticated } from "../store/appSlice";
+import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowLeft } from 'lucide-react';
+import Navbar from '../components/Navbar';
 import axios from "axios";
 import { FaGoogle } from "react-icons/fa";
 
@@ -17,6 +19,8 @@ const SignupPage = () => {
     password: "",
     confirmPassword: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -36,8 +40,19 @@ const SignupPage = () => {
   };
 
   const handleSignup = async () => {
+    if (!formData.name || !formData.email || !formData.password || !formData.phone) {
+      dispatch(setError('All fields are required'));
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      dispatch(setError('Passwords do not match'));
+      return;
+    }
+
     dispatch(setLoading(true));
     dispatch(clearError());
+    
     try {
       const response = await axios.post(
         import.meta.env.VITE_BACKEND_URL + "/auth/signup",
@@ -72,8 +87,8 @@ const SignupPage = () => {
   };
 
   const handleGoogleSignIn = () => {
-    console.log("Google signup clicked");
-  };
+    console.log("Google login clicked");
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-4">

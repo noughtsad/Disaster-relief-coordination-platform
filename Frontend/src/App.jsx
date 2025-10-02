@@ -4,6 +4,9 @@ import LandingPage from './pages/LandingPage';
 import NgoDashboard from './pages/NgoDashboard';
 import Signup from './pages/SignupPage';
 import SurvivorDashboard from './pages/SurvivorDashboard';
+import VolunteerPage from './pages/VolunteerPage';
+import AboutPage from './pages/AboutPage';
+import DonationsPage from './pages/DonationsPage';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ThemeProvider, { ThemeContext } from './context/ThemeContext';
 import LoginPage from './pages/LoginPage';
@@ -37,6 +40,18 @@ const router = createBrowserRouter([
   {
     path: '/select-user-type',
     element: <UserTypeSelectionPage />
+  },
+  {
+    path: '/volunteer',
+    element: <VolunteerPage />
+  },
+  {
+    path: '/about',
+    element: <AboutPage />
+  },
+  {
+    path: '/donate',
+    element: <DonationsPage />
   }
 ]);
 
