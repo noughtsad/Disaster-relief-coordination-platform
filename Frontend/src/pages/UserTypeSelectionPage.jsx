@@ -50,29 +50,51 @@ export default function UserTypeSelectionPage() {
             withCredentials: true,
           }
         );
-        dispatch(updateProfile({ ...user, userType: response.data.user.userType }));
+        dispatch(
+          updateProfile({ ...user, userType: response.data.user.userType })
+        );
         navigate("/survivorDashboard");
       } else if (selectedUserType === "NGO") {
         if (
           !ngoDetails.ngoName ||
           !ngoDetails.ngoLatitude ||
           !ngoDetails.ngoLongitude ||
-          !ngoDetails.ngoContact
+          !ngoDetails.ngoContact ||
+          !ngoDetails.ngoDescription
         ) {
           dispatch(setError("Please fill in all required NGO details."));
           return;
         }
-        const response = await axios.post( import.meta.env.VITE_BACKEND_URL + "/auth/updateUserType",
+        const response = await axios.post(
+          import.meta.env.VITE_BACKEND_URL + "/auth/updateUserType",
           { userId: user._id, userType: "NGO", ngoDetails },
           {
             headers: { "Content-Type": "application/json" },
             withCredentials: true,
           }
         );
-        dispatch(updateProfile({ ...user, userType: response.data.user.userType }));
+        dispatch(
+          updateProfile({ ...user, userType: response.data.user.userType })
+        );
+
+        const data = await axios.post(
+          import.meta.env.VITE_BACKEND_URL + "/ngo",
+          {
+            ngoName: ngoDetails.ngoName,
+            ngoLatitude: ngoDetails.ngoLatitude,
+            ngoLongitude: ngoDetails.ngoLongitude,
+            ngoContact: ngoDetails.ngoContact,
+            ngoDescription: ngoDetails.ngoDescription,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
         navigate("/ngoDashboard");
       }
     } catch (err) {
+      console.error(err);
       dispatch(
         setError(
           err.response.data.message ||
@@ -202,12 +224,12 @@ export default function UserTypeSelectionPage() {
                         theme === "light" ? "text-gray-700" : "text-gray-300"
                       }`}
                     >
-                      Location *
+                      Location (Latitude & Longitude) *
                     </label>
                     <div className="flex gap-4 justify-between">
                       <input
                         type="text"
-                        name="ngoLocation"
+                        name="ngoLatitude"
                         value={ngoDetails.ngoLatitude}
                         onChange={handleNgoChange}
                         className={`w-1/2 px-3 py-2 border rounded-lg ${
@@ -215,12 +237,12 @@ export default function UserTypeSelectionPage() {
                             ? "border-gray-300 bg-white"
                             : "border-gray-600 bg-gray-800 text-white"
                         }`}
-                        placeholder="Enter the Latitude"
+                        placeholder="56.76531 N"
                         required
                       />
                       <input
                         type="text"
-                        name="ngoLocation"
+                        name="ngoLongitude"
                         value={ngoDetails.ngoLongitude}
                         onChange={handleNgoChange}
                         className={`w-1/2 px-3 py-2 border rounded-lg ${
@@ -228,7 +250,7 @@ export default function UserTypeSelectionPage() {
                             ? "border-gray-300 bg-white"
                             : "border-gray-600 bg-gray-800 text-white"
                         }`}
-                        placeholder="Enter the Longitude"
+                        placeholder="23.72331 E"
                         required
                       />
                     </div>

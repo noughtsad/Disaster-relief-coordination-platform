@@ -38,7 +38,7 @@ const router = createBrowserRouter([
     element: <LoginPage />
   },
   {
-    path: '/select-user-type',
+    path: '/selectUserType',
     element: <UserTypeSelectionPage />
   },
   {

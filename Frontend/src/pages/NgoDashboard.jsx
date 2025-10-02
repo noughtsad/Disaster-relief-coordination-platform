@@ -33,10 +33,9 @@ import { ThemeContext } from "../context/ThemeContext";
 export default function NgoDashboard() {
   const { theme } = useContext(ThemeContext);
   const dispatch = useDispatch();
-  const { requests, loading: requestsLoading, error: requestsError } = useSelector((state) => state.requests);
-  const { donations, loading: donationsLoading, error: donationsError } = useSelector((state) => state.donations);
-  const { communications, loading: communicationsLoading, error: communicationsError } = useSelector((state) => state.communications);
-  const { user } = useSelector((state) => state.app); // Assuming user info is in appSlice
+  const { requests,} = useSelector((state) => state.requests);
+  const { donations} = useSelector((state) => state.donations);
+  const { communications } = useSelector((state) => state.communications);
 
   const [activeSection, setActiveSection] = useState("home");
   const [searchTerm, setSearchTerm] = useState("");

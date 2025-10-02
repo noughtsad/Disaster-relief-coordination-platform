@@ -19,13 +19,11 @@ const SignupPage = () => {
     password: "",
     confirmPassword: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
       if (!user?.userType) {
-        navigate("/select-user-type");
+        navigate("/selectUserType");
       } else if (user.userType === "Survivor") {
         navigate("/survivorDashboard");
       } else if (user.userType === "NGO") {
@@ -73,7 +71,7 @@ const SignupPage = () => {
       dispatch(setUser(response.data.user));
       dispatch(setIsAuthenticated(true));
       if (!response.data.user.userType) {
-        navigate("/select-user-type");
+        navigate("/selectUserType");
       } else if (response.data.user.userType === "Survivor") {
         navigate("/survivorDashboard");
       } else if (response.data.user.userType === "NGO") {

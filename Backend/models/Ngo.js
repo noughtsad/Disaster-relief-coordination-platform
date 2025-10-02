@@ -9,7 +9,7 @@ const NgoSchema = new Schema(
         ngoLongitude: { type: String, required: true },
         ngoContact: { type: String, required: true },
         ngoDescription: { type: String },
-        userType: { type: String, default: "NGO", enum: ["NGO"] }
+        owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
     },
     { timestamps: true }
 );

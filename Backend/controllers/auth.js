@@ -93,9 +93,10 @@ export async function googleAuth(req, res) {
 }
 
 export async function updateUserType(req, res) {
-  const { userId, userType } = req.body;
-  if (!userId || !userType) {
-    return res.status(400).json({ message: "User ID and user type are required" });
+  const { userType } = req.body;
+  const userId = req.user.id;
+  if (!userType) {
+    return res.status(400).json({ message: "User type is required" });
   }
   if (!['Survivor', 'Volunteer', 'NGO', 'Local Authority'].includes(userType)) {
     return res.status(400).json({ message: "Invalid user type" });

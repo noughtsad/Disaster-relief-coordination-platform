@@ -6,13 +6,15 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
 import passport from "passport";
 import cors from "cors";
+import ngoRoutes from "./routes/ngo.js";
+import cookieParser from "cookie-parser";
 const app = express();
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
-
+app.use(cookieParser());
 app.use(passport.initialize());
 
 app.use(cors({
@@ -65,7 +67,8 @@ app.get("/math", (req, res) => {
   res.json(result);
 });
 
-app.use("/api/auth", authRoutes);
+app.use("/auth", authRoutes);
+app.use("/ngo", ngoRoutes);
 
 app.get("/" , (req,res) =>{
   res.send("Welcome to Disaster Relief Coordination Platform API")
