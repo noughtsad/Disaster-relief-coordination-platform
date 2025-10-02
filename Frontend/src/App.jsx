@@ -5,10 +5,11 @@ import { setUser } from './store/appSlice';
 import FeedbackPage from './pages/Feedback';
 import LandingPage from './pages/LandingPage';
 import NgoDashboard from './pages/NgoDashboard';
-import Signup from './pages/Signup';
+import Signup from './pages/SignupPage';
 import SurvivorDashboard from './pages/SurvivorDashboard';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import ThemeProvider, { ThemeContext } from './context/ThemeContext'; // Import ThemeProvider and ThemeContext
+import ThemeProvider, { ThemeContext } from './context/ThemeContext';
+import LoginPage from './pages/LoginPage';
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
   {
     path: '/feedback',
     element: <FeedbackPage />,
+  },
+  {
+    path: '/login',
+    element: <LoginPage />
   }
 ]);
 

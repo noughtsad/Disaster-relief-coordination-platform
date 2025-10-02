@@ -22,11 +22,11 @@ const Navbar = () => {
       <h1 className="text-3xl font-bold">CrisisConnect</h1>
 
       <div className="flex items-center gap-6">
-        {/* Navigation Buttons */}
+
         {isAuthenticated ? (
           <>
             <button
-              onClick={() => navigate('/survivorDashboard')} // Assuming a generic dashboard for now
+              onClick={() => navigate('/survivorDashboard')}
               className={`px-6 py-3 font-medium transition-colors ${
                 theme === "light"
                   ? "text-gray-700 hover:text-gray-900"
@@ -36,7 +36,7 @@ const Navbar = () => {
               Dashboard
             </button>
             <button
-              onClick={() => navigate('/profile')} // Assuming a profile page
+              onClick={() => navigate('/profile')}
               className={`px-6 py-3 font-medium transition-colors ${
                 theme === "light"
                   ? "text-gray-700 hover:text-gray-900"
@@ -48,8 +48,8 @@ const Navbar = () => {
             <button
               onClick={() => {
                 dispatch(logout());
-                localStorage.removeItem('token'); // Clear token on logout
-                navigate('/'); // Redirect to landing page
+                localStorage.removeItem('token');
+                navigate('/');
               }}
               className={`px-6 py-3 rounded-lg font-medium transition-colors shadow-sm ${
                 theme === "light"
@@ -73,7 +73,7 @@ const Navbar = () => {
               Register
             </button>
             <button
-              onClick={() => navigate('/signup')} // Login is part of the signup page
+              onClick={() => navigate('/signup')}
               className={`px-6 py-3 font-medium transition-colors ${
                 theme === "light"
                   ? "text-gray-700 hover:text-gray-900"
