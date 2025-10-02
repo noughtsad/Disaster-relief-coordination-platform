@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { signup, login, logout, me, googleAuth } from "../controllers/auth.js";
-import passport from "passport";
+import passport from "../utils/passport.js";
 
 const router = Router();
 

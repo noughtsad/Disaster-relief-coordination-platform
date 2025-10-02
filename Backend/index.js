@@ -4,18 +4,22 @@ import Feedback from "./models/Feedback.js";
 import * as math from "./mathModule.js";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
+import passport from "passport";
+import cors from "cors";
 const app = express();
 dotenv.config();
+
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") return res.sendStatus(204);
-  next();
-});
+
+app.use(passport.initialize());
+
+app.use(cors({
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type"]
+}));
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -61,6 +65,10 @@ app.get("/math", (req, res) => {
 });
 
 app.use("/auth", authRoutes);
+
+app.get("/" , (req,res) =>{
+  res.send("Welcome to Disaster Relief Coordination Platform API")
+})
 
 app.use((req, res) => {
   res.status(404).send("Route not found");
