@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setUser, setLoading, setError, clearError } from "../store/appSlice";
+import { setUser, setLoading, setError, clearError, setIsAuthenticated } from "../store/appSlice";
+import { FaGoogle } from "react-icons/fa";
+import axios from "axios";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -23,13 +25,20 @@ const LoginPage = () => {
     dispatch(setLoading(true));
     dispatch(clearError());
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      if (formData.email === "test@example.com" && formData.password === "password") {
-        dispatch(setUser({ email: formData.email, userType: "survivor" }));
-        localStorage.setItem("token", "dummy-token");
-      } else throw new Error("Invalid credentials");
+      const response = await axios.post(import.meta.env.VITE_BACKEND_URL + "/auth/login", {
+        email: formData.email,
+        password: formData.password,
+      },{
+        headers: {
+          "Content-Type": "application/json"
+        },
+        withCredentials: true
+      });
+      dispatch(setUser(response.data.user));
+      dispatch(setIsAuthenticated(true));
+      navigate("/survivorDashboard");
     } catch (err) {
-      dispatch(setError(err.message));
+      dispatch(setError(err.response?.data?.message || "Login failed"));
     } finally {
       dispatch(setLoading(false));
     }
@@ -45,11 +54,15 @@ const LoginPage = () => {
         <h1 className="text-2xl font-bold text-center mb-6">Welcome Back</h1>
 
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        {loading && <p className="text-blue-500 text-center mb-4">Loading...</p>}
+        {loading && (
+          <p className="text-blue-500 text-center mb-4">Loading...</p>
+        )}
 
         {/* Email */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
           <input
             type="email"
             name="email"
@@ -62,7 +75,9 @@ const LoginPage = () => {
 
         {/* Password */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Password
+          </label>
           <input
             type="password"
             name="password"
@@ -83,25 +98,31 @@ const LoginPage = () => {
 
         {/* OR Divider */}
         <div className="relative text-center my-4">
-          <span className="text-xs font-medium text-gray-500 bg-white px-2">OR</span>
+          <span className="text-xs font-medium text-gray-500 bg-white px-2">
+            OR
+          </span>
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-200"></div>
           </div>
         </div>
 
-        {/* Google Login */}
+        {/* Google Signup */}
         <button
           onClick={handleGoogleSignIn}
-          className="w-full bg-white text-gray-700 py-2.5 rounded-lg text-sm font-medium border border-gray-300 hover:bg-gray-50 transition-all"
+          className="w-full flex items-center justify-center bg-white text-gray-700 py-2.5 rounded-lg text-sm font-medium border border-gray-300 hover:bg-gray-50 transition-all"
         >
-          Sign in with Google
+          <FaGoogle className="inline-block mr-2" />
+          <p>Sign up with Google</p>
         </button>
 
         {/* Bottom link */}
         <div className="text-center mt-4">
           <span className="text-xs text-gray-600">
             Don’t have an account?{" "}
-            <a href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
+            <a
+              href="/signup"
+              className="text-blue-600 hover:text-blue-700 font-medium"
+            >
               Sign Up
             </a>
           </span>

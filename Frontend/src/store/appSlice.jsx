@@ -1,15 +1,20 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  user: null,
+  user: {
+    name: "",
+    phone: "",
+    email: "",
+    userType: ""
+  },
   isAuthenticated: false,
   loading: false,
   error: null,
-  theme: 'light', // Added theme state
+  theme: "light",
 };
 
 const appSlice = createSlice({
-  name: 'app',
+  name: "app",
   initialState,
   reducers: {
     setUser: (state, action) => {
@@ -29,12 +34,27 @@ const appSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
     },
-    toggleTheme: (state) => { // Added toggleTheme reducer
-      state.theme = state.theme === 'light' ? 'dark' : 'light';
+    toggleTheme: (state) => {
+      state.theme = state.theme === "light" ? "dark" : "light";
     },
+    updateProfile: (state, action) => {
+      state.user = { ...state.user, ...action.payload };
+    },
+    setIsAuthenticated: (state, action) => {
+      state.isAuthenticated = action.payload;
+    }
   },
 });
 
-export const { setUser, setLoading, setError, clearError, logout, toggleTheme } = appSlice.actions;
+export const {
+  setUser,
+  setLoading,
+  setError,
+  clearError,
+  logout,
+  toggleTheme,
+  updateProfile,
+  setIsAuthenticated
+} = appSlice.actions;
 
 export default appSlice.reducer;

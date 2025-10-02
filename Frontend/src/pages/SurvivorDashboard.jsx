@@ -11,29 +11,22 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  X,
   Edit,
   Save,
-  Camera,
-  FileText,
-  Heart,
-  Zap,
-  Users,
   Building,
-  Truck
 } from "lucide-react";
 import { useSelector, useDispatch } from 'react-redux';
 import { addRequest, setLoading as setRequestLoading, setError as setRequestError, clearError as clearRequestError } from '../store/requestSlice';
-import { setProfile, setLoading as setProfileLoading, setError as setProfileError, clearError as clearProfileError } from '../store/profileSlice';
+import { setUser, setLoading as setProfileLoading, setError as setProfileError, clearError as clearProfileError, updateProfile } from '../store/appSlice';
 import Navbar from "../components/Navbar";
 import { ThemeContext } from "../context/ThemeContext";
 
 export default function SurvivorDashboard() {
   const { theme } = useContext(ThemeContext);
   const dispatch = useDispatch();
-  const { requests, loading: requestsLoading, error: requestsError } = useSelector((state) => state.requests);
-  const { profile, loading: profileLoading, error: profileError } = useSelector((state) => state.profile);
-  const { user } = useSelector((state) => state.app); // Assuming user info is in appSlice
+  const { requests } = useSelector((state) => state.requests);
+  const { user: profile } = useSelector((state) => state.app);
+  const { user } = useSelector((state) => state.app);
 
   const [activeSection, setActiveSection] = useState('home');
   const [newRequest, setNewRequest] = useState({
@@ -44,14 +37,13 @@ export default function SurvivorDashboard() {
     contactInfo: ''
   });
 
-  // Mock data for camps and alerts (can be moved to Redux if needed globally)
-  const [camps, setCamps] = useState([
+  const [camps] = useState([
     { id: 1, name: 'Community Relief Center', address: '123 Main St', services: ['Shelter', 'Food', 'Medical'], capacity: '80/100', distance: '2 miles' },
     { id: 2, name: 'Emergency Aid Station', address: '456 Oak Ave', services: ['Supplies', 'Information'], capacity: 'Full', distance: '5 miles' },
     { id: 3, name: 'Disaster Recovery Hub', address: '789 Pine St', services: ['Housing', 'Financial Aid'], capacity: '50/75', distance: '8 miles' }
   ]);
 
-  const [alerts, setAlerts] = useState([
+  const [alerts] = useState([
       { id: 1, title: 'Flash Flood Warning', severity: 'High', time: '2 hours ago', details: 'A flash flood warning is in effect for your area. Move to higher ground immediately.' },
       { id: 2, title: 'Boil Water Advisory', severity: 'Medium', time: '8 hours ago', details: 'A boil water advisory is in effect. Boil all water before consumption.' }
   ]);
@@ -61,15 +53,15 @@ export default function SurvivorDashboard() {
     // dispatch(fetchProfile());
     // dispatch(fetchRequests());
     if (user && user.name && profile.name !== user.name) {
-      dispatch(setProfile({ name: user.name, email: user.email }));
+      dispatch(setUser({ name: user.name, email: user.email }));
     }
-  }, [dispatch, user, profile.name]);
-
-  const HomeSection = () => (
-    <div>
-      <h2 className={`text-2xl font-bold drop-shadow mb-6 ${theme === "light" ? "text-black" : "text-white"}`}>
-        Dashboard
-      </h2>
+    }, [dispatch, user, profile]);
+  
+    const HomeSection = () => (
+      <div>
+        <h2 className={`text-2xl font-bold drop-shadow mb-6 ${theme === "light" ? "text-black" : "text-white"}`}>
+          Dashboard
+        </h2>
 
       {/* Quick Stats */}
       <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -605,13 +597,15 @@ export default function SurvivorDashboard() {
       setEditProfile(profile); // Sync local edit state with Redux profile when profile changes
     }, [profile]);
 
-    const handleSave = async () => {
+    const handleSave = () => {
       dispatch(setProfileLoading(true));
       dispatch(clearProfileError());
       try {
-        // Simulate API call to update profile
-        await new Promise(resolve => setTimeout(resolve, 500));
-        dispatch(setProfile(editProfile)); // Dispatch action to update Redux store
+        // Simulate API call for saving profile
+        // In a real application, you would make an API call here
+        // and then dispatch updateProfile with the response from the API
+        new Promise(resolve => setTimeout(resolve, 500)); 
+        dispatch(updateProfile(editProfile));
         setIsEditing(false);
         alert('Profile updated successfully!');
       } catch (err) {
@@ -680,51 +674,23 @@ export default function SurvivorDashboard() {
             </div>
           </div>
 
-          {/* Address Information */}
-          <div className={`backdrop-blur border rounded-xl p-6 shadow-lg ${
-            theme === "light" ? "bg-white/95 border-gray-200" : "bg-gray-900/95 border-gray-700"
-          }`}>
-            <h3 className={`font-semibold text-lg mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}>
-              Address Information
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>
-                  Current Address
-                </label>
-                <textarea
-                  value={isEditing ? editProfile.address : profile.address}
-                  onChange={(e) => setEditProfile({...editProfile, address: e.target.value})}
-                  disabled={!isEditing}
-                  rows={3}
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    isEditing 
-                      ? theme === "light" ? "border-gray-300 bg-white" : "border-gray-600 bg-gray-800 text-white"
-                      : theme === "light" ? "border-gray-200 bg-gray-50" : "border-gray-700 bg-gray-800 text-gray-300"
-                  }`}
-                />
-              </div>
-            </div>
-          </div>
-
           {/* Emergency Contact */}
           <div className={`backdrop-blur border rounded-xl p-6 shadow-lg ${
             theme === "light" ? "bg-white/95 border-gray-200" : "bg-gray-900/95 border-gray-700"
           }`}>
             <h3 className={`font-semibold text-lg mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}>
-              Emergency Contact
+              Contact Information
             </h3>
             <div className="space-y-4">
               <div>
                 <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>
-                  Emergency Contact Info
+                  Phone Number
                 </label>
                 <input
                   type="text"
-                  value={isEditing ? editProfile.emergencyContact : profile.emergencyContact}
-                  onChange={(e) => setEditProfile({...editProfile, emergencyContact: e.target.value})}
+                  value={isEditing ? editProfile.phone : profile.phone}
+                  onChange={(e) => setEditProfile({...editProfile, phone: e.target.value})}
                   disabled={!isEditing}
-                  placeholder="Name - Phone Number"
                   className={`w-full px-3 py-2 border rounded-lg ${
                     isEditing 
                       ? theme === "light" ? "border-gray-300 bg-white" : "border-gray-600 bg-gray-800 text-white"
@@ -732,32 +698,15 @@ export default function SurvivorDashboard() {
                   }`}
                 />
               </div>
-            </div>
-          </div>
-
-          {/* Medical Information */}
-          <div className={`backdrop-blur border rounded-xl p-6 shadow-lg ${
-            theme === "light" ? "bg-white/95 border-gray-200" : "bg-gray-900/95 border-gray-700"
-          }`}>
-            <h3 className={`font-semibold text-lg mb-4 ${theme === "light" ? "text-gray-900" : "text-white"}`}>
-              Medical Information
-            </h3>
-            <div className="space-y-4">
               <div>
                 <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>
-                  Medical Notes
+                  User Type
                 </label>
-                <textarea
-                  value={isEditing ? editProfile.medicalInfo : profile.medicalInfo}
-                  onChange={(e) => setEditProfile({...editProfile, medicalInfo: e.target.value})}
-                  disabled={!isEditing}
-                  rows={3}
-                  placeholder="Allergies, medications, medical conditions..."
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    isEditing 
-                      ? theme === "light" ? "border-gray-300 bg-white" : "border-gray-600 bg-gray-800 text-white"
-                      : theme === "light" ? "border-gray-200 bg-gray-50" : "border-gray-700 bg-gray-800 text-gray-300"
-                  }`}
+                <input
+                  type="text"
+                  value={profile.userType}
+                  disabled
+                  className={`w-full px-3 py-2 border rounded-lg ${ theme === "light" ? "border-gray-200 bg-gray-50" : "border-gray-700 bg-gray-800 text-gray-300"}`}
                 />
               </div>
             </div>

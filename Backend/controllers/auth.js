@@ -11,24 +11,22 @@ const COOKIE_OPTIONS = {
 };
 
 export async function signup(req, res) {
-  const { email, password, name } = req.body;
-  if (!email || !password || !name)
-    return res
-      .status(400)
-      .json({ message: "Email, password, and name are required" });
+  const { email, password, name, userType, phone } = req.body;
+  if (!email || !password || !name || !userType || !phone)
+    return res.status(400).json({ message: "Email, password, name, userType, and phone are required" });
 
   const existing = await User.findOne({ email });
   if (existing)
     return res.status(409).json({ message: "Email already in use" });
 
   const hashed = await bcrypt.hash(password, 10);
-  const user = await User.create({ email, password: hashed, name });
-  const token = signJwt({ id: user._id.toString(), email: user.email });
+  const user = await User.create({ email, password: hashed, name, userType, phone });
+  const token = signJwt({ id: user._id.toString(), email: user.email, name: user.name, userType: user.userType, phone: user.phone });
 
   res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
   return res.status(201).json({
-    message: "User created",
-    user: { id: user._id, email: user.email, name: user.name },
+    message: "Signup successful",
+    user: { id: user._id, email: user.email, name: user.name, userType: user.userType, phone: user.phone },
   });
 }
 
@@ -39,9 +37,7 @@ export async function login(req, res) {
 
   const user = await User.findOne({ email });
   if (!user)
-    return res
-      .status(401)
-      .json({ message: "User not found invalid credentials" });
+    return res.status(401).json({ message: "User not found invalid credentials" });
 
   const ok = await bcrypt.compare(password, user.password);
   if (!ok) return res.status(401).json({ message: "Password incorrect" });
@@ -50,10 +46,13 @@ export async function login(req, res) {
     id: user._id.toString(),
     email: user.email,
     name: user.name,
+    userType: user.userType,
+    phone: user.phone
   });
   res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
-  return res.json({
-    user: { id: user._id, email: user.email, name: user.name },
+  return res.status(201).json({
+    message: "Login successful",
+    user: { id: user._id, email: user.email, name: user.name, phone: user.phone, userType: user.userType },
   });
 }
 
