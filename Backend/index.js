@@ -65,7 +65,7 @@ app.get("/math", (req, res) => {
   res.json(result);
 });
 
-app.use("/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/" , (req,res) =>{
   res.send("Welcome to Disaster Relief Coordination Platform API")
