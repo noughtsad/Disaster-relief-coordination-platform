@@ -9,7 +9,6 @@ const SignupPage = () => {
   const { isAuthenticated, loading, error } = useSelector((state) => state.app);
 
   const [formData, setFormData] = useState({
-    userType: "survivor",
     name: "",
     phone: "",
     email: "",
@@ -30,10 +29,21 @@ const SignupPage = () => {
     dispatch(setLoading(true));
     dispatch(clearError());
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      if (formData.password !== formData.confirmPassword) throw new Error("Passwords do not match");
-      dispatch(setUser({ email: formData.email, userType: formData.userType }));
-      localStorage.setItem("token", "dummy-token");
+      if (formData.password !== formData.confirmPassword) {
+        throw new Error("Passwords do not match");
+      }
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong');
+      }
+      dispatch(setUser(data.user));
     } catch (err) {
       dispatch(setError(err.message));
     } finally {

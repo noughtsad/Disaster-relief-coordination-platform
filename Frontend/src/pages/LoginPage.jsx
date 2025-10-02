@@ -23,11 +23,18 @@ const LoginPage = () => {
     dispatch(setLoading(true));
     dispatch(clearError());
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      if (formData.email === "test@example.com" && formData.password === "password") {
-        dispatch(setUser({ email: formData.email, userType: "survivor" }));
-        localStorage.setItem("token", "dummy-token");
-      } else throw new Error("Invalid credentials");
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong');
+      }
+      dispatch(setUser(data.user));
     } catch (err) {
       dispatch(setError(err.message));
     } finally {

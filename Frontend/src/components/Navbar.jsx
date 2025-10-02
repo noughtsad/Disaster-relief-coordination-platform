@@ -73,7 +73,7 @@ const Navbar = () => {
               Register
             </button>
             <button
-              onClick={() => navigate('/signup')}
+              onClick={() => navigate('/login')}
               className={`px-6 py-3 font-medium transition-colors ${
                 theme === "light"
                   ? "text-gray-700 hover:text-gray-900"
