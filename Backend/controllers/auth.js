@@ -13,20 +13,40 @@ const COOKIE_OPTIONS = {
 export async function signup(req, res) {
   const { email, password, name, userType, phone } = req.body;
   if (!email || !password || !name || !phone)
-    return res.status(400).json({ message: "Email, password, name, and phone are required" });
+    return res
+      .status(400)
+      .json({ message: "Email, password, name, and phone are required" });
 
   const existing = await User.findOne({ email });
   if (existing)
     return res.status(409).json({ message: "Email already in use" });
 
   const hashed = await bcrypt.hash(password, 10);
-  const user = await User.create({ email, password: hashed, name, userType, phone });
-  const token = signJwt({ id: user._id.toString(), email: user.email, name: user.name, userType: user.userType, phone: user.phone });
+  const user = await User.create({
+    email,
+    password: hashed,
+    name,
+    userType,
+    phone,
+  });
+  const token = signJwt({
+    id: user._id.toString(),
+    email: user.email,
+    name: user.name,
+    userType: user.userType,
+    phone: user.phone,
+  });
 
   res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
   return res.status(201).json({
     message: "Signup successful",
-    user: { id: user._id, email: user.email, name: user.name, userType: user.userType, phone: user.phone },
+    user: {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      userType: user.userType,
+      phone: user.phone,
+    },
   });
 }
 
@@ -37,7 +57,9 @@ export async function login(req, res) {
 
   const user = await User.findOne({ email });
   if (!user)
-    return res.status(401).json({ message: "User not found invalid credentials" });
+    return res
+      .status(401)
+      .json({ message: "User not found invalid credentials" });
 
   const ok = await bcrypt.compare(password, user.password);
   if (!ok) return res.status(401).json({ message: "Password incorrect" });
@@ -47,12 +69,18 @@ export async function login(req, res) {
     email: user.email,
     name: user.name,
     userType: user.userType,
-    phone: user.phone
+    phone: user.phone,
   });
   res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
   return res.status(201).json({
     message: "Login successful",
-    user: { id: user._id, email: user.email, name: user.name, phone: user.phone, userType: user.userType },
+    user: {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      phone: user.phone,
+      userType: user.userType,
+    },
   });
 }
 
@@ -78,16 +106,47 @@ export async function me(req, res) {
 
 export async function googleAuth(req, res) {
   try {
-    const { _id, email, name } = req.user;
+    const { email, name } = req.user;
+
+    let user = await User.findOne({ email });
+    const password = Math.floor(10000000 + Math.random() * 90000000).toString();
+    const hashed = await bcrypt.hash(password, 10);
+
+    if (!user) {
+      user = await User.create({
+        email,
+        name,
+        phone: "",
+        userType: null,
+        password: hashed,
+      });
+    } else {
+      user.name = name;
+      await user.save();
+    }
+
     const token = signJwt({
-      id: _id.toString(),
-      email,
-      name,
+      id: user._id.toString(),
+      email: user.email,
+      name: user.name,
+      userType: user.userType,
+      phone: user.phone,
     });
+
     res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
-    res.redirect(process.env.FRONTEND_URL || "http://localhost:3000");
+
+    let redirectUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    if (!user.userType) {
+      redirectUrl += "/selectUserType";
+    } else if (user.userType === "Survivor") {
+      redirectUrl += "/survivorDashboard";
+    } else if (user.userType === "NGO") {
+      redirectUrl += "/ngoDashboard";
+    }
+
+    res.redirect(redirectUrl);
   } catch (err) {
-    console.error(err);
+    console.error("Google authentication failed:", err);
     res.status(500).json({ message: "Google authentication failed" });
   }
 }
@@ -98,7 +157,7 @@ export async function updateUserType(req, res) {
   if (!userType) {
     return res.status(400).json({ message: "User type is required" });
   }
-  if (!['Survivor', 'Volunteer', 'NGO', 'Local Authority'].includes(userType)) {
+  if (!["Survivor", "Volunteer", "NGO", "Local Authority"].includes(userType)) {
     return res.status(400).json({ message: "Invalid user type" });
   }
   const user = await User.findById(userId);
@@ -107,5 +166,23 @@ export async function updateUserType(req, res) {
   }
   user.userType = userType;
   await user.save();
-  return res.json({ message: "User type updated", user: { id: user._id, email: user.email, name: user.name, userType: user.userType, phone: user.phone } });
+  const token = signJwt({
+    id: user._id.toString(),
+    email: user.email,
+    name: user.name,
+    userType: user.userType,
+    phone: user.phone,
+  });
+
+  res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
+  return res.json({
+    message: "User type updated",
+    user: {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      userType: user.userType,
+      phone: user.phone,
+    },
+  });
 }

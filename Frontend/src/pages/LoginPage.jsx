@@ -65,7 +65,7 @@ const LoginPage = () => {
   };
 
   const handleGoogleSignIn = () => {
-    console.log("Google login clicked");
+    window.location.href = import.meta.env.VITE_BACKEND_URL + "/auth/google";
   };
 
   return (
