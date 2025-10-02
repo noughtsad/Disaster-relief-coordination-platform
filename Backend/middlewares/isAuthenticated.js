@@ -7,6 +7,7 @@ export const isAuthenticated = (req, res, next) => {
   try {
     const decoded = verifyJwt(token);
     req.user = decoded;
+    console.log("Authenticated user:", req.user);
     next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid or expired token" });

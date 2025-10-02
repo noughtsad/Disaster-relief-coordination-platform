@@ -17,6 +17,7 @@ export async function createNgo(req, res) {
       owner: req.user.id,
     });
 
+    console.log("Creating NGO for owner:", req.user.id);
     await newNgo.save();
     return res.status(201).json({ ngo: newNgo });
   } catch (error) {
@@ -27,11 +28,12 @@ export async function createNgo(req, res) {
 
 export async function getNgo(req, res) {
   try {
-    const ngo = await Ngo.findById(req.params.id).populate("owner", "username email");
+    const ngo = await Ngo.findOne({ owner: req.user.id }).populate("owner", "username email");
     if (!ngo) {
-      return res.status(404).json({ message: "NGO not found" });
+      console.log("No NGO found for user:", req.user.id);
+      return res.status(404).json({ message: "NGO not found for this user" });
     }
-    return res.status(200).json(ngo);
+    return res.status(200).json({ ngo }); // Wrap ngo in an object to match frontend expectation
   } catch (error) {
     console.error("Error fetching NGO:", error);
     return res.status(500).json({ message: "Server error", error: error.message });

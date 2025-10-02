@@ -41,7 +41,7 @@ export default function NgoDashboard() {
 
   const [activeSection, setActiveSection] = useState("home");
   const [searchTerm, setSearchTerm] = useState("");
-
+  console.log(ngoProfile);
   useEffect(() => {
   }, [dispatch, ngoProfile.ngoName, user?._id]);
 
