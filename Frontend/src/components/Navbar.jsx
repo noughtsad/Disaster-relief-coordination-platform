@@ -3,7 +3,7 @@ import { Sun, Moon } from "lucide-react";
 import { ThemeContext } from "../context/ThemeContext";
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { logout } from '../store/appSlice';
+import { logoutUser } from '../store/appSlice';
 
 const Navbar = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -87,9 +87,7 @@ const Navbar = () => {
             </button>
             <button
               onClick={() => {
-                dispatch(logout());
-                localStorage.removeItem('token');
-                localStorage.removeItem('userType');
+                dispatch(logoutUser());
                 navigate('/');
               }}
               className={`px-6 py-3 rounded-lg font-medium transition-colors shadow-sm ${

@@ -32,6 +32,24 @@ export const fetchUser = createAsyncThunk(
   }
 );
 
+// Async thunk to logout user
+export const logoutUser = createAsyncThunk(
+  'app/logoutUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      await axios.post(import.meta.env.VITE_BACKEND_URL + "/auth/logout", {}, {
+        withCredentials: true,
+      });
+      return;
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
+      }
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const appSlice = createSlice({
   name: "app",
   initialState,
@@ -48,10 +66,6 @@ const appSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
-    },
-    logout: (state) => {
-      state.user = null;
-      state.isAuthenticated = false;
     },
     toggleTheme: (state) => {
       state.theme = state.theme === "light" ? "dark" : "light";
@@ -79,6 +93,16 @@ const appSlice = createSlice({
         state.error = action.payload;
         state.isAuthenticated = false;
         state.user = null;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.isAuthenticated = false;
+        state.error = null;
+        state.loading = false;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
@@ -88,7 +112,6 @@ export const {
   setLoading,
   setError,
   clearError,
-  logout,
   toggleTheme,
   updateProfile,
   setIsAuthenticated
