@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import Navbar from "../components/Navbar";
+import { motion } from "framer-motion";
 
 const AboutPage = () => {
   const { theme } = useContext(ThemeContext);
@@ -41,24 +42,6 @@ const AboutPage = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
       >
-        {/* Header */}
-        <motion.div 
-          className="text-center mb-16"
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          <motion.h1 
-            className={`text-4xl md:text-5xl font-bold mb-6 ${
-              theme === 'light' ? 'text-gray-900' : 'text-white'
-            }`}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-          >
-            About CrisisConnect
-          </motion.h1>
-        </motion.div>
 
         {/* Our Mission */}
         <motion.section 
