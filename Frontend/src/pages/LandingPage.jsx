@@ -81,9 +81,9 @@ const LandingPage = () => {
                   initial="hidden"
                   animate="visible"
                 >
-                  <motion.div 
+                   <motion.div 
                     onClick={() => handleCardClick('survivor')}
-                    className="cursor-pointer md:col-span-2"
+                    className="cursor-pointer"
                     variants={{
                       hidden: { y: 50, opacity: 0 },
                       visible: { y: 0, opacity: 1 }
@@ -100,7 +100,27 @@ const LandingPage = () => {
                       className="h-80"
                     />
                   </motion.div>
-                  
+
+                  <motion.div 
+                    onClick={() => handleCardClick('survivor')}
+                    className="cursor-pointer"
+                    variants={{
+                      hidden: { y: 50, opacity: 0 },
+                      visible: { y: 0, opacity: 1 }
+                    }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      transition: { duration: 0.2 }
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Card 
+                      title="Supplier" 
+                      img="https://www.manutan.com/blog/medias/files/thumbsSource/A00233P2_1110x555.jpeg"
+                      className="h-80"
+                    />
+                  </motion.div>
+                 
                   <motion.div 
                     onClick={() => handleCardClick('volunteer')}
                     className="cursor-pointer"
