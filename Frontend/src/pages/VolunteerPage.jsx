@@ -213,8 +213,8 @@ export default function VolunteerPage() {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-blue-600">Total Hours</p>
-              <p className="text-2xl font-bold text-blue-900">{volunteerProfile.totalHours}</p>
+              <p className={`text-sm font-medium ${theme === 'light' ? 'text-blue-600' : 'text-blue-900'}`}>Total Hours</p>
+              <p className={`text-2xl font-bold ${theme === 'light' ? 'text-blue-600' : 'text-blue-900'}`}>{volunteerProfile.totalHours}</p>
             </div>
             <Clock className="h-8 w-8 text-blue-500" />
           </div>
@@ -230,8 +230,8 @@ export default function VolunteerPage() {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-green-600">Completed Tasks</p>
-              <p className="text-2xl font-bold text-green-900">{volunteerProfile.completedTasks}</p>
+              <p className={`text-sm font-medium ${theme === 'light' ? 'text-green-600' : 'text-green-900'}`}>Completed Tasks</p>
+              <p className={`text-2xl font-bold ${theme === 'light' ? 'text-green-600' : 'text-green-900'}`}>{volunteerProfile.completedTasks}</p>
             </div>
             <CheckCircle className="h-8 w-8 text-green-500" />
           </div>
@@ -247,8 +247,8 @@ export default function VolunteerPage() {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-yellow-600">Rating</p>
-              <p className="text-2xl font-bold text-yellow-900">{volunteerProfile.rating}/5</p>
+              <p className={`text-sm font-medium ${theme === 'light' ? 'text-yellow-600' : 'text-yellow-900'}`}>Rating</p>
+              <p className={`text-2xl font-bold ${theme === 'light' ? 'text-yellow-600' : 'text-yellow-900'}`}>{volunteerProfile.rating}/5</p>
             </div>
             <Star className="h-8 w-8 text-yellow-500" />
           </div>
@@ -264,8 +264,8 @@ export default function VolunteerPage() {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-purple-600">Experience</p>
-              <p className="text-2xl font-bold text-purple-900">{volunteerProfile.experience}</p>
+              <p className={`text-sm font-medium ${theme === 'light' ? 'text-purple-600' : 'text-purple-400'}`}>Experience</p>
+              <p className={`text-2xl font-bold ${theme === 'light' ? 'text-purple-900' : 'text-purple-100'}`}>{volunteerProfile.experience}</p>
             </div>
             <Award className="h-8 w-8 text-purple-500" />
           </div>
@@ -273,18 +273,18 @@ export default function VolunteerPage() {
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold mb-4 flex items-center">
+        <div className={`p-6 rounded-lg shadow-sm border ${theme === 'light' ? 'bg-white' : 'bg-gray-800 border-gray-700'}`}>
+          <h3 className={`text-lg font-semibold mb-4 flex items-center ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
             <Calendar className="mr-2 h-5 w-5 text-blue-500" />
             Upcoming Schedule
           </h3>
           <div className="space-y-4">
             {schedule.slice(0, 3).map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div key={item.id} className={`flex items-center justify-between p-3 rounded-lg ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-700'}`}>
                 <div>
-                  <p className="font-medium">{item.title}</p>
-                  <p className="text-sm text-gray-600">{item.date} • {item.time}</p>
-                  <p className="text-sm text-gray-500">{item.location}</p>
+                  <p className={`font-medium ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{item.title}</p>
+                  <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>{item.date} • {item.time}</p>
+                  <p className={`text-sm ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}>{item.location}</p>
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                   item.status === 'confirmed' 
@@ -298,16 +298,16 @@ export default function VolunteerPage() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold mb-4 flex items-center">
+        <div className={`p-6 rounded-lg shadow-sm border ${theme === 'light' ? 'bg-white' : 'bg-gray-800 border-gray-700'}`}>
+          <h3 className={`text-lg font-semibold mb-4 flex items-center ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
             <Heart className="mr-2 h-5 w-5 text-red-500" />
             Available Opportunities
           </h3>
           <div className="space-y-4">
             {opportunities.slice(0, 3).map((opp) => (
-              <div key={opp.id} className="p-3 bg-gray-50 rounded-lg">
+              <div key={opp.id} className={`p-3 rounded-lg ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-700'}`}>
                 <div className="flex items-center justify-between mb-2">
-                  <p className="font-medium">{opp.title}</p>
+                  <p className={`font-medium ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{opp.title}</p>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     opp.urgency === 'high' 
                       ? 'bg-red-100 text-red-800' 
@@ -316,10 +316,10 @@ export default function VolunteerPage() {
                     {opp.urgency}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600">{opp.organization}</p>
-                <p className="text-sm text-gray-500">{opp.date} • {opp.location}</p>
+                <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>{opp.organization}</p>
+                <p className={`text-sm ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}>{opp.date} • {opp.location}</p>
                 <div className="mt-2 flex items-center justify-between">
-                  <span className="text-xs text-gray-500">
+                  <span className={`text-xs ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}>
                     {opp.volunteers_registered}/{opp.volunteers_needed} volunteers
                   </span>
                   <button 
@@ -340,19 +340,19 @@ export default function VolunteerPage() {
   const renderOpportunities = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Available Opportunities</h2>
+        <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Available Opportunities</h2>
         <div className="flex items-center space-x-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme === 'light' ? 'text-gray-400' : 'text-gray-500'} h-4 w-4`} />
             <input
               type="text"
               placeholder="Search opportunities..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'}`}
             />
           </div>
-          <button className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+          <button className={`flex items-center px-4 py-2 border rounded-lg ${theme === 'light' ? 'border-gray-300 hover:bg-gray-50 text-gray-700' : 'border-gray-600 hover:bg-gray-700 text-gray-300'}`}>
             <Filter className="mr-2 h-4 w-4" />
             Filter
           </button>
@@ -361,11 +361,11 @@ export default function VolunteerPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {opportunities.map((opp) => (
-          <div key={opp.id} className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+          <div key={opp.id} className={`p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-lg font-semibold">{opp.title}</h3>
-                <p className="text-gray-600">{opp.organization}</p>
+                <h3 className={`text-lg font-semibold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{opp.title}</h3>
+                <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>{opp.organization}</p>
               </div>
               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                 opp.urgency === 'high' 
@@ -379,29 +379,29 @@ export default function VolunteerPage() {
             </div>
 
             <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm text-gray-600">
+              <div className={`flex items-center text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
                 <Calendar className="mr-2 h-4 w-4" />
                 {opp.date} • {opp.time}
               </div>
-              <div className="flex items-center text-sm text-gray-600">
+              <div className={`flex items-center text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
                 <MapPin className="mr-2 h-4 w-4" />
                 {opp.location}
               </div>
-              <div className="flex items-center text-sm text-gray-600">
+              <div className={`flex items-center text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
                 <Clock className="mr-2 h-4 w-4" />
                 {opp.duration}
               </div>
-              <div className="flex items-center text-sm text-gray-600">
+              <div className={`flex items-center text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
                 <Users className="mr-2 h-4 w-4" />
                 {opp.volunteers_registered}/{opp.volunteers_needed} volunteers
               </div>
             </div>
 
-            <p className="text-sm text-gray-700 mb-4">{opp.description}</p>
+            <p className={`text-sm ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'} mb-4`}>{opp.description}</p>
 
             <div className="mb-4">
-              <p className="text-sm font-medium text-gray-700 mb-2">Requirements:</p>
-              <ul className="list-disc list-inside text-sm text-gray-600">
+              <p className={`text-sm font-medium ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'} mb-2`}>Requirements:</p>
+              <ul className={`list-disc list-inside text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
                 {opp.requirements.map((req, index) => (
                   <li key={index}>{req}</li>
                 ))}
@@ -409,7 +409,7 @@ export default function VolunteerPage() {
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">Category: {opp.category}</span>
+              <span className={`text-sm ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}>Category: {opp.category}</span>
               <div className="flex space-x-2">
                 <button 
                   onClick={() => setSelectedOpportunity(opp)}
@@ -434,20 +434,20 @@ export default function VolunteerPage() {
   const renderSchedule = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">My Schedule</h2>
+        <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>My Schedule</h2>
         <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           <Plus className="mr-2 h-4 w-4" />
           Add Event
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border">
+      <div className={`rounded-lg shadow-sm border ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
         <div className="p-6">
           <div className="space-y-4">
             {schedule.map((item) => (
-              <div key={item.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+              <div key={item.id} className={`rounded-lg p-4 hover:shadow-sm transition-shadow ${theme === 'light' ? 'border border-gray-200' : 'border border-gray-600 bg-gray-700'}`}>
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-semibold">{item.title}</h3>
+                  <h3 className={`text-lg font-semibold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{item.title}</h3>
                   <div className="flex items-center space-x-2">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       item.status === 'confirmed' 
@@ -458,29 +458,29 @@ export default function VolunteerPage() {
                     }`}>
                       {item.status}
                     </span>
-                    <button className="text-gray-400 hover:text-gray-600">
+                    <button className={`hover:text-gray-600 ${theme === 'light' ? 'text-gray-400' : 'text-gray-500'}`}>
                       <Edit className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-                  <div className="flex items-center">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div className={`flex items-center ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
                     <Calendar className="mr-2 h-4 w-4" />
                     {item.date}
                   </div>
-                  <div className="flex items-center">
+                  <div className={`flex items-center ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
                     <Clock className="mr-2 h-4 w-4" />
                     {item.time}
                   </div>
-                  <div className="flex items-center">
+                  <div className={`flex items-center ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
                     <MapPin className="mr-2 h-4 w-4" />
                     {item.location}
                   </div>
                 </div>
                 
                 <div className="mt-3 flex items-center justify-between">
-                  <p className="text-sm text-gray-600">Organization: {item.organization}</p>
+                  <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>Organization: {item.organization}</p>
                   <div className="flex space-x-2">
                     <button className="text-sm text-blue-600 hover:text-blue-800">Contact</button>
                     <button className="text-sm text-red-600 hover:text-red-800">Cancel</button>
@@ -497,7 +497,7 @@ export default function VolunteerPage() {
   const renderTraining = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Training & Certification</h2>
+        <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Training & Certification</h2>
         <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           <BookOpen className="mr-2 h-4 w-4" />
           Browse Courses
@@ -506,11 +506,11 @@ export default function VolunteerPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {trainingModules.map((module) => (
-          <div key={module.id} className="bg-white p-6 rounded-lg shadow-sm border">
+          <div key={module.id} className={`p-6 rounded-lg shadow-sm border ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-lg font-semibold">{module.title}</h3>
-                <p className="text-gray-600">Duration: {module.duration}</p>
+                <h3 className={`text-lg font-semibold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{module.title}</h3>
+                <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>Duration: {module.duration}</p>
               </div>
               <div className="flex items-center space-x-2">
                 {module.completed ? (
@@ -524,7 +524,7 @@ export default function VolunteerPage() {
               </div>
             </div>
 
-            <p className="text-sm text-gray-700 mb-4">{module.description}</p>
+            <p className={`text-sm ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'} mb-4`}>{module.description}</p>
 
             <div className="flex items-center justify-between">
               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -556,11 +556,11 @@ export default function VolunteerPage() {
 
   const renderProfile = () => (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Volunteer Profile</h2>
+      <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Volunteer Profile</h2>
       
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
+      <div className={`p-6 rounded-lg shadow-sm border ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold">Personal Information</h3>
+          <h3 className={`text-lg font-semibold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Personal Information</h3>
           <button className="flex items-center px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
             <Edit className="mr-2 h-4 w-4" />
             Edit Profile
@@ -569,59 +569,59 @@ export default function VolunteerPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+            <label className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'} mb-2`}>Full Name</label>
             <input
               type="text"
               value={volunteerProfile.name}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'}`}
               readOnly
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+            <label className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'} mb-2`}>Email</label>
             <input
               type="email"
               value={volunteerProfile.email}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'}`}
               readOnly
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+            <label className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'} mb-2`}>Phone</label>
             <input
               type="tel"
               value={volunteerProfile.phone}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'}`}
               readOnly
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Experience</label>
+            <label className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'} mb-2`}>Experience</label>
             <input
               type="text"
               value={volunteerProfile.experience}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'}`}
               readOnly
             />
           </div>
         </div>
 
         <div className="mt-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+          <label className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'} mb-2`}>Address</label>
           <textarea
             value={volunteerProfile.address}
             rows="2"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'}`}
             readOnly
           />
         </div>
 
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Skills</label>
+            <label className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'} mb-2`}>Skills</label>
             <div className="flex flex-wrap gap-2">
               {volunteerProfile.skills.map((skill, index) => (
                 <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
@@ -632,7 +632,7 @@ export default function VolunteerPage() {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Availability</label>
+            <label className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'} mb-2`}>Availability</label>
             <div className="flex flex-wrap gap-2">
               {volunteerProfile.availability.map((time, index) => (
                 <span key={index} className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
