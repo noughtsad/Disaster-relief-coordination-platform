@@ -9,8 +9,7 @@ import {
 } from "../store/appSlice";
 import { setNgoProfile } from '../store/ngoSlice';
 import { ThemeContext } from "../context/ThemeContext";
-import Navbar from "../components/Navbar";
-import { User, Building } from "lucide-react";
+import { User, Building, HandHeart } from "lucide-react";
 import axios from "axios";
 
 export default function UserTypeSelectionPage() {
@@ -95,6 +94,19 @@ export default function UserTypeSelectionPage() {
         );
         dispatch(setNgoProfile(ngoDetailsResponse.data.ngo));
         navigate("/ngoDashboard");
+      } else if (selectedUserType === "Volunteer") {
+        const response = await axios.post(
+          import.meta.env.VITE_BACKEND_URL + "/auth/updateUserType",
+          { userId: user._id, userType: "Volunteer" },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+        dispatch(
+          updateProfile({ ...user, userType: response.data.user.userType })
+        );
+        navigate("/volunteer");
       }
     } catch (err) {
       console.error(err);
@@ -117,7 +129,6 @@ export default function UserTypeSelectionPage() {
           : "bg-gray-100 text-gray-900"
       }`}
     >
-      <Navbar />
       <div className="flex-1 flex items-center justify-center p-4">
         <div
           className={`backdrop-blur border rounded-xl p-8 shadow-lg max-w-2xl w-full ${
@@ -145,7 +156,7 @@ export default function UserTypeSelectionPage() {
           )}
 
           {!selectedUserType ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <button
                 onClick={() => handleUserTypeSelect("Survivor")}
                 className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all duration-200
@@ -184,6 +195,26 @@ export default function UserTypeSelectionPage() {
                   }`}
                 >
                   I provide aid and support.
+                </p>
+              </button>
+              <button
+                onClick={() => handleUserTypeSelect("Volunteer")}
+                className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all duration-200
+                  ${
+                    theme === "light"
+                      ? "bg-white hover:bg-indigo-50 border-gray-300 hover:border-indigo-500"
+                      : "bg-gray-800 hover:bg-indigo-900/30 border-gray-600 hover:border-indigo-500"
+                  }
+                  ${theme === "light" ? "text-gray-800" : "text-white"}`}
+              >
+                <HandHeart size={48} className="mb-4 text-yellow-600" />
+                <span className="text-xl font-semibold">Volunteer</span>
+                <p
+                  className={`text-sm mt-2 text-center ${
+                    theme === "light" ? "text-gray-600" : "text-gray-400"
+                  }`}
+                >
+                  I want to help.
                 </p>
               </button>
             </div>

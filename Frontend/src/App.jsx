@@ -12,6 +12,7 @@ import ThemeProvider from './context/ThemeContext';
 import LoginPage from './pages/LoginPage';
 import UserTypeSelectionPage from './pages/UserTypeSelectionPage';
 import Root from './components/Root';
+import PageNotFound from './pages/PageNotFound';
 
 const router = createBrowserRouter([
   {
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
       {
         path: '/donate',
         element: <DonationsPage />
+      },
+      {
+        path: '*',
+        element: <PageNotFound />
       }
     ]
   }

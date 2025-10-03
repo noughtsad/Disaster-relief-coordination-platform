@@ -29,7 +29,6 @@ import {
 } from "lucide-react";
 import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
-import Navbar from "../components/Navbar";
 import { ThemeContext } from "../context/ThemeContext";
 
 export default function VolunteerPage() {
@@ -679,7 +678,6 @@ export default function VolunteerPage() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <Navbar />
       
       <div className="flex">
         {/* Sidebar */}

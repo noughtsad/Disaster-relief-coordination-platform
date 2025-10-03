@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
-import Navbar from "../components/Navbar";
+import { motion } from "framer-motion";
 
 const AboutPage = () => {
   const { theme } = useContext(ThemeContext);
@@ -33,7 +33,6 @@ const AboutPage = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      <Navbar />
       
       <motion.div 
         className="max-w-6xl mx-auto px-6 py-12"
