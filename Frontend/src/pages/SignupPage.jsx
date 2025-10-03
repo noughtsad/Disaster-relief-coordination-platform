@@ -89,20 +89,20 @@ const SignupPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-        <h1 className="text-2xl font-bold text-center mb-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-gray-50 to-stone-100 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-md p-8">
+        <h1 className="text-3xl font-semibold text-center mb-8 text-gray-800">
           Create Your Account
         </h1>
 
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        {error && <p className="text-red-600 text-center mb-6 bg-red-50 p-3 rounded-lg border border-red-200">{error}</p>}
         {loading && (
-          <p className="text-blue-500 text-center mb-4">Loading...</p>
+          <p className="text-slate-600 text-center mb-6 bg-slate-50 p-3 rounded-lg border border-slate-200">Loading...</p>
         )}
 
         {/* Full Name */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Full Name
           </label>
           <input
@@ -111,13 +111,13 @@ const SignupPage = () => {
             value={formData.name}
             placeholder="Your Full Name"
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-200 transition-all"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white focus:border-slate-500 focus:ring-2 focus:ring-slate-200 focus:outline-none transition-all"
           />
         </div>
 
         {/* Phone */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Phone Number
           </label>
           <input
@@ -126,13 +126,13 @@ const SignupPage = () => {
             value={formData.phone}
             placeholder="9876504012"
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-200 transition-all"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white focus:border-slate-500 focus:ring-2 focus:ring-slate-200 focus:outline-none transition-all"
           />
         </div>
 
         {/* Email */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Email
           </label>
           <input
@@ -141,13 +141,13 @@ const SignupPage = () => {
             value={formData.email}
             placeholder="example@email.com"
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-200 transition-all"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white focus:border-slate-500 focus:ring-2 focus:ring-slate-200 focus:outline-none transition-all"
           />
         </div>
 
         {/* Password */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Password
           </label>
           <input
@@ -156,13 +156,13 @@ const SignupPage = () => {
             value={formData.password}
             placeholder="Create a password"
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-200 transition-all"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white focus:border-slate-500 focus:ring-2 focus:ring-slate-200 focus:outline-none transition-all"
           />
         </div>
 
         {/* Confirm Password */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="mb-8">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Confirm Password
           </label>
           <input
@@ -171,44 +171,44 @@ const SignupPage = () => {
             value={formData.confirmPassword}
             placeholder="Confirm your password"
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-200 transition-all"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white focus:border-slate-500 focus:ring-2 focus:ring-slate-200 focus:outline-none transition-all"
           />
         </div>
 
         {/* Signup Button */}
         <button
           onClick={handleSignup}
-          className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all mb-3"
+          className="w-full bg-slate-700 text-white py-3 rounded-lg text-sm font-semibold hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all mb-4"
         >
           Sign Up
         </button>
 
         {/* OR Divider */}
-        <div className="relative text-center my-4">
-          <span className="text-xs font-medium text-gray-500 bg-white px-2">
+        <div className="relative text-center my-6">
+          <span className="text-sm font-medium text-gray-500 bg-white px-4">
             OR
           </span>
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
+            <div className="w-full border-t border-gray-300"></div>
           </div>
         </div>
 
         {/* Google Signup */}
         <button
           onClick={handleGoogleSignIn}
-          className="w-full flex items-center justify-center bg-white text-gray-700 py-2.5 rounded-lg text-sm font-medium border border-gray-300 hover:bg-gray-50 transition-all"
+          className="w-full flex items-center justify-center bg-white text-gray-700 py-3 rounded-lg text-sm font-semibold border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 transition-all"
         >
-          <FaGoogle className="inline-block mr-2" />
+          <FaGoogle className="inline-block mr-2 text-gray-600" />
           <p>Sign up with Google</p>
         </button>
 
         {/* Bottom link */}
-        <div className="text-center mt-4">
-          <span className="text-xs text-gray-600">
+        <div className="text-center mt-6">
+          <span className="text-sm text-gray-600">
             Already have an account?{" "}
             <a
               href="/login"
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              className="text-slate-700 hover:text-slate-900 font-semibold underline decoration-slate-300 hover:decoration-slate-500 transition-all"
             >
               Login
             </a>
