@@ -20,6 +20,8 @@ const LoginPage = () => {
         navigate("/survivorDashboard");
       } else if (user.userType === "NGO") {
         navigate("/ngoDashboard");
+      } else if (user.userType === "Volunteer") {
+        navigate("/volunteer");
       }
     }
   }, [isAuthenticated, navigate, user]);
@@ -56,6 +58,8 @@ const LoginPage = () => {
         navigate("/survivorDashboard");
       } else if (response.data.user.userType === "NGO") {
         navigate("/ngoDashboard");
+      } else if (response.data.user.userType === "Volunteer") {
+        navigate("/volunteer");
       }
     } catch (err) {
       dispatch(setError(err.response?.data?.message || "Login failed"));
