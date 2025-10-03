@@ -18,7 +18,6 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { addRequest, setLoading as setRequestLoading, setError as setRequestError, clearError as clearRequestError } from '../store/requestSlice';
 import { setUser, setLoading as setProfileLoading, setError as setProfileError, clearError as clearProfileError, updateProfile } from '../store/appSlice';
-import Navbar from "../components/Navbar";
 import { ThemeContext } from "../context/ThemeContext";
 
 export default function SurvivorDashboard() {
@@ -759,7 +758,6 @@ export default function SurvivorDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar /> {/* isLoggedIn prop removed */}
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside className={`w-64 backdrop-blur border-r p-6 flex flex-col shadow-md ${

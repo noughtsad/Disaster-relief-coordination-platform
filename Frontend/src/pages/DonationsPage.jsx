@@ -2,7 +2,6 @@ import React, { useState, useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion';
-import Navbar from "../components/Navbar";
 import { 
   Heart, 
   CreditCard, 
@@ -73,7 +72,6 @@ const DonationsPage = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <Navbar />
       
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Header */}

@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { setUser, setLoading, setError, clearError, setIsAuthenticated } from "../store/appSlice";
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowLeft } from 'lucide-react';
-import Navbar from '../components/Navbar';
 import axios from "axios";
 import { FaGoogle } from "react-icons/fa";
 

@@ -2,7 +2,6 @@ import { Plus, Minus, Search, ZoomIn, ZoomOut } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-import Navbar from "../components/Navbar";
 import Card from "../components/Card";
 
 // Main Landing Page Component
@@ -53,7 +52,6 @@ const LandingPage = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        <Navbar />
         
         <main className="px-8 py-12">
           <motion.div 

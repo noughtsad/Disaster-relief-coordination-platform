@@ -26,7 +26,6 @@ import {
 } from "lucide-react";
 import { useSelector, useDispatch } from 'react-redux';
 import { updateRequestStatus, setLoading as setRequestLoading, setError as setRequestError, clearError as clearRequestError } from '../store/requestSlice';
-import Navbar from "../components/Navbar";
 
 import { ThemeContext } from "../context/ThemeContext";
 
@@ -1209,7 +1208,6 @@ export default function NgoDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar /> {/* isLoggedIn prop removed */}
       <div
         className={`flex h-screen ${
           theme === "light" ? "bg-gray-50" : "bg-gray-800"
