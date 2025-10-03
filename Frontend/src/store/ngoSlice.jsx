@@ -7,6 +7,8 @@ const initialState = {
     ngoLocation: "",
     ngoContact: "",
     ngoDescription: "",
+    ngoLatitude: "", // Added
+    ngoLongitude: "", // Added
   },
   loading: false,
   error: null,

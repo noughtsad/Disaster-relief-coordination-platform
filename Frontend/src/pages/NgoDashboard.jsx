@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useSelector, useDispatch } from 'react-redux';
 import { updateRequestStatus, setLoading as setRequestLoading, setError as setRequestError, clearError as clearRequestError } from '../store/requestSlice';
+import { fetchNgoProfile } from '../store/ngoSlice'; // Import fetchNgoProfile
 
 import { ThemeContext } from "../context/ThemeContext";
 
@@ -42,7 +43,10 @@ export default function NgoDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   console.log(ngoProfile);
   useEffect(() => {
-  }, [dispatch, ngoProfile.ngoName, user?._id]);
+    if (user?._id) {
+      dispatch(fetchNgoProfile(user._id));
+    }
+  }, [dispatch, user?._id]);
 
   const HomeSection = () => (
     <div>
