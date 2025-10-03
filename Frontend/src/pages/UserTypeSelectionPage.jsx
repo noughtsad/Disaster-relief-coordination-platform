@@ -9,7 +9,7 @@ import {
 } from "../store/appSlice";
 import { setNgoProfile } from '../store/ngoSlice';
 import { ThemeContext } from "../context/ThemeContext";
-import { User, Building, HandHeart } from "lucide-react";
+import { User, Building, HandHeart, Package } from "lucide-react";
 import axios from "axios";
 
 export default function UserTypeSelectionPage() {
@@ -107,6 +107,19 @@ export default function UserTypeSelectionPage() {
           updateProfile({ ...user, userType: response.data.user.userType })
         );
         navigate("/volunteer");
+      } else if (selectedUserType === "Supplier") {
+        const response = await axios.post(
+          import.meta.env.VITE_BACKEND_URL + "/auth/updateUserType",
+          { userId: user._id, userType: "Supplier" },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+        dispatch(
+          updateProfile({ ...user, userType: response.data.user.userType })
+        );
+        navigate("/supplierDashboard");
       }
     } catch (err) {
       console.error(err);
@@ -156,7 +169,7 @@ export default function UserTypeSelectionPage() {
           )}
 
           {!selectedUserType ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 gap-6">
               <button
                 onClick={() => handleUserTypeSelect("Survivor")}
                 className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all duration-200
@@ -215,6 +228,26 @@ export default function UserTypeSelectionPage() {
                   }`}
                 >
                   I want to help.
+                </p>
+              </button>
+              <button
+                onClick={() => handleUserTypeSelect("Supplier")}
+                className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all duration-200
+                  ${
+                    theme === "light"
+                      ? "bg-white hover:bg-indigo-50 border-gray-300 hover:border-indigo-500"
+                      : "bg-gray-800 hover:bg-indigo-900/30 border-gray-600 hover:border-indigo-500"
+                  }
+                  ${theme === "light" ? "text-gray-800" : "text-white"}`}
+              >
+                <Package size={48} className="mb-4 text-blue-600" />
+                <span className="text-xl font-semibold">Supplier</span>
+                <p
+                  className={`text-sm mt-2 text-center ${
+                    theme === "light" ? "text-gray-600" : "text-gray-400"
+                  }`}
+                >
+                  I provide relief supplies.
                 </p>
               </button>
             </div>

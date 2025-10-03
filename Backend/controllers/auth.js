@@ -157,7 +157,7 @@ export async function updateUserType(req, res) {
   if (!userType) {
     return res.status(400).json({ message: "User type is required" });
   }
-  if (!["Survivor", "Volunteer", "NGO", "Local Authority"].includes(userType)) {
+  if (!["Survivor", "Volunteer", "NGO", "Supplier"].includes(userType)) {
     return res.status(400).json({ message: "Invalid user type" });
   }
   const user = await User.findById(userId);
