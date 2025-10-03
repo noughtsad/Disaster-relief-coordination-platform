@@ -13,6 +13,7 @@ import LoginPage from './pages/LoginPage';
 import UserTypeSelectionPage from './pages/UserTypeSelectionPage';
 import Root from './components/Root';
 import PageNotFound from './pages/PageNotFound';
+import SupplierDashboard from './pages/SupplierDashboard';
 
 const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
       {
         path: '/donate',
         element: <DonationsPage />
+      },
+      {
+        path: '/supplierDashboard',
+        element: <SupplierDashboard />
       },
       {
         path: '*',
