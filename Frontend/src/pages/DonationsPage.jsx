@@ -1,6 +1,5 @@
 import React, { useState, useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
-import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion';
 import { 
   Heart, 
@@ -20,7 +19,6 @@ import {
 
 const DonationsPage = () => {
   const { theme } = useContext(ThemeContext);
-  const navigate = useNavigate();
   
   const [selectedAmount, setSelectedAmount] = useState(500);
   const [customAmount, setCustomAmount] = useState("");
@@ -55,7 +53,6 @@ const DonationsPage = () => {
   };
 
   const handleDonate = () => {
-    const amount = customAmount || selectedAmount;
     setShowThankYou(true);
     setTimeout(() => setShowThankYou(false), 3000);
   };
@@ -65,14 +62,23 @@ const DonationsPage = () => {
     setCustomAmount("");
   };
 
+  // Theme classes
+  const bgMain = theme === 'light' ? 'bg-gradient-to-br from-blue-50 via-white to-purple-50' : 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900';
+  const bgCard = theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700';
+  const bgSection = theme === 'light' ? 'bg-white' : 'bg-gray-800';
+  const bgInner = theme === 'light' ? 'bg-gray-50' : 'bg-gray-700';
+  const textMain = theme === 'light' ? 'text-gray-900' : 'text-white';
+  const textSub = theme === 'light' ? 'text-gray-800' : 'text-gray-200';
+  const textMuted = theme === 'light' ? 'text-gray-600' : 'text-gray-400';
+  const borderInput = theme === 'light' ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-700 text-white';
+
   return (
     <motion.div 
-      className={`min-h-screen ${theme === 'light' ? 'bg-gradient-to-br from-blue-50 via-white to-purple-50' : 'bg-gray-900'}`}
+      className={`min-h-screen ${bgMain}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
         <motion.div 
@@ -82,9 +88,7 @@ const DonationsPage = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <motion.h1 
-            className={`text-5xl md:text-6xl font-bold mb-6 ${
-              theme === 'light' ? 'text-gray-900' : 'text-white'
-            }`}
+            className={`text-5xl md:text-6xl font-bold mb-6 ${textMain}`}
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
@@ -97,14 +101,10 @@ const DonationsPage = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
-            <p className={`text-2xl font-semibold ${
-              theme === 'light' ? 'text-gray-800' : 'text-gray-200'
-            }`}>
+            <p className={`text-2xl font-semibold ${textSub}`}>
               Trust me, we got this
             </p>
-            <p className={`text-2xl font-semibold ${
-              theme === 'light' ? 'text-gray-800' : 'text-gray-200'
-            }`}>
+            <p className={`text-2xl font-semibold ${textSub}`}>
               Just Do It.
             </p>
           </motion.div>
@@ -114,9 +114,7 @@ const DonationsPage = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.8 }}
           >
-            <p className={`text-lg ${
-              theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-            }`}>
+            <p className={`text-lg ${textMuted}`}>
               Your donation helps us provide immediate disaster relief and long-term support to communities in need.
             </p>
           </motion.div>
@@ -125,28 +123,20 @@ const DonationsPage = () => {
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           {/* Left Side - Donation Form */}
-          <div className={`bg-white rounded-3xl p-8 shadow-2xl border ${
-            theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'
-          }`}>
+          <div className={`rounded-3xl p-8 shadow-2xl border ${bgCard}`}>
             <div className="text-center mb-8">
               <Heart className="h-12 w-12 text-red-500 mx-auto mb-4" />
-              <h2 className={`text-3xl font-bold ${
-                theme === 'light' ? 'text-gray-900' : 'text-white'
-              }`}>
+              <h2 className={`text-3xl font-bold ${textMain}`}>
                 Make a Difference
               </h2>
-              <p className={`text-lg mt-2 ${
-                theme === 'light' ? 'text-gray-600' : 'text-gray-300'
-              }`}>
+              <p className={`text-lg mt-2 ${textMuted}`}>
                 Every contribution counts
               </p>
             </div>
 
             {/* Amount Selection */}
             <div className="mb-8">
-              <h3 className={`text-lg font-semibold mb-4 ${
-                theme === 'light' ? 'text-gray-900' : 'text-white'
-              }`}>
+              <h3 className={`text-lg font-semibold mb-4 ${textMain}`}>
                 Choose Amount
               </h3>
               <div className="grid grid-cols-3 gap-3 mb-4">
@@ -174,20 +164,14 @@ const DonationsPage = () => {
                   placeholder="Enter custom amount"
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    theme === 'light'
-                      ? 'border-gray-300 bg-white text-gray-900'
-                      : 'border-gray-600 bg-gray-700 text-white'
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${borderInput}`}
                 />
               </div>
             </div>
 
             {/* Payment Methods */}
             <div className="mb-8">
-              <h3 className={`text-lg font-semibold mb-4 ${
-                theme === 'light' ? 'text-gray-900' : 'text-white'
-              }`}>
+              <h3 className={`text-lg font-semibold mb-4 ${textMain}`}>
                 Payment Method
               </h3>
               <div className="space-y-3">
@@ -203,9 +187,7 @@ const DonationsPage = () => {
                 >
                   <div className="flex items-center">
                     <Smartphone className="h-6 w-6 text-blue-600 mr-3" />
-                    <span className={`font-medium ${
-                      theme === 'light' ? 'text-gray-900' : 'text-white'
-                    }`}>
+                    <span className={`font-medium ${textMain}`}>
                       UPI Payment
                     </span>
                   </div>
@@ -228,9 +210,7 @@ const DonationsPage = () => {
                 >
                   <div className="flex items-center">
                     <CreditCard className="h-6 w-6 text-blue-600 mr-3" />
-                    <span className={`font-medium ${
-                      theme === 'light' ? 'text-gray-900' : 'text-white'
-                    }`}>
+                    <span className={`font-medium ${textMain}`}>
                       Credit/Debit Card
                     </span>
                   </div>
@@ -254,12 +234,8 @@ const DonationsPage = () => {
 
           {/* Right Side - QR Code */}
           <div className="flex flex-col items-center justify-center">
-            <div className={`bg-white rounded-3xl p-8 shadow-2xl border text-center ${
-              theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'
-            }`}>
-              <h3 className={`text-2xl font-bold mb-4 ${
-                theme === 'light' ? 'text-gray-900' : 'text-white'
-              }`}>
+            <div className={`rounded-3xl p-8 shadow-2xl border text-center ${bgCard}`}>
+              <h3 className={`text-2xl font-bold mb-4 ${textMain}`}>
                 Communism for the win?
               </h3>
               
@@ -291,12 +267,8 @@ const DonationsPage = () => {
               </div>
 
               {/* UPI ID */}
-              <div className={`bg-gray-50 rounded-lg p-4 mb-6 ${
-                theme === 'light' ? 'bg-gray-50' : 'bg-gray-700'
-              }`}>
-                <p className={`text-sm font-medium mb-2 ${
-                  theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-                }`}>
+              <div className={`rounded-lg p-4 mb-6 ${bgInner}`}>
+                <p className={`text-sm font-medium mb-2 ${textMuted}`}>
                   UPI ID: {upiId}
                 </p>
                 <button
@@ -317,9 +289,7 @@ const DonationsPage = () => {
                 </button>
               </div>
 
-              <p className={`text-sm ${
-                theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-              }`}>
+              <p className={`text-sm ${textMuted}`}>
                 Scan with any UPI app to donate instantly
               </p>
             </div>
@@ -328,114 +298,76 @@ const DonationsPage = () => {
 
         {/* Statistics Section */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-          <div className={`bg-white rounded-xl p-6 text-center shadow-lg ${
-            theme === 'light' ? 'bg-white' : 'bg-gray-800'
-          }`}>
+          <div className={`rounded-xl p-6 text-center shadow-lg ${bgSection}`}>
             <TrendingUp className="h-8 w-8 text-green-500 mx-auto mb-3" />
-            <p className={`text-2xl font-bold ${
-              theme === 'light' ? 'text-gray-900' : 'text-white'
-            }`}>
+            <p className={`text-2xl font-bold ${textMain}`}>
               {donationStats.totalRaised}
             </p>
-            <p className={`text-sm ${
-              theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-            }`}>
+            <p className={`text-sm ${textMuted}`}>
               Total Raised
             </p>
           </div>
           
-          <div className={`bg-white rounded-xl p-6 text-center shadow-lg ${
-            theme === 'light' ? 'bg-white' : 'bg-gray-800'
-          }`}>
+          <div className={`rounded-xl p-6 text-center shadow-lg ${bgSection}`}>
             <Users className="h-8 w-8 text-blue-500 mx-auto mb-3" />
-            <p className={`text-2xl font-bold ${
-              theme === 'light' ? 'text-gray-900' : 'text-white'
-            }`}>
+            <p className={`text-2xl font-bold ${textMain}`}>
               {donationStats.totalDonors}
             </p>
-            <p className={`text-sm ${
-              theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-            }`}>
+            <p className={`text-sm ${textMuted}`}>
               Donors
             </p>
           </div>
           
-          <div className={`bg-white rounded-xl p-6 text-center shadow-lg ${
-            theme === 'light' ? 'bg-white' : 'bg-gray-800'
-          }`}>
+          <div className={`rounded-xl p-6 text-center shadow-lg ${bgSection}`}>
             <Target className="h-8 w-8 text-purple-500 mx-auto mb-3" />
-            <p className={`text-2xl font-bold ${
-              theme === 'light' ? 'text-gray-900' : 'text-white'
-            }`}>
+            <p className={`text-2xl font-bold ${textMain}`}>
               {donationStats.activeProjects}
             </p>
-            <p className={`text-sm ${
-              theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-            }`}>
+            <p className={`text-sm ${textMuted}`}>
               Active Projects
             </p>
           </div>
           
-          <div className={`bg-white rounded-xl p-6 text-center shadow-lg ${
-            theme === 'light' ? 'bg-white' : 'bg-gray-800'
-          }`}>
+          <div className={`rounded-xl p-6 text-center shadow-lg ${bgSection}`}>
             <Heart className="h-8 w-8 text-red-500 mx-auto mb-3" />
-            <p className={`text-2xl font-bold ${
-              theme === 'light' ? 'text-gray-900' : 'text-white'
-            }`}>
+            <p className={`text-2xl font-bold ${textMain}`}>
               {donationStats.helpedFamilies}
             </p>
-            <p className={`text-sm ${
-              theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-            }`}>
+            <p className={`text-sm ${textMuted}`}>
               Families Helped
             </p>
           </div>
         </div>
 
         {/* Recent Donations */}
-        <div className={`bg-white rounded-2xl p-8 shadow-lg border ${
-          theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'
-        }`}>
-          <h3 className={`text-2xl font-bold mb-6 flex items-center ${
-            theme === 'light' ? 'text-gray-900' : 'text-white'
-          }`}>
+        <div className={`rounded-2xl p-8 shadow-lg border ${bgCard}`}>
+          <h3 className={`text-2xl font-bold mb-6 flex items-center ${textMain}`}>
             <Gift className="h-6 w-6 mr-3 text-yellow-500" />
             Recent Donations
           </h3>
           
           <div className="space-y-4">
             {recentDonations.map((donation, index) => (
-              <div key={index} className={`flex items-center justify-between p-4 rounded-lg ${
-                theme === 'light' ? 'bg-gray-50' : 'bg-gray-700'
-              }`}>
+              <div key={index} className={`flex items-center justify-between p-4 rounded-lg ${bgInner}`}>
                 <div className="flex items-center">
                   <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-4">
                     <Star className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className={`font-semibold ${
-                      theme === 'light' ? 'text-gray-900' : 'text-white'
-                    }`}>
+                    <p className={`font-semibold ${textMain}`}>
                       {donation.name}
                     </p>
-                    <p className={`text-sm ${
-                      theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-                    }`}>
+                    <p className={`text-sm ${textMuted}`}>
                       {donation.time}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className={`font-bold text-green-600 ${
-                    theme === 'light' ? 'text-green-600' : 'text-green-400'
-                  }`}>
+                  <p className={`font-bold text-green-600 ${theme === 'light' ? 'text-green-600' : 'text-green-400'}`}>
                     {donation.amount}
                   </p>
                   {donation.message && (
-                    <p className={`text-sm italic ${
-                      theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-                    }`}>
+                    <p className={`text-sm italic ${textMuted}`}>
                       "{donation.message}"
                     </p>
                   )}
@@ -449,12 +381,12 @@ const DonationsPage = () => {
       {/* Thank You Modal */}
       {showThankYou && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-8 text-center max-w-md mx-4 shadow-2xl">
+          <div className={`rounded-2xl p-8 text-center max-w-md mx-4 shadow-2xl ${bgSection}`}>
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Check className="h-8 w-8 text-green-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Thank You!</h3>
-            <p className="text-gray-600 mb-6">
+            <h3 className={`text-2xl font-bold mb-2 ${textMain}`}>Thank You!</h3>
+            <p className={`mb-6 ${textMuted}`}>
               Your donation of ₹{customAmount || selectedAmount} will make a real difference in someone's life.
             </p>
             <button
