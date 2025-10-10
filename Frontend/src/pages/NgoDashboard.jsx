@@ -1232,7 +1232,7 @@ export default function NgoDashboard() {
             }`}
           >
             <img
-              src="https://i.pravatar.cc/50?img=12"
+              src={`https://ui-avatars.com/api/?name=${ngoProfile.ngoName}&background=000000&color=ffffff`}
               alt="NGO Logo"
               className="w-10 h-10 rounded-full"
             />

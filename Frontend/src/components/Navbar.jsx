@@ -1,9 +1,9 @@
 import { useContext } from "react";
 import { Sun, Moon } from "lucide-react";
 import { ThemeContext } from "../context/ThemeContext";
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { logoutUser } from '../store/appSlice';
+import { useDispatch } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
+import { logoutUser } from "../store/appSlice";
 
 const Navbar = ({ user, isAuthenticated }) => {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -12,30 +12,29 @@ const Navbar = ({ user, isAuthenticated }) => {
   const location = useLocation();
 
   // Check if user is on dashboard pages where logo shouldn't navigate away
-  const isDashboardPage = location.pathname === '/volunteer' || 
-                          location.pathname === '/survivorDashboard' || 
-                          location.pathname === '/ngoDashboard';
+  const isDashboardPage =
+    location.pathname === "/volunteer" ||
+    location.pathname === "/survivorDashboard" ||
+    location.pathname === "/ngoDashboard";
 
   const handleLogoClick = () => {
     if (!isDashboardPage) {
-      navigate('/');
+      navigate("/");
     }
   };
 
   return (
     <nav
       className={`flex justify-between items-center px-8 py-6 shadow-sm transition-colors ${
-        theme === "light"
-          ? "bg-white text-gray-800"
-          : "bg-gray-900 text-white"
+        theme === "light" ? "bg-white text-gray-800" : "bg-gray-900 text-white"
       }`}
     >
-      <h1 
+      <h1
         onClick={handleLogoClick}
         className={`text-3xl font-bold ${
-          isDashboardPage 
-            ? 'cursor-default' 
-            : 'cursor-pointer hover:text-blue-600 transition-colors'
+          isDashboardPage
+            ? "cursor-default"
+            : "cursor-pointer hover:text-blue-600 transition-colors"
         }`}
       >
         CrisisConnect
@@ -45,11 +44,12 @@ const Navbar = ({ user, isAuthenticated }) => {
         {/* Navigation Buttons */}
         {isAuthenticated ? (
           <>
-            {location.pathname === '/' ? null : (
+            {location.pathname === "/" ? null : (
               <>
-                {(user?.userType === 'ngo' || location.pathname === '/ngoDashboard') && (
+                {(user?.userType === "ngo" ||
+                  location.pathname === "/ngoDashboard") && (
                   <button
-                    onClick={() => navigate('/ngoDashboard')}
+                    onClick={() => navigate("/ngoDashboard")}
                     className={`px-6 py-3 font-medium transition-colors ${
                       theme === "light"
                         ? "text-gray-700 hover:text-gray-900"
@@ -60,9 +60,10 @@ const Navbar = ({ user, isAuthenticated }) => {
                   </button>
                 )}
 
-                {(user?.userType === 'survivor' || location.pathname === '/survivorDashboard') && (
+                {(user?.userType === "survivor" ||
+                  location.pathname === "/survivorDashboard") && (
                   <button
-                    onClick={() => navigate('/survivorDashboard')}
+                    onClick={() => navigate("/survivorDashboard")}
                     className={`px-6 py-3 font-medium transition-colors ${
                       theme === "light"
                         ? "text-gray-700 hover:text-gray-900"
@@ -73,9 +74,10 @@ const Navbar = ({ user, isAuthenticated }) => {
                   </button>
                 )}
 
-                {(user?.userType === 'volunteer' || location.pathname === '/volunteer') && (
+                {(user?.userType === "volunteer" ||
+                  location.pathname === "/volunteer") && (
                   <button
-                    onClick={() => navigate('/volunteer')}
+                    onClick={() => navigate("/volunteer")}
                     className={`px-6 py-3 font-medium transition-colors ${
                       theme === "light"
                         ? "text-gray-700 hover:text-gray-900"
@@ -88,7 +90,7 @@ const Navbar = ({ user, isAuthenticated }) => {
                 <button
                   onClick={() => {
                     dispatch(logoutUser());
-                    navigate('/');
+                    navigate("/");
                   }}
                   className={`px-6 py-3 rounded-lg font-medium transition-colors shadow-sm ${
                     theme === "light"
@@ -102,10 +104,10 @@ const Navbar = ({ user, isAuthenticated }) => {
             )}
           </>
         ) : (
-          location.pathname === '/' && (
+          location.pathname === "/" && (
             <>
               <button
-                onClick={() => navigate('/signup')}
+                onClick={() => navigate("/signup")}
                 className={`px-6 py-3 rounded-lg font-medium transition-colors shadow-sm ${
                   theme === "light"
                     ? "bg-blue-600 text-white hover:bg-blue-700"
@@ -115,7 +117,7 @@ const Navbar = ({ user, isAuthenticated }) => {
                 Register
               </button>
               <button
-                onClick={() => navigate('/login')}
+                onClick={() => navigate("/login")}
                 className={`px-6 py-3 font-medium transition-colors ${
                   theme === "light"
                     ? "text-gray-700 hover:text-gray-900"
@@ -127,9 +129,9 @@ const Navbar = ({ user, isAuthenticated }) => {
             </>
           )
         )}
-        {(location.pathname !== '/volunteer') && (
+        {location.pathname !== "/volunteer" && (
           <button
-            onClick={() => navigate('/donate')}
+            onClick={() => navigate("/donate")}
             className={`px-6 py-3 rounded-lg font-medium transition-colors shadow-sm ${
               theme === "light"
                 ? "bg-blue-600 text-white hover:bg-blue-700"
@@ -140,7 +142,7 @@ const Navbar = ({ user, isAuthenticated }) => {
           </button>
         )}
         <button
-          onClick={() => navigate('/about')}
+          onClick={() => navigate("/about")}
           className={`px-6 py-3 font-medium transition-colors ${
             theme === "light"
               ? "text-gray-700 hover:text-gray-900"
@@ -153,9 +155,7 @@ const Navbar = ({ user, isAuthenticated }) => {
         {/* Theme Toggle Button */}
         <button
           className={`p-2 rounded-full transition-colors ${
-            theme === "light"
-              ? "hover:bg-gray-100"
-              : "hover:bg-gray-800"
+            theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-800"
           }`}
           onClick={toggleTheme}
         >

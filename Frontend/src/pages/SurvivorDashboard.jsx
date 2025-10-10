@@ -768,7 +768,7 @@ export default function SurvivorDashboard() {
           {/* Profile */}
           <div className="flex items-center space-x-3 mb-8">
             <img
-              src="https://randomuser.me/api/portraits/women/44.jpg"
+              src={`https://ui-avatars.com/api/?name=${profile.name}&background=000000&color=ffffff`}
               alt="profile"
               className="w-12 h-12 rounded-full object-cover"
             />
