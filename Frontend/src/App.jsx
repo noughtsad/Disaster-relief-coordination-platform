@@ -3,7 +3,7 @@ import FeedbackPage from './pages/Feedback';
 import LandingPage from './pages/LandingPage';
 import NgoDashboard from './pages/NgoDashboard/index';
 import Signup from './pages/SignupPage';
-import SurvivorDashboard from './pages/SurvivorDashboard';
+import SurvivorDashboard from './pages/SurvivorDashboard/index';
 import VolunteerPage from './pages/VolunteerPage';
 import AboutPage from './pages/AboutPage';
 import DonationsPage from './pages/DonationsPage';
