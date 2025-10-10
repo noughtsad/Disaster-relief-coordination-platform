@@ -1,7 +1,7 @@
 import './App.css';
 import FeedbackPage from './pages/Feedback';
 import LandingPage from './pages/LandingPage';
-import NgoDashboard from './pages/NgoDashboard';
+import NgoDashboard from './pages/NgoDashboard/index';
 import Signup from './pages/SignupPage';
 import SurvivorDashboard from './pages/SurvivorDashboard';
 import VolunteerPage from './pages/VolunteerPage';
