@@ -5,7 +5,9 @@ import {
   User,
   Heart,
   BookOpen,
-  XCircle
+  XCircle,
+  Menu,
+  X
 } from "lucide-react";
 import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
@@ -26,6 +28,7 @@ export default function VolunteerPage() {
   const [activeSection, setActiveSection] = useState('home');
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Volunteer profile state
   const [volunteerProfile, setVolunteerProfile] = useState({
@@ -217,10 +220,29 @@ export default function VolunteerPage() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className={`fixed top-4 left-4 z-50 lg:hidden p-2 rounded-lg shadow-lg ${
+          theme === "light" ? "bg-white" : "bg-gray-900"
+        }`}
+      >
+        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      {/* Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
       
-      <div className="flex">
+      <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <div className={`w-64 min-h-screen shadow-sm ${
+        <div className={`${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-64 min-h-screen shadow-sm transition-transform duration-300 ${
           theme === 'light' ? 'bg-white' : 'bg-gray-800'
         }`}>
           <div className="p-6 border-b border-gray-200">
@@ -244,7 +266,10 @@ export default function VolunteerPage() {
               {sidebarItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => setActiveSection(item.id)}
+                  onClick={() => {
+                    setActiveSection(item.id);
+                    setIsMobileMenuOpen(false);
+                  }}
                   className={`w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors ${
                     activeSection === item.id
                       ? theme === 'light'
@@ -275,8 +300,10 @@ export default function VolunteerPage() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-8">
-          {renderContent()}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4 sm:p-6 md:p-8">
+            {renderContent()}
+          </div>
         </div>
       </div>
 

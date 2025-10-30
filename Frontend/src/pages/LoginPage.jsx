@@ -74,8 +74,8 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-gray-50 to-stone-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-md p-8">
-        <h1 className="text-3xl font-semibold text-center mb-8 text-gray-800">Welcome Back</h1>
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-md p-4 sm:p-6 md:p-8">
+        <h1 className="text-2xl sm:text-3xl font-semibold text-center mb-6 sm:mb-8 text-gray-800">Welcome Back</h1>
 
         {error && <p className="text-red-600 text-center mb-6 bg-red-50 p-3 rounded-lg border border-red-200">{error}</p>}
         {loading && (

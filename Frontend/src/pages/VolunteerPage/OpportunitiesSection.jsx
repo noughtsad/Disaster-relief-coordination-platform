@@ -19,34 +19,34 @@ const OpportunitiesSection = ({
   const { theme } = useContext(ThemeContext);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Available Opportunities</h2>
-        <div className="flex items-center space-x-4">
-          <div className="relative">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+        <h2 className={`text-xl sm:text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Available Opportunities</h2>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
+          <div className="relative flex-1 lg:flex-none">
             <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme === 'light' ? 'text-gray-400' : 'text-gray-500'} h-4 w-4`} />
             <input
               type="text"
               placeholder="Search opportunities..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={`pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'}`}
+              className={`w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'}`}
             />
           </div>
-          <button className={`flex items-center px-4 py-2 border rounded-lg ${theme === 'light' ? 'border-gray-300 hover:bg-gray-50 text-gray-700' : 'border-gray-600 hover:bg-gray-700 text-gray-300'}`}>
+          <button className={`flex items-center justify-center px-3 sm:px-4 py-2 border rounded-lg text-sm ${theme === 'light' ? 'border-gray-300 hover:bg-gray-50 text-gray-700' : 'border-gray-600 hover:bg-gray-700 text-gray-300'}`}>
             <Filter className="mr-2 h-4 w-4" />
             Filter
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {opportunities.map((opp) => (
-          <div key={opp.id} className={`p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
-            <div className="flex items-start justify-between mb-4">
+          <div key={opp.id} className={`p-4 sm:p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
+            <div className="flex items-start justify-between mb-3 sm:mb-4">
               <div>
-                <h3 className={`text-lg font-semibold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{opp.title}</h3>
-                <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>{opp.organization}</p>
+                <h3 className={`text-base sm:text-lg font-semibold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{opp.title}</h3>
+                <p className={`text-xs sm:text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>{opp.organization}</p>
               </div>
               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                 opp.urgency === 'high' 

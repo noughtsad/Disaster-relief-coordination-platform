@@ -169,10 +169,10 @@ export default function UserTypeSelectionPage() {
           )}
 
           {!selectedUserType ? (
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <button
                 onClick={() => handleUserTypeSelect("Survivor")}
-                className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all duration-200
+                className={`flex flex-col items-center justify-center p-4 sm:p-6 rounded-lg border-2 transition-all duration-200
                   ${
                     theme === "light"
                       ? "bg-white hover:bg-indigo-50 border-gray-300 hover:border-indigo-500"
@@ -180,10 +180,10 @@ export default function UserTypeSelectionPage() {
                   }
                   ${theme === "light" ? "text-gray-800" : "text-white"}`}
               >
-                <User size={48} className="mb-4 text-indigo-600" />
-                <span className="text-xl font-semibold">Survivor</span>
+                <User size={48} className="mb-3 sm:mb-4 text-indigo-600" />
+                <span className="text-lg sm:text-xl font-semibold">Survivor</span>
                 <p
-                  className={`text-sm mt-2 text-center ${
+                  className={`text-xs sm:text-sm mt-2 text-center ${
                     theme === "light" ? "text-gray-600" : "text-gray-400"
                   }`}
                 >
@@ -192,7 +192,7 @@ export default function UserTypeSelectionPage() {
               </button>
               <button
                 onClick={() => handleUserTypeSelect("NGO")}
-                className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all duration-200
+                className={`flex flex-col items-center justify-center p-4 sm:p-6 rounded-lg border-2 transition-all duration-200
                   ${
                     theme === "light"
                       ? "bg-white hover:bg-indigo-50 border-gray-300 hover:border-indigo-500"
@@ -200,10 +200,10 @@ export default function UserTypeSelectionPage() {
                   }
                   ${theme === "light" ? "text-gray-800" : "text-white"}`}
               >
-                <Building size={48} className="mb-4 text-green-600" />
-                <span className="text-xl font-semibold">NGO</span>
+                <Building size={48} className="mb-3 sm:mb-4 text-green-600" />
+                <span className="text-lg sm:text-xl font-semibold">NGO</span>
                 <p
-                  className={`text-sm mt-2 text-center ${
+                  className={`text-xs sm:text-sm mt-2 text-center ${
                     theme === "light" ? "text-gray-600" : "text-gray-400"
                   }`}
                 >
@@ -212,7 +212,7 @@ export default function UserTypeSelectionPage() {
               </button>
               <button
                 onClick={() => handleUserTypeSelect("Volunteer")}
-                className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all duration-200
+                className={`flex flex-col items-center justify-center p-4 sm:p-6 rounded-lg border-2 transition-all duration-200
                   ${
                     theme === "light"
                       ? "bg-white hover:bg-indigo-50 border-gray-300 hover:border-indigo-500"
@@ -220,10 +220,10 @@ export default function UserTypeSelectionPage() {
                   }
                   ${theme === "light" ? "text-gray-800" : "text-white"}`}
               >
-                <HandHeart size={48} className="mb-4 text-yellow-600" />
-                <span className="text-xl font-semibold">Volunteer</span>
+                <HandHeart size={48} className="mb-3 sm:mb-4 text-yellow-600" />
+                <span className="text-lg sm:text-xl font-semibold">Volunteer</span>
                 <p
-                  className={`text-sm mt-2 text-center ${
+                  className={`text-xs sm:text-sm mt-2 text-center ${
                     theme === "light" ? "text-gray-600" : "text-gray-400"
                   }`}
                 >
@@ -232,7 +232,7 @@ export default function UserTypeSelectionPage() {
               </button>
               <button
                 onClick={() => handleUserTypeSelect("Supplier")}
-                className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all duration-200
+                className={`flex flex-col items-center justify-center p-4 sm:p-6 rounded-lg border-2 transition-all duration-200
                   ${
                     theme === "light"
                       ? "bg-white hover:bg-indigo-50 border-gray-300 hover:border-indigo-500"
@@ -240,10 +240,10 @@ export default function UserTypeSelectionPage() {
                   }
                   ${theme === "light" ? "text-gray-800" : "text-white"}`}
               >
-                <Package size={48} className="mb-4 text-blue-600" />
-                <span className="text-xl font-semibold">Supplier</span>
+                <Package size={48} className="mb-3 sm:mb-4 text-blue-600" />
+                <span className="text-lg sm:text-xl font-semibold">Supplier</span>
                 <p
-                  className={`text-sm mt-2 text-center ${
+                  className={`text-xs sm:text-sm mt-2 text-center ${
                     theme === "light" ? "text-gray-600" : "text-gray-400"
                   }`}
                 >

@@ -66,13 +66,13 @@ export default function FeedbackPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">We Value Your Feedback</h1>
-          <p className="text-gray-600">Help us improve by sharing your thoughts</p>
+      <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 max-w-md w-full">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">We Value Your Feedback</h1>
+          <p className="text-sm sm:text-base text-gray-600">Help us improve by sharing your thoughts</p>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Name */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -133,13 +133,13 @@ export default function FeedbackPage() {
               <Star className="w-4 h-4 inline mr-1" />
               Rating <span className="text-red-500">*</span>
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 justify-center sm:justify-start">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
                   type="button"
                   onClick={() => setRating(star)}
-                  className={`w-10 h-10 rounded-full border flex items-center justify-center ${
+                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full border flex items-center justify-center text-sm sm:text-base ${
                     rating >= star
                       ? "bg-yellow-400 text-white"
                       : "border-gray-300 text-gray-400"
@@ -152,7 +152,7 @@ export default function FeedbackPage() {
           </div>
 
           {/* Buttons */}
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <button
               onClick={handleReset}
               className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"

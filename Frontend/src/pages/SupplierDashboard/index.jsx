@@ -5,6 +5,8 @@ import {
   Truck,
   List,
   User,
+  Menu,
+  X,
 } from "lucide-react";
 import { ThemeContext } from "../../context/ThemeContext";
 
@@ -20,6 +22,7 @@ export default function SupplierDashboard() {
 
   const [activeSection, setActiveSection] = useState('home');
   const [searchTerm, setSearchTerm] = useState("");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Mock data for supplier profile
   const [supplierProfile] = useState({
@@ -73,8 +76,20 @@ export default function SupplierDashboard() {
 
   return (
     <div className={`min-h-screen flex ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-900'}`}>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className={`fixed top-4 left-4 z-50 lg:hidden p-2 rounded-lg shadow-lg ${
+          theme === "light" ? "bg-white" : "bg-gray-900"
+        }`}
+      >
+        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
       {/* Sidebar */}
-      <div className={`w-64 min-h-screen shadow-sm ${
+      <div className={`${
+        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+      } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-64 min-h-screen shadow-sm transition-transform duration-300 ${
         theme === 'light' ? 'bg-white' : 'bg-gray-800'
       }`}>
         <div className="p-6 border-b border-gray-200">
@@ -96,7 +111,10 @@ export default function SupplierDashboard() {
         <nav className="mt-6">
           <div className="px-4 space-y-2">
             <button
-              onClick={() => setActiveSection('home')}
+              onClick={() => {
+                setActiveSection('home');
+                setIsMobileMenuOpen(false);
+              }}
               className={`w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors ${
                 activeSection === 'home'
                   ? theme === 'light'
@@ -113,7 +131,10 @@ export default function SupplierDashboard() {
               </div>
             </button>
             <button
-              onClick={() => setActiveSection('inventory')}
+              onClick={() => {
+                setActiveSection('inventory');
+                setIsMobileMenuOpen(false);
+              }}
               className={`w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors ${
                 activeSection === 'inventory'
                   ? theme === 'light'
@@ -130,7 +151,10 @@ export default function SupplierDashboard() {
               </div>
             </button>
             <button
-              onClick={() => setActiveSection('orders')}
+              onClick={() => {
+                setActiveSection('orders');
+                setIsMobileMenuOpen(false);
+              }}
               className={`w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors ${
                 activeSection === 'orders'
                   ? theme === 'light'
@@ -147,7 +171,10 @@ export default function SupplierDashboard() {
               </div>
             </button>
             <button
-              onClick={() => setActiveSection('deliveries')}
+              onClick={() => {
+                setActiveSection('deliveries');
+                setIsMobileMenuOpen(false);
+              }}
               className={`w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors ${
                 activeSection === 'deliveries'
                   ? theme === 'light'
@@ -164,7 +191,10 @@ export default function SupplierDashboard() {
               </div>
             </button>
             <button
-              onClick={() => setActiveSection('profile')}
+              onClick={() => {
+                setActiveSection('profile');
+                setIsMobileMenuOpen(false);
+              }}
               className={`w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors ${
                 activeSection === 'profile'
                   ? theme === 'light'
@@ -184,8 +214,16 @@ export default function SupplierDashboard() {
         </nav>
       </div>
 
+      {/* Overlay for mobile */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Main Content */}
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-4 sm:p-6 md:p-8">
         {renderContent()}
       </div>
     </div>

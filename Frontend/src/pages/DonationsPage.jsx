@@ -79,16 +79,16 @@ const DonationsPage = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Header */}
         <motion.div 
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-12"
           initial={{ y: -30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <motion.h1 
-            className={`text-5xl md:text-6xl font-bold mb-6 ${textMain}`}
+            className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 ${textMain}`}
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
@@ -101,45 +101,45 @@ const DonationsPage = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
-            <p className={`text-2xl font-semibold ${textSub}`}>
+            <p className={`text-lg sm:text-xl md:text-2xl font-semibold ${textSub}`}>
               Trust me, we got this
             </p>
-            <p className={`text-2xl font-semibold ${textSub}`}>
+            <p className={`text-lg sm:text-xl md:text-2xl font-semibold ${textSub}`}>
               Just Do It.
             </p>
           </motion.div>
           <motion.div 
-            className="mt-8"
+            className="mt-6 sm:mt-8"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.8 }}
           >
-            <p className={`text-lg ${textMuted}`}>
+            <p className={`text-base sm:text-lg ${textMuted}`}>
               Your donation helps us provide immediate disaster relief and long-term support to communities in need.
             </p>
           </motion.div>
         </motion.div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-12 sm:mb-16">
           {/* Left Side - Donation Form */}
-          <div className={`rounded-3xl p-8 shadow-2xl border ${bgCard}`}>
-            <div className="text-center mb-8">
-              <Heart className="h-12 w-12 text-red-500 mx-auto mb-4" />
-              <h2 className={`text-3xl font-bold ${textMain}`}>
+          <div className={`rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl border ${bgCard}`}>
+            <div className="text-center mb-6 sm:mb-8">
+              <Heart className="h-10 w-10 sm:h-12 sm:w-12 text-red-500 mx-auto mb-3 sm:mb-4" />
+              <h2 className={`text-2xl sm:text-3xl font-bold ${textMain}`}>
                 Make a Difference
               </h2>
-              <p className={`text-lg mt-2 ${textMuted}`}>
+              <p className={`text-base sm:text-lg mt-2 ${textMuted}`}>
                 Every contribution counts
               </p>
             </div>
 
             {/* Amount Selection */}
-            <div className="mb-8">
-              <h3 className={`text-lg font-semibold mb-4 ${textMain}`}>
+            <div className="mb-6 sm:mb-8">
+              <h3 className={`text-base sm:text-lg font-semibold mb-3 sm:mb-4 ${textMain}`}>
                 Choose Amount
               </h3>
-              <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-4">
                 {predefinedAmounts.map((amount) => (
                   <button
                     key={amount}
@@ -169,9 +169,9 @@ const DonationsPage = () => {
               </div>
             </div>
 
-            {/* Payment Methods */}
-            <div className="mb-8">
-              <h3 className={`text-lg font-semibold mb-4 ${textMain}`}>
+            {/* Payment Method */}
+            <div className="mb-6 sm:mb-8">
+              <h3 className={`text-base sm:text-lg font-semibold mb-3 sm:mb-4 ${textMain}`}>
                 Payment Method
               </h3>
               <div className="space-y-3">
@@ -234,14 +234,14 @@ const DonationsPage = () => {
 
           {/* Right Side - QR Code */}
           <div className="flex flex-col items-center justify-center">
-            <div className={`rounded-3xl p-8 shadow-2xl border text-center ${bgCard}`}>
-              <h3 className={`text-2xl font-bold mb-4 ${textMain}`}>
+            <div className={`rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl border text-center ${bgCard}`}>
+              <h3 className={`text-xl sm:text-2xl font-bold mb-3 sm:mb-4 ${textMain}`}>
                 Communism for the win?
               </h3>
               
               {/* QR Code */}
-              <div className="bg-white p-6 rounded-xl shadow-inner mb-6">
-                <div className="w-64 h-64 mx-auto bg-gray-100 rounded-lg flex items-center justify-center">
+              <div className="bg-white p-4 sm:p-6 rounded-xl shadow-inner mb-4 sm:mb-6">
+                <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 mx-auto bg-gray-100 rounded-lg flex items-center justify-center">
                   {/* QR Code placeholder - in real implementation, you'd generate actual QR code */}
                   <div className="w-full h-full bg-white border-8 border-black relative">
                     <div className="absolute inset-4 bg-black"></div>

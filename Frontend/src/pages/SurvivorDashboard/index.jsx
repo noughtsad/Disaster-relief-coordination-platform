@@ -6,6 +6,8 @@ import {
   Info, 
   User,
   Building,
+  Menu,
+  X,
 } from "lucide-react";
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from '../../store/appSlice';
@@ -26,6 +28,7 @@ export default function SurvivorDashboard() {
   const { user } = useSelector((state) => state.app);
 
   const [activeSection, setActiveSection] = useState('home');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const [alerts] = useState([
       { id: 1, title: 'Flash Flood Warning', severity: 'High', time: '2 hours ago', details: 'A flash flood warning is in effect for your area. Move to higher ground immediately.' },
@@ -59,9 +62,21 @@ export default function SurvivorDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className={`fixed top-4 left-4 z-50 lg:hidden p-2 rounded-lg shadow-lg ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
         {/* Sidebar */}
-        <aside className={`w-64 backdrop-blur border-r p-6 flex flex-col shadow-md ${
+        <aside className={`${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-64 backdrop-blur border-r p-6 flex flex-col shadow-md transition-transform duration-300 ${
           theme === "light" 
             ? "bg-white/90 border-gray-200" 
             : "bg-gray-900/90 border-gray-700"
@@ -86,7 +101,10 @@ export default function SurvivorDashboard() {
           {/* Menu */}
           <nav className="flex flex-col space-y-2">
             <button
-              onClick={() => setActiveSection('home')}
+              onClick={() => {
+                setActiveSection('home');
+                setIsMobileMenuOpen(false);
+              }}
               className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition text-left ${
                 activeSection === 'home'
                   ? "bg-indigo-600 text-white font-medium shadow-md"
@@ -99,7 +117,10 @@ export default function SurvivorDashboard() {
               <span>Home</span>
             </button>
             <button
-              onClick={() => setActiveSection('report')}
+              onClick={() => {
+                setActiveSection('report');
+                setIsMobileMenuOpen(false);
+              }}
               className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition text-left ${
                 activeSection === 'report'
                   ? "bg-indigo-600 text-white font-medium shadow-md"
@@ -112,7 +133,10 @@ export default function SurvivorDashboard() {
               <span>Report Need</span>
             </button>
             <button
-              onClick={() => setActiveSection('requests')}
+              onClick={() => {
+                setActiveSection('requests');
+                setIsMobileMenuOpen(false);
+              }}
               className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition text-left ${
                 activeSection === 'requests'
                   ? "bg-indigo-600 text-white font-medium shadow-md"
@@ -125,7 +149,10 @@ export default function SurvivorDashboard() {
               <span>Requests</span>
             </button>
             <button
-              onClick={() => setActiveSection('emergency')}
+              onClick={() => {
+                setActiveSection('emergency');
+                setIsMobileMenuOpen(false);
+              }}
               className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition text-left ${
                 activeSection === 'emergency'
                   ? "bg-indigo-600 text-white font-medium shadow-md"
@@ -138,7 +165,10 @@ export default function SurvivorDashboard() {
               <span>Emergency Info</span>
             </button>
             <button
-              onClick={() => setActiveSection('camps')}
+              onClick={() => {
+                setActiveSection('camps');
+                setIsMobileMenuOpen(false);
+              }}
               className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition text-left ${
                 activeSection === 'camps'
                   ? "bg-indigo-600 text-white font-medium shadow-md"
@@ -151,7 +181,10 @@ export default function SurvivorDashboard() {
               <span>Camps</span>
             </button>
             <button
-              onClick={() => setActiveSection('profile')}
+              onClick={() => {
+                setActiveSection('profile');
+                setIsMobileMenuOpen(false);
+              }}
               className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition text-left ${
                 activeSection === 'profile'
                   ? "bg-indigo-600 text-white font-medium shadow-md"
@@ -166,9 +199,19 @@ export default function SurvivorDashboard() {
           </nav>
         </aside>
 
+        {/* Overlay for mobile */}
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
         {/* Main Dashboard */}
-        <main className="flex-1 p-8">
-          {renderSection()}
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-4 sm:p-6 md:p-8">
+            {renderSection()}
+          </div>
         </main>
       </div>
     </div>

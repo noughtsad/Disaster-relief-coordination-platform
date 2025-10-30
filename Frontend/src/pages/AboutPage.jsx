@@ -36,7 +36,7 @@ const AboutPage = () => {
       transition={{ duration: 0.6 }}
     >
       <motion.div 
-        className="max-w-6xl mx-auto px-6 py-12"
+        className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
@@ -50,13 +50,13 @@ const AboutPage = () => {
           transition={{ duration: 0.6, delay: 0.8 }}
         >
           <motion.div 
-            className={`rounded-2xl p-8 shadow-lg border ${sectionBg}`}
+            className={`rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border ${sectionBg}`}
             whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
           >
-            <h2 className={`text-2xl font-bold mb-6 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+            <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
               Our Mission
             </h2>
-            <p className={`text-lg leading-relaxed ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
+            <p className={`text-base sm:text-lg leading-relaxed ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
               CrisisConnect is dedicated to providing immediate and effective disaster relief by connecting those affected with essential 
               resources and support. Our mission is to minimize suffering and facilitate recovery in communities impacted by natural 
               disasters.
@@ -72,13 +72,13 @@ const AboutPage = () => {
           transition={{ duration: 0.6, delay: 1.0 }}
         >
           <motion.div 
-            className={`rounded-2xl p-8 shadow-lg border ${sectionBg}`}
+            className={`rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border ${sectionBg}`}
             whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
           >
-            <h2 className={`text-2xl font-bold mb-6 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+            <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
               Our Values
             </h2>
-            <p className={`text-lg leading-relaxed ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
+            <p className={`text-base sm:text-lg leading-relaxed ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
               We operate with transparency, accountability, and a deep commitment to the communities we serve. Our core values include 
               empathy, integrity, and a focus on sustainable solutions that empower individuals and families to rebuild their lives.
             </p>
@@ -93,13 +93,13 @@ const AboutPage = () => {
           transition={{ duration: 0.6, delay: 1.2 }}
         >
           <motion.div 
-            className={`rounded-2xl p-8 shadow-lg border ${sectionBg}`}
+            className={`rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border ${sectionBg}`}
             whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
           >
-            <h2 className={`text-2xl font-bold mb-6 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+            <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
               How It Works
             </h2>
-            <p className={`text-lg leading-relaxed ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
+            <p className={`text-base sm:text-lg leading-relaxed ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
               Our platform streamlines the process of disaster relief by offering a centralized hub for information, resources, and 
               assistance. Users can easily access real-time updates, request aid, and connect with volunteers and organizations providing 
               support. We ensure that help reaches those who need it most, efficiently and effectively.
@@ -115,13 +115,13 @@ const AboutPage = () => {
           transition={{ duration: 0.6, delay: 1.4 }}
         >
           <motion.div 
-            className={`rounded-2xl p-8 shadow-lg border ${sectionBg}`}
+            className={`rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border ${sectionBg}`}
             whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
           >
-            <h2 className={`text-2xl font-bold mb-6 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+            <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
               Our Impact
             </h2>
-            <p className={`text-lg leading-relaxed ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
+            <p className={`text-base sm:text-lg leading-relaxed ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
               Since our inception, CrisisConnect has played a crucial role in numerous disaster relief efforts, from hurricanes to wildfires. 
               We've helped thousands of families begin their journey to recovery by providing immediate relief but also long-term support to 
               foster resilience and recovery. Our impact is measured not just in numbers, but in the stories of hope and recovery we've 
@@ -138,20 +138,20 @@ const AboutPage = () => {
           transition={{ duration: 0.6, delay: 1.6 }}
         >
           <motion.div 
-            className={`rounded-2xl p-8 shadow-lg border ${sectionBg}`}
+            className={`rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg border ${sectionBg}`}
             whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
           >
-            <h2 className={`text-2xl font-bold mb-6 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+            <h2 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
               Meet the Team
             </h2>
-            <p className={`text-lg leading-relaxed mb-8 ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
+            <p className={`text-base sm:text-lg leading-relaxed mb-6 sm:mb-8 ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
               Our team is composed of dedicated professionals with diverse backgrounds in disaster management, technology, and 
               community outreach. We are united by a shared passion for making a difference and a commitment to leveraging innovation 
               to improve disaster relief outcomes.
             </p>
 
             {/* Team Members Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
               {teamMembers.map((member, index) => (
                 <motion.div 
                   key={member.id} 

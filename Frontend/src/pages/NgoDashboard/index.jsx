@@ -6,6 +6,8 @@ import {
   BarChart2,
   MessageSquare,
   User,
+  Menu,
+  X,
 } from "lucide-react";
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchNgoProfile } from '../../store/ngoSlice';
@@ -26,6 +28,7 @@ export default function NgoDashboard() {
   const { user } = useSelector((state) => state.app);
 
   const [activeSection, setActiveSection] = useState("home");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (user?._id) {
@@ -55,13 +58,25 @@ export default function NgoDashboard() {
   return (
     <div className="min-h-screen flex flex-col">
       <div
-        className={`flex h-screen ${
+        className={`flex flex-1 overflow-hidden ${
           theme === "light" ? "bg-gray-50" : "bg-gray-800"
         }`}
       >
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className={`fixed top-4 left-4 z-50 lg:hidden p-2 rounded-lg shadow-lg ${
+            theme === "light" ? "bg-white" : "bg-gray-900"
+          }`}
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
         {/* Sidebar */}
         <aside
-          className={`w-64 backdrop-blur border-r p-6 flex flex-col shadow-md ${
+          className={`${
+            isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-64 backdrop-blur border-r p-6 flex flex-col shadow-md transition-transform duration-300 ${
             theme === "light"
               ? "bg-white/90 border-gray-200"
               : "bg-gray-900/90 border-gray-700"
@@ -92,7 +107,10 @@ export default function NgoDashboard() {
           </div>
           <nav className="flex-1 px-4 py-6 space-y-4">
             <button
-              onClick={() => setActiveSection("home")}
+              onClick={() => {
+                setActiveSection("home");
+                setIsMobileMenuOpen(false);
+              }}
               className={`w-full flex items-center text-left hover:text-blue-600 ${
                 activeSection === "home"
                   ? "text-blue-600 font-semibold"
@@ -104,7 +122,10 @@ export default function NgoDashboard() {
               <Home className="w-5 h-5 mr-3" /> Home
             </button>
             <button
-              onClick={() => setActiveSection("donations")}
+              onClick={() => {
+                setActiveSection("donations");
+                setIsMobileMenuOpen(false);
+              }}
               className={`w-full flex items-center text-left hover:text-blue-600 ${
                 activeSection === "donations"
                   ? "text-blue-600 font-semibold"
@@ -116,7 +137,10 @@ export default function NgoDashboard() {
               <Heart className="w-5 h-5 mr-3" /> Manage Donations
             </button>
             <button
-              onClick={() => setActiveSection("requests")}
+              onClick={() => {
+                setActiveSection("requests");
+                setIsMobileMenuOpen(false);
+              }}
               className={`w-full flex items-center text-left hover:text-blue-600 ${
                 activeSection === "requests"
                   ? "text-blue-600 font-semibold"
@@ -128,7 +152,10 @@ export default function NgoDashboard() {
               <List className="w-5 h-5 mr-3" /> View Requests
             </button>
             <button
-              onClick={() => setActiveSection("impact")}
+              onClick={() => {
+                setActiveSection("impact");
+                setIsMobileMenuOpen(false);
+              }}
               className={`w-full flex items-center text-left hover:text-blue-600 ${
                 activeSection === "impact"
                   ? "text-blue-600 font-semibold"
@@ -140,7 +167,10 @@ export default function NgoDashboard() {
               <BarChart2 className="w-5 h-5 mr-3" /> Impact Tracking
             </button>
             <button
-              onClick={() => setActiveSection("communications")}
+              onClick={() => {
+                setActiveSection("communications");
+                setIsMobileMenuOpen(false);
+              }}
               className={`w-full flex items-center text-left hover:text-blue-600 ${
                 activeSection === "communications"
                   ? "text-blue-600 font-semibold"
@@ -152,7 +182,10 @@ export default function NgoDashboard() {
               <MessageSquare className="w-5 h-5 mr-3" /> Communications
             </button>
             <button
-              onClick={() => setActiveSection("profile")}
+              onClick={() => {
+                setActiveSection("profile");
+                setIsMobileMenuOpen(false);
+              }}
               className={`w-full flex items-center text-left hover:text-blue-600 ${
                 activeSection === "profile"
                   ? "text-blue-600 font-semibold"
@@ -178,8 +211,20 @@ export default function NgoDashboard() {
           </div>
         </aside>
 
+        {/* Overlay for mobile */}
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
         {/* Main Dashboard */}
-        <main className="flex-1 p-8 overflow-y-auto">{renderSection()}</main>
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-4 sm:p-6 md:p-8">
+            {renderSection()}
+          </div>
+        </main>
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ const HomeSection = () => {
   return (
     <div>
       <h1
-        className={`text-3xl font-bold mb-6 ${
+        className={`text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 ${
           theme === "light" ? "text-gray-900" : "text-white"
         }`}
       >
@@ -25,34 +25,34 @@ const HomeSection = () => {
       </h1>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div
-          className={`p-6 rounded-xl shadow ${
+          className={`p-4 sm:p-6 rounded-xl shadow ${
             theme === "light" ? "bg-white" : "bg-gray-900"
           }`}
         >
           <div className="flex items-center justify-between">
             <div>
               <p
-                className={
+                className={`text-xs sm:text-sm ${
                   theme === "light" ? "text-gray-600" : "text-gray-400"
-                }
+                }`}
               >
                 Total Donations
               </p>
               <h2
-                className={`text-2xl font-bold mt-2 ${
+                className={`text-xl sm:text-2xl font-bold mt-1 sm:mt-2 ${
                   theme === "light" ? "text-gray-900" : "text-white"
                 }`}
               >
                 $125,000
               </h2>
             </div>
-            <DollarSign className="w-10 h-10 text-green-500" />
+            <DollarSign className="w-8 h-8 sm:w-10 sm:h-10 text-green-500" />
           </div>
         </div>
         <div
-          className={`p-6 rounded-xl shadow ${
+          className={`p-4 sm:p-6 rounded-xl shadow ${
             theme === "light" ? "bg-white" : "bg-gray-900"
           }`}
         >

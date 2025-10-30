@@ -35,27 +35,27 @@ const ViewRequestsSection = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
         <h1
-          className={`text-3xl font-bold ${
+          className={`text-xl sm:text-2xl md:text-3xl font-bold ${
             theme === "light" ? "text-gray-900" : "text-white"
           }`}
         >
           View Requests
         </h1>
         {/* New Request button might navigate to a form or modal */}
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+        <button className="px-3 sm:px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 flex items-center gap-2 w-full sm:w-auto justify-center">
           <Plus className="w-4 h-4" />
           New Request
         </button>
       </div>
 
       {/* Request Cards */}
-      <div className="grid gap-6">
+      <div className="grid gap-4 sm:gap-6">
         {requests.map((request) => (
           <div
             key={request.id}
-            className={`p-6 rounded-xl shadow ${
+            className={`p-4 sm:p-6 rounded-xl shadow ${
               theme === "light" ? "bg-white" : "bg-gray-900"
             }`}
           >

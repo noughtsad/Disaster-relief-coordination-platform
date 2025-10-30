@@ -68,14 +68,14 @@ export default function SupplierDashboard() {
       </h1>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className={`p-6 rounded-lg shadow-sm border ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className={`p-4 sm:p-6 rounded-lg shadow-sm border ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className={`text-sm font-medium ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Total Orders</p>
-              <p className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{supplierProfile.totalOrders}</p>
+              <p className={`text-xs sm:text-sm font-medium ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Total Orders</p>
+              <p className={`text-xl sm:text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{supplierProfile.totalOrders}</p>
             </div>
-            <List className="h-8 w-8 text-blue-500" />
+            <List className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
           </div>
         </div>
         
@@ -111,9 +111,9 @@ export default function SupplierDashboard() {
       </div>
 
       {/* Recent Orders */}
-      <div className={`p-6 rounded-lg shadow-sm border ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
-        <h3 className={`text-lg font-semibold mb-4 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Recent Orders</h3>
-        <div className="space-y-4">
+      <div className={`p-4 sm:p-6 rounded-lg shadow-sm border ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
+        <h3 className={`text-base sm:text-lg font-semibold mb-3 sm:mb-4 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Recent Orders</h3>
+        <div className="space-y-3 sm:space-y-4">
           {orders.slice(0, 3).map(order => (
             <div key={order.id} className={`flex items-center justify-between p-3 rounded-lg ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-700'}`}>
               <div>
@@ -133,9 +133,9 @@ export default function SupplierDashboard() {
       </div>
 
       {/* Low Stock Alerts */}
-      <div className={`p-6 rounded-lg shadow-sm border ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
-        <h3 className={`text-lg font-semibold mb-4 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Low Stock Alerts</h3>
-        <div className="space-y-4">
+      <div className={`p-4 sm:p-6 rounded-lg shadow-sm border ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
+        <h3 className={`text-base sm:text-lg font-semibold mb-3 sm:mb-4 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Low Stock Alerts</h3>
+        <div className="space-y-3 sm:space-y-4">
           {inventory.filter(item => item.status === 'Low Stock').map(item => (
             <div key={item.id} className={`flex items-center justify-between p-3 rounded-lg border-l-4 border-red-500 ${theme === 'light' ? 'bg-red-50' : 'bg-red-900/20'}`}>
               <div>
@@ -154,37 +154,38 @@ export default function SupplierDashboard() {
   );
 
   const ManageInventorySection = () => (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Manage Inventory</h2>
-        <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+        <h2 className={`text-xl sm:text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Manage Inventory</h2>
+        <button className="flex items-center px-3 sm:px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors w-full sm:w-auto justify-center">
           <Plus className="mr-2 h-4 w-4" />
           Add Item
         </button>
       </div>
 
-      <div className="flex items-center space-x-4">
-        <div className="relative flex-1">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+        <div className="relative flex-1 w-full">
           <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme === 'light' ? 'text-gray-400' : 'text-gray-500'} h-4 w-4`} />
           <input
             type="text"
             placeholder="Search inventory..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'}`}
+            className={`w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent ${theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'}`}
           />
         </div>
-        <button className={`flex items-center px-4 py-2 border rounded-lg ${theme === 'light' ? 'border-gray-300 hover:bg-gray-50 text-gray-700' : 'border-gray-600 hover:bg-gray-700 text-gray-300'}`}>
+        <button className={`flex items-center px-3 sm:px-4 py-2 border rounded-lg text-sm w-full sm:w-auto justify-center ${theme === 'light' ? 'border-gray-300 hover:bg-gray-50 text-gray-700' : 'border-gray-600 hover:bg-gray-700 text-gray-300'}`}>
           <Filter className="mr-2 h-4 w-4" />
           Filter
         </button>
       </div>
 
       <div className={`rounded-lg shadow-sm border overflow-hidden ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
+        <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className={`${theme === 'light' ? 'bg-gray-50' : 'bg-gray-700'}`}>
             <tr>
-              <th className={`px-6 py-3 text-left text-xs font-medium ${theme === 'light' ? 'text-gray-500' : 'text-gray-300'} uppercase tracking-wider`}>Item</th>
+              <th className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium ${theme === 'light' ? 'text-gray-500' : 'text-gray-300'} uppercase tracking-wider`}>Item</th>
               <th className={`px-6 py-3 text-left text-xs font-medium ${theme === 'light' ? 'text-gray-500' : 'text-gray-300'} uppercase tracking-wider`}>Quantity</th>
               <th className={`px-6 py-3 text-left text-xs font-medium ${theme === 'light' ? 'text-gray-500' : 'text-gray-300'} uppercase tracking-wider`}>Status</th>
               <th className={`px-6 py-3 text-left text-xs font-medium ${theme === 'light' ? 'text-gray-500' : 'text-gray-300'} uppercase tracking-wider`}>Last Updated</th>
@@ -214,6 +215,7 @@ export default function SupplierDashboard() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
@@ -440,9 +442,9 @@ export default function SupplierDashboard() {
   };
 
   return (
-    <div className={`min-h-screen flex ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-900'}`}>
+    <div className={`min-h-screen flex overflow-hidden ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-900'}`}>
       {/* Sidebar */}
-      <div className={`w-64 min-h-screen shadow-sm ${
+      <div className={`w-64 min-h-screen overflow-y-auto shadow-sm ${
         theme === 'light' ? 'bg-white' : 'bg-gray-800'
       }`}>
         <div className="p-6 border-b border-gray-200">
@@ -553,8 +555,10 @@ export default function SupplierDashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-8">
-        {renderContent()}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-4 sm:p-6 md:p-8">
+          {renderContent()}
+        </div>
       </div>
     </div>
   );
