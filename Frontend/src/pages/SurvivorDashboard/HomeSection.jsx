@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { useSelector } from 'react-redux';
+import MapComponent from "../../components/Map";
 import { 
   List, 
   CheckCircle, 
@@ -17,7 +18,7 @@ const HomeSection = ({ setActiveSection, alerts = [] }) => {
       <h2 className={`text-2xl font-bold drop-shadow mb-6 ${theme === "light" ? "text-black" : "text-white"}`}>
         Dashboard
       </h2>
-
+      <MapComponent />
       {/* Quick Stats */}
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         <div className={`backdrop-blur border rounded-xl p-6 shadow-lg ${
