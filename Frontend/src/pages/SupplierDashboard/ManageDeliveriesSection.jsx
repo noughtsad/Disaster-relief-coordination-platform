@@ -1,5 +1,6 @@
 import React from 'react';
 import { Plus, Search, Filter } from 'lucide-react';
+import MapComponent from '../../components/Map';
 
 export default function ManageDeliveriesSection({ theme, deliveries, searchTerm, setSearchTerm }) {
   return (
@@ -66,6 +67,7 @@ export default function ManageDeliveriesSection({ theme, deliveries, searchTerm,
           </tbody>
         </table>
       </div>
+      <MapComponent />
     </div>
   );
 }

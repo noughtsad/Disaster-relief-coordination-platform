@@ -13,7 +13,7 @@ import LoginPage from './pages/LoginPage';
 import UserTypeSelectionPage from './pages/UserTypeSelectionPage';
 import Root from './components/Root';
 import PageNotFound from './pages/PageNotFound';
-import SupplierDashboard from './pages/SupplierDashboard';
+import SupplierDashboard from './pages/SupplierDashboard/index';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const router = createBrowserRouter([

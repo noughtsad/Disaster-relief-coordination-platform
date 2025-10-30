@@ -8,6 +8,7 @@ import {
   Users
 } from "lucide-react";
 import { ThemeContext } from "../../context/ThemeContext";
+import MapComponent from "../../components/Map";
 
 const OpportunitiesSection = ({ 
   opportunities, 
@@ -109,6 +110,7 @@ const OpportunitiesSection = ({
           </div>
         ))}
       </div>
+        <MapComponent />
     </div>
   );
 };
