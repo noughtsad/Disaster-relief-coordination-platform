@@ -186,3 +186,53 @@ export async function updateUserType(req, res) {
     },
   });
 }
+
+export async function validateDashboardAccess(req, res) {
+  const { dashboardType } = req.params;
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({ 
+      message: "Authentication required",
+      isAuthenticated: false 
+    });
+  }
+
+  if (!user.userType) {
+    return res.status(403).json({ 
+      message: "User type not selected",
+      requiresUserTypeSelection: true,
+      isAuthenticated: true
+    });
+  }
+
+  const dashboardUserTypeMap = {
+    survivor: "Survivor",
+    ngo: "NGO",
+    volunteer: "Volunteer",
+    supplier: "Supplier"
+  };
+
+  const requiredUserType = dashboardUserTypeMap[dashboardType.toLowerCase()];
+  
+  if (!requiredUserType) {
+    return res.status(400).json({ message: "Invalid dashboard type" });
+  }
+
+  if (user.userType !== requiredUserType) {
+    return res.status(403).json({ 
+      message: `Access denied. This dashboard is only for ${requiredUserType} users.`,
+      currentUserType: user.userType,
+      requiredUserType: requiredUserType,
+      isAuthenticated: true,
+      hasCorrectUserType: false
+    });
+  }
+
+  return res.json({ 
+    message: "Access granted",
+    isAuthenticated: true,
+    hasCorrectUserType: true,
+    userType: user.userType
+  });
+}

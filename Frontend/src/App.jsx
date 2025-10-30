@@ -14,6 +14,7 @@ import UserTypeSelectionPage from './pages/UserTypeSelectionPage';
 import Root from './components/Root';
 import PageNotFound from './pages/PageNotFound';
 import SupplierDashboard from './pages/SupplierDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const router = createBrowserRouter([
   {
@@ -30,11 +31,19 @@ const router = createBrowserRouter([
       },
       {
         path: '/survivorDashboard',
-        element: <SurvivorDashboard />,
+        element: (
+          <ProtectedRoute requiredUserType="Survivor" dashboardType="survivor">
+            <SurvivorDashboard />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/ngoDashboard',
-        element: <NgoDashboard />,
+        element: (
+          <ProtectedRoute requiredUserType="NGO" dashboardType="ngo">
+            <NgoDashboard />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/feedback',
@@ -50,7 +59,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/volunteer',
-        element: <VolunteerPage />
+        element: (
+          <ProtectedRoute requiredUserType="Volunteer" dashboardType="volunteer">
+            <VolunteerPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/about',
@@ -62,7 +75,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/supplierDashboard',
-        element: <SupplierDashboard />
+        element: (
+          <ProtectedRoute requiredUserType="Supplier" dashboardType="supplier">
+            <SupplierDashboard />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '*',

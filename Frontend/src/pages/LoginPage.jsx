@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { setUser, setLoading, setError, clearError, setIsAuthenticated } from "../store/appSlice";
 import { FaGoogle } from "react-icons/fa";
 import axios from "axios";
@@ -8,23 +8,18 @@ import axios from "axios";
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isAuthenticated, loading, error, user } = useSelector((state) => state.app);
+  const location = useLocation();
+  const { isAuthenticated, loading, error } = useSelector((state) => state.app);
 
   const [formData, setFormData] = useState({ email: "", password: "" });
 
   useEffect(() => {
     if (isAuthenticated) {
-      if (!user?.userType) {
-        navigate("/selectUserType");
-      } else if (user.userType === "Survivor") {
-        navigate("/survivorDashboard");
-      } else if (user.userType === "NGO") {
-        navigate("/ngoDashboard");
-      } else if (user.userType === "Volunteer") {
-        navigate("/volunteer");
-      }
+      // Navigate to the page they were trying to access, or home
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
     }
-  }, [isAuthenticated, navigate, user]);
+  }, [isAuthenticated, navigate, location]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,15 +47,7 @@ const LoginPage = () => {
       });
       dispatch(setUser(response.data.user));
       dispatch(setIsAuthenticated(true));
-      if (!response.data.user.userType) {
-        navigate("/selectUserType");
-      } else if (response.data.user.userType === "Survivor") {
-        navigate("/survivorDashboard");
-      } else if (response.data.user.userType === "NGO") {
-        navigate("/ngoDashboard");
-      } else if (response.data.user.userType === "Volunteer") {
-        navigate("/volunteer");
-      }
+      // Navigation will be handled by the useEffect above
     } catch (err) {
       dispatch(setError(err.response?.data?.message || "Login failed"));
     } finally {
