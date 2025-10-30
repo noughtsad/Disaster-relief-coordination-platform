@@ -1,11 +1,25 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useSelector } from 'react-redux';
-import { PlusCircle, Edit } from "lucide-react";
+import { PlusCircle, Edit, MessageCircle } from "lucide-react";
 import { ThemeContext } from "../../context/ThemeContext";
+import ChatModal from '../../components/ChatModal';
 
 const RequestsSection = ({ setActiveSection }) => {
   const { theme } = useContext(ThemeContext);
   const { requests } = useSelector((state) => state.requests);
+  const { user } = useSelector((state) => state.app);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const handleOpenChat = (request) => {
+    setSelectedRequest(request);
+    setIsChatOpen(true);
+  };
+
+  const handleCloseChat = () => {
+    setIsChatOpen(false);
+    setSelectedRequest(null);
+  };
 
   return (
     <div>
@@ -64,20 +78,46 @@ const RequestsSection = ({ setActiveSection }) => {
                   </span>
                 </div>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <span className={`text-sm ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>
                   Submitted: {request.date}
                 </span>
                 <div className="flex gap-2">
-                  <button className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg">
-                    <Edit className="w-4 h-4" />
-                  </button>
+                  {/* Chat Button (only for Approved/Completed requests with chat enabled) */}
+                  {request.chatEnabled && (request.status === 'Approved' || request.status === 'Completed') && (
+                    <button 
+                      onClick={() => handleOpenChat(request)}
+                      className="px-3 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition flex items-center gap-2"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      Chat
+                    </button>
+                  )}
+                  
+                  {/* Edit Button (only for Pending requests) */}
+                  {request.status === 'Pending' && (
+                    <button className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Chat Modal */}
+      <ChatModal
+        isOpen={isChatOpen}
+        onClose={handleCloseChat}
+        request={selectedRequest}
+        currentUser={{
+          id: user?.id || 'survivor-1',
+          name: user?.name || 'Survivor',
+          role: 'Survivor'
+        }}
+      />
     </div>
   );
 };

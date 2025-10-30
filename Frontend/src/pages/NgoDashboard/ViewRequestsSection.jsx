@@ -1,22 +1,28 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   Plus, 
   MapPin, 
-  Calendar 
+  Calendar,
+  MessageCircle
 } from "lucide-react";
 import { 
-  updateRequestStatus, 
+  updateRequestStatus,
+  acceptRequest, 
   setLoading as setRequestLoading, 
   setError as setRequestError, 
   clearError as clearRequestError 
 } from '../../store/requestSlice';
 import { ThemeContext } from "../../context/ThemeContext";
+import ChatModal from '../../components/ChatModal';
 
 const ViewRequestsSection = () => {
   const { theme } = useContext(ThemeContext);
   const dispatch = useDispatch();
   const { requests } = useSelector((state) => state.requests);
+  const { user } = useSelector((state) => state.app);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const handleMarkComplete = async (id) => {
     dispatch(setRequestLoading(true));
@@ -31,6 +37,31 @@ const ViewRequestsSection = () => {
     } finally {
       dispatch(setRequestLoading(false));
     }
+  };
+
+  const handleAcceptRequest = async (id) => {
+    dispatch(setRequestLoading(true));
+    dispatch(clearRequestError());
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      dispatch(acceptRequest({ id, acceptedBy: user?.id || 'ngo-1' }));
+      alert('Request accepted! You can now chat with the survivor.');
+    } catch (err) {
+      dispatch(setRequestError(err.message));
+    } finally {
+      dispatch(setRequestLoading(false));
+    }
+  };
+
+  const handleOpenChat = (request) => {
+    setSelectedRequest(request);
+    setIsChatOpen(true);
+  };
+
+  const handleCloseChat = () => {
+    setIsChatOpen(false);
+    setSelectedRequest(null);
   };
 
   return (
@@ -123,23 +154,36 @@ const ViewRequestsSection = () => {
                 </span>
               </div>
             </div>
-            <div className="flex gap-2">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            <div className="flex flex-wrap gap-2">
+              {/* Accept Button (only for Pending requests) */}
+              {request.status === 'Pending' && (
+                <button
+                  onClick={() => handleAcceptRequest(request.id)}
+                  className="px-3 sm:px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition"
+                >
+                  Accept Request
+                </button>
+              )}
+              
+              {/* Chat Button (only for Approved/Completed requests with chat enabled) */}
+              {request.chatEnabled && (request.status === 'Approved' || request.status === 'Completed') && (
+                <button
+                  onClick={() => handleOpenChat(request)}
+                  className="px-3 sm:px-4 py-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition flex items-center gap-2"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Open Chat
+                </button>
+              )}
+
+              <button className="px-3 sm:px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
                 View Details
               </button>
-              <button
-                className={`px-4 py-2 border rounded hover:bg-gray-50 ${
-                  theme === "light"
-                    ? "border-gray-300"
-                    : "border-gray-600 hover:bg-gray-700 text-white"
-                }`}
-              >
-                Edit
-              </button>
+              
               {request.status !== 'Completed' && (
                 <button
                   onClick={() => handleMarkComplete(request.id)}
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                  className="px-3 sm:px-4 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
                 >
                   Mark Complete
                 </button>
@@ -148,6 +192,18 @@ const ViewRequestsSection = () => {
           </div>
         ))}
       </div>
+
+      {/* Chat Modal */}
+      <ChatModal
+        isOpen={isChatOpen}
+        onClose={handleCloseChat}
+        request={selectedRequest}
+        currentUser={{
+          id: user?.id || 'ngo-1',
+          name: user?.name || 'NGO Representative',
+          role: 'NGO'
+        }}
+      />
     </div>
   );
 };
