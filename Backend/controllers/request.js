@@ -130,9 +130,9 @@ export async function acceptRequest(req, res) {
     console.log('Added responder:', { userId, userName: user.name, userRole: user.userType });
     console.log('Total responders before save:', request.responders.length);
 
-    // If this is the first responder, set as primary acceptedBy
+    // If this is the first responder, set as primary acceptedBy and change status to Ongoing
     if (!request.acceptedBy) {
-      request.status = 'Approved';
+      request.status = 'Ongoing';
       request.acceptedBy = userId;
       request.acceptedByName = user.name;
       request.acceptedByRole = user.userType;
@@ -158,13 +158,129 @@ export async function acceptRequest(req, res) {
   }
 }
 
-// Update request status
+// Mark request as complete (by NGO/Volunteer/Supplier)
+export async function markRequestComplete(req, res) {
+  try {
+    const { requestId } = req.params;
+    const { completionNotes } = req.body;
+    const userId = req.user.id;
+
+    const user = await User.findById(userId).select('name userType');
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Only NGOs, Volunteers, and Suppliers can mark as complete
+    if (!['NGO', 'Volunteer', 'Supplier'].includes(user.userType)) {
+      return res.status(403).json({ message: "Only NGOs, Volunteers, and Suppliers can mark requests as complete" });
+    }
+
+    const request = await Request.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    // Check if user is a responder on this request
+    const isResponder = request.responders.some(
+      responder => responder.userId.toString() === userId && responder.status === 'Active'
+    );
+
+    if (!isResponder) {
+      return res.status(403).json({ message: "You must be an active responder to mark this request as complete" });
+    }
+
+    // Check if already completed or verified
+    if (request.status === 'Complete' || request.status === 'Verified') {
+      return res.status(400).json({ message: "This request has already been marked as complete" });
+    }
+
+    // Update request to Complete status
+    request.status = 'Complete';
+    request.completedBy = userId;
+    request.completedByName = user.name;
+    request.completedByRole = user.userType;
+    request.completedAt = new Date();
+    request.completionNotes = completionNotes || '';
+
+    await request.save();
+
+    console.log(`Request ${requestId} marked as complete by ${user.name} (${user.userType})`);
+
+    return res.json({
+      message: "Request marked as complete successfully. Awaiting survivor verification.",
+      request
+    });
+  } catch (error) {
+    console.error("Mark complete error:", error);
+    return res.status(500).json({ 
+      message: "Error marking request as complete", 
+      error: error.message 
+    });
+  }
+}
+
+// Verify request completion (by Survivor only)
+export async function verifyRequestCompletion(req, res) {
+  try {
+    const { requestId } = req.params;
+    const { verificationNotes } = req.body;
+    const userId = req.user.id;
+
+    const user = await User.findById(userId).select('name userType');
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Only Survivors can verify
+    if (user.userType !== 'Survivor') {
+      return res.status(403).json({ message: "Only survivors can verify request completion" });
+    }
+
+    const request = await Request.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    // Check if this is their request
+    if (request.survivorId.toString() !== userId) {
+      return res.status(403).json({ message: "You can only verify your own requests" });
+    }
+
+    // Check if request is in Complete status
+    if (request.status !== 'Complete') {
+      return res.status(400).json({ message: "Request must be marked as complete before verification" });
+    }
+
+    // Update request to Verified status
+    request.status = 'Verified';
+    request.verifiedBy = userId;
+    request.verifiedAt = new Date();
+    request.verificationNotes = verificationNotes || '';
+
+    await request.save();
+
+    console.log(`Request ${requestId} verified by survivor ${user.name}`);
+
+    return res.json({
+      message: "Request verified successfully. Thank you for confirming!",
+      request
+    });
+  } catch (error) {
+    console.error("Verify request error:", error);
+    return res.status(500).json({ 
+      message: "Error verifying request", 
+      error: error.message 
+    });
+  }
+}
+
+// Update request status (generic - for admin use)
 export async function updateRequestStatus(req, res) {
   try {
     const { requestId } = req.params;
     const { status } = req.body;
 
-    if (!['Pending', 'Approved', 'Completed', 'Rejected'].includes(status)) {
+    if (!['Pending', 'Ongoing', 'Complete', 'Verified', 'Rejected'].includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }
 

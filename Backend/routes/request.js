@@ -4,6 +4,8 @@ import {
   getAllRequests, 
   getMyRequests, 
   acceptRequest, 
+  markRequestComplete,
+  verifyRequestCompletion,
   updateRequestStatus,
   getRequestsByLocation,
   getRequestResponders,
@@ -35,7 +37,13 @@ router.post("/withdraw/:requestId", isAuthenticated, withdrawFromRequest);
 // Get responders for a request
 router.get("/responders/:requestId", isAuthenticated, getRequestResponders);
 
-// Update request status
+// Mark request as complete (NGOs/Volunteers/Suppliers)
+router.post("/complete/:requestId", isAuthenticated, markRequestComplete);
+
+// Verify request completion (Survivors only)
+router.post("/verify/:requestId", isAuthenticated, verifyRequestCompletion);
+
+// Update request status (generic)
 router.put("/status/:requestId", isAuthenticated, updateRequestStatus);
 
 // Get requests by location

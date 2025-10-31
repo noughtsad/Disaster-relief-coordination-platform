@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { PlusCircle, Edit, MessageCircle } from "lucide-react";
 import { ThemeContext } from "../../context/ThemeContext";
 import ChatModal from '../../components/ChatModal';
-import { setRequests, setLoading, setError } from '../../store/requestSlice';
+import { setRequests, setLoading, setError, clearError } from '../../store/requestSlice';
 import axios from 'axios';
 
 const RequestsSection = ({ setActiveSection }) => {
@@ -61,6 +61,67 @@ const RequestsSection = ({ setActiveSection }) => {
       fetchMyRequests();
     }
   }, [dispatch, user]);
+
+  const handleVerifyRequest = async (id) => {
+    const verificationNotes = prompt('Please confirm that your needs have been satisfied. Optional: Add any feedback:');
+    
+    // User clicked cancel
+    if (verificationNotes === null) return;
+    
+    dispatch(setLoading(true));
+    dispatch(clearError());
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/request/verify/${id}`,
+        { verificationNotes },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      alert(response.data.message || 'Request verified successfully! Thank you for confirming.');
+      
+      // Refresh the requests list
+      const refreshResponse = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/request/my-requests`,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      const formattedRequests = refreshResponse.data.requests.map(req => ({
+        id: req._id,
+        type: req.type,
+        status: req.status,
+        date: new Date(req.createdAt).toLocaleDateString(),
+        urgency: req.urgency,
+        description: req.description,
+        latitude: req.latitude,
+        longitude: req.longitude,
+        address: req.address,
+        location: req.location,
+        contactInfo: req.contactInfo,
+        survivorId: req.survivorId,
+        acceptedBy: req.acceptedBy,
+        chatEnabled: req.chatEnabled,
+        responders: req.responders || [],
+      }));
+      
+      dispatch(setRequests(formattedRequests));
+    } catch (err) {
+      console.error('Verify request error:', err);
+      dispatch(setError(err.response?.data?.message || 'Failed to verify request'));
+      alert(err.response?.data?.message || 'Failed to verify request');
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
   const handleOpenChat = (request) => {
     setSelectedRequest(request);
@@ -145,11 +206,13 @@ const RequestsSection = ({ setActiveSection }) => {
                 </div>
                 <div className="flex flex-col items-end gap-2">
                   <span className={`px-3 py-1 text-xs rounded-full ${
-                    request.status === 'Pending' ? 
-                      (theme === "light" ? "bg-gray-100 text-gray-700" : "bg-gray-700 text-gray-300") :
-                    request.status === 'Approved' ?
+                    request.status === 'Verified' ? 
                       (theme === "light" ? "bg-green-100 text-green-700" : "bg-green-900/50 text-green-400") :
-                      (theme === "light" ? "bg-blue-100 text-blue-700" : "bg-blue-900/50 text-blue-400")
+                    request.status === 'Complete' ?
+                      (theme === "light" ? "bg-blue-100 text-blue-700" : "bg-blue-900/50 text-blue-400") :
+                    request.status === 'Ongoing' ?
+                      (theme === "light" ? "bg-yellow-100 text-yellow-700" : "bg-yellow-900/50 text-yellow-400") :
+                      (theme === "light" ? "bg-gray-100 text-gray-700" : "bg-gray-700 text-gray-300")
                   }`}>
                     {request.status}
                   </span>
@@ -167,8 +230,18 @@ const RequestsSection = ({ setActiveSection }) => {
                   Submitted: {request.date}
                 </span>
                 <div className="flex gap-2">
-                  {/* Chat Button (only for Approved/Completed requests with chat enabled) */}
-                  {request.chatEnabled && (request.status === 'Approved' || request.status === 'Completed') && (
+                  {/* Verify Button (only for Complete status) */}
+                  {request.status === 'Complete' && (
+                    <button 
+                      onClick={() => handleVerifyRequest(request.id)}
+                      className="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition flex items-center gap-2"
+                    >
+                      ✓ Verify Completion
+                    </button>
+                  )}
+                  
+                  {/* Chat Button (only for Ongoing/Complete/Verified requests with chat enabled) */}
+                  {request.chatEnabled && (request.status === 'Ongoing' || request.status === 'Complete' || request.status === 'Verified') && (
                     <button 
                       onClick={() => handleOpenChat(request)}
                       className="px-3 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition flex items-center gap-2"

@@ -12,7 +12,7 @@ const RequestSchema = new Schema(
     status: { 
       type: String, 
       required: true,
-      enum: ['Pending', 'Approved', 'Completed', 'Rejected'],
+      enum: ['Pending', 'Ongoing', 'Complete', 'Verified', 'Rejected'],
       default: 'Pending'
     },
     urgency: { 
@@ -97,6 +97,35 @@ const RequestSchema = new Schema(
       type: Boolean, 
       default: false 
     },
+    // Completion tracking
+    completedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    completedByName: {
+      type: String
+    },
+    completedByRole: {
+      type: String,
+      enum: ['NGO', 'Volunteer', 'Supplier', null]
+    },
+    completedAt: {
+      type: Date
+    },
+    completionNotes: {
+      type: String
+    },
+    // Verification tracking
+    verifiedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    verifiedAt: {
+      type: Date
+    },
+    verificationNotes: {
+      type: String
+    }
   },
   { 
     timestamps: true 

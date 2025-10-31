@@ -78,15 +78,33 @@ const ViewRequestsSection = () => {
   }, [dispatch, user]);
 
   const handleMarkComplete = async (id) => {
+    const completionNotes = prompt('Optional: Add any notes about the completion (e.g., items delivered, services provided):');
+    
+    // User clicked cancel
+    if (completionNotes === null) return;
+    
     dispatch(setRequestLoading(true));
     dispatch(clearRequestError());
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      dispatch(updateRequestStatus({ id, status: 'Completed' }));
-      alert('Request marked as complete!');
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/request/complete/${id}`,
+        { completionNotes },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      alert(response.data.message || 'Request marked as complete! Awaiting survivor verification.');
+      
+      // Refresh the requests list
+      await fetchAllRequests();
     } catch (err) {
-      dispatch(setRequestError(err.message));
+      console.error('Mark complete error:', err);
+      dispatch(setRequestError(err.response?.data?.message || 'Failed to mark request as complete'));
+      alert(err.response?.data?.message || 'Failed to mark request as complete');
     } finally {
       dispatch(setRequestLoading(false));
     }
@@ -251,9 +269,11 @@ const ViewRequestsSection = () => {
                 </span>
                 <span
                   className={`px-3 py-1 text-xs rounded-full ${
-                    request.status === "Completed"
+                    request.status === "Verified"
                       ? "bg-green-100 text-green-800"
-                      : request.status === "Approved"
+                      : request.status === "Complete"
+                      ? "bg-blue-100 text-blue-800"
+                      : request.status === "Ongoing"
                       ? "bg-yellow-100 text-yellow-800"
                       : "bg-gray-100 text-gray-800"
                   }`}
@@ -273,8 +293,18 @@ const ViewRequestsSection = () => {
                 </button>
               )}
               
-              {/* Chat Button (only for Approved/Completed requests with chat enabled) */}
-              {request.chatEnabled && (request.status === 'Approved' || request.status === 'Completed') && (
+              {/* Mark Complete Button (only for Ongoing requests if user is a responder) */}
+              {request.status === 'Ongoing' && (
+                <button
+                  onClick={() => handleMarkComplete(request.id)}
+                  className="px-3 sm:px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition"
+                >
+                  Mark as Complete
+                </button>
+              )}
+              
+              {/* Chat Button (only for Ongoing/Complete requests with chat enabled) */}
+              {request.chatEnabled && (request.status === 'Ongoing' || request.status === 'Complete' || request.status === 'Verified') && (
                 <button
                   onClick={() => handleOpenChat(request)}
                   className="px-3 sm:px-4 py-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition flex items-center gap-2"
@@ -284,18 +314,9 @@ const ViewRequestsSection = () => {
                 </button>
               )}
 
-              <button className="px-3 sm:px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
+              <button className="px-3 sm:px-4 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700">
                 View Details
               </button>
-              
-              {request.status !== 'Completed' && (
-                <button
-                  onClick={() => handleMarkComplete(request.id)}
-                  className="px-3 sm:px-4 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
-                >
-                  Mark Complete
-                </button>
-              )}
             </div>
           </div>
         ))}
