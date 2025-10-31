@@ -4,6 +4,7 @@ import Feedback from "./models/Feedback.js";
 import * as math from "./mathModule.js";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
+import requestRoutes from "./routes/request.js";
 import passport from "passport";
 import cors from "cors";
 import ngoRoutes from "./routes/ngo.js";
@@ -18,8 +19,8 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 app.use(cors({
-  origin: ["http://localhost:5173", process.env.FRONTEND_URL],
-  methods: ["GET", "POST", "OPTIONS"],
+  origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:5176", process.env.FRONTEND_URL],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
@@ -69,6 +70,7 @@ app.get("/math", (req, res) => {
 
 app.use("/auth", authRoutes);
 app.use("/ngo", ngoRoutes);
+app.use("/request", requestRoutes);
 
 app.get("/" , (req,res) =>{
   res.send("Welcome to Disaster Relief Coordination Platform API")
