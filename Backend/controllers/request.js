@@ -56,6 +56,7 @@ export async function getAllRequests(req, res) {
     const requests = await Request.find()
       .populate('survivorId', 'name phone email')
       .populate('acceptedBy', 'name userType')
+      .populate('responders.userId', 'name userType')
       .sort({ createdAt: -1 });
 
     return res.json({ requests });
@@ -75,6 +76,7 @@ export async function getMyRequests(req, res) {
     
     const requests = await Request.find({ survivorId: userId })
       .populate('acceptedBy', 'name userType')
+      .populate('responders.userId', 'name userType')
       .sort({ createdAt: -1 });
 
     return res.json({ requests });
@@ -98,26 +100,54 @@ export async function acceptRequest(req, res) {
       return res.status(404).json({ message: "User not found" });
     }
 
+    if (!['NGO', 'Volunteer', 'Supplier'].includes(user.userType)) {
+      return res.status(403).json({ message: "Only NGOs, Volunteers, and Suppliers can accept requests" });
+    }
+
     const request = await Request.findById(requestId);
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
     }
 
-    if (request.status !== 'Pending') {
-      return res.status(400).json({ message: "Request is no longer pending" });
+    // Check if user already accepted this request
+    const alreadyAccepted = request.responders.some(
+      responder => responder.userId.toString() === userId
+    );
+
+    if (alreadyAccepted) {
+      return res.status(400).json({ message: "You have already accepted this request" });
     }
 
-    request.status = 'Approved';
-    request.acceptedBy = userId;
-    request.acceptedByName = user.name;
-    request.acceptedByRole = user.userType;
-    request.chatEnabled = true;
+    // Add responder to the list
+    request.responders.push({
+      userId: userId,
+      userName: user.name,
+      userRole: user.userType,
+      acceptedAt: new Date(),
+      status: 'Active'
+    });
+
+    console.log('Added responder:', { userId, userName: user.name, userRole: user.userType });
+    console.log('Total responders before save:', request.responders.length);
+
+    // If this is the first responder, set as primary acceptedBy
+    if (!request.acceptedBy) {
+      request.status = 'Approved';
+      request.acceptedBy = userId;
+      request.acceptedByName = user.name;
+      request.acceptedByRole = user.userType;
+      request.chatEnabled = true;
+    }
     
     await request.save();
+    
+    console.log('Total responders after save:', request.responders.length);
+    console.log('Responders array:', JSON.stringify(request.responders, null, 2));
 
     return res.json({
       message: "Request accepted successfully",
-      request
+      request,
+      totalResponders: request.responders.length
     });
   } catch (error) {
     console.error("Accept request error:", error);
@@ -191,6 +221,112 @@ export async function getRequestsByLocation(req, res) {
     console.error("Get requests by location error:", error);
     return res.status(500).json({ 
       message: "Error fetching requests by location", 
+      error: error.message 
+    });
+  }
+}
+
+// Get responders for a specific request
+export async function getRequestResponders(req, res) {
+  try {
+    const { requestId } = req.params;
+
+    const request = await Request.findById(requestId)
+      .populate('responders.userId', 'name email phone userType');
+
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    return res.json({
+      responders: request.responders,
+      totalResponders: request.responders.length
+    });
+  } catch (error) {
+    console.error("Get responders error:", error);
+    return res.status(500).json({ 
+      message: "Error fetching responders", 
+      error: error.message 
+    });
+  }
+}
+
+// Withdraw from a request
+export async function withdrawFromRequest(req, res) {
+  try {
+    const { requestId } = req.params;
+    const userId = req.user.id;
+
+    const request = await Request.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    // Find responder
+    const responderIndex = request.responders.findIndex(
+      responder => responder.userId.toString() === userId
+    );
+
+    if (responderIndex === -1) {
+      return res.status(400).json({ message: "You haven't accepted this request" });
+    }
+
+    // Update responder status to withdrawn
+    request.responders[responderIndex].status = 'Withdrawn';
+
+    // If this was the primary acceptedBy, reassign to next active responder
+    if (request.acceptedBy && request.acceptedBy.toString() === userId) {
+      const nextActiveResponder = request.responders.find(
+        r => r.status === 'Active' && r.userId.toString() !== userId
+      );
+
+      if (nextActiveResponder) {
+        request.acceptedBy = nextActiveResponder.userId;
+        request.acceptedByName = nextActiveResponder.userName;
+        request.acceptedByRole = nextActiveResponder.userRole;
+      } else {
+        // No other active responders, set back to pending
+        request.status = 'Pending';
+        request.acceptedBy = null;
+        request.acceptedByName = null;
+        request.acceptedByRole = null;
+        request.chatEnabled = false;
+      }
+    }
+
+    await request.save();
+
+    return res.json({
+      message: "Successfully withdrawn from request",
+      request
+    });
+  } catch (error) {
+    console.error("Withdraw from request error:", error);
+    return res.status(500).json({ 
+      message: "Error withdrawing from request", 
+      error: error.message 
+    });
+  }
+}
+
+// Get my accepted requests (for NGOs/Volunteers/Suppliers)
+export async function getMyAcceptedRequests(req, res) {
+  try {
+    const userId = req.user.id;
+    
+    const requests = await Request.find({
+      'responders.userId': userId,
+      'responders.status': 'Active'
+    })
+      .populate('survivorId', 'name phone email')
+      .populate('responders.userId', 'name userType')
+      .sort({ createdAt: -1 });
+
+    return res.json({ requests, total: requests.length });
+  } catch (error) {
+    console.error("Get my accepted requests error:", error);
+    return res.status(500).json({ 
+      message: "Error fetching your accepted requests", 
       error: error.message 
     });
   }

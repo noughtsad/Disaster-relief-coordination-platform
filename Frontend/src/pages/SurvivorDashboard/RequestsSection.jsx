@@ -1,15 +1,66 @@
-import React, { useContext, useState } from "react";
-import { useSelector } from 'react-redux';
+import React, { useContext, useState, useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux';
 import { PlusCircle, Edit, MessageCircle } from "lucide-react";
 import { ThemeContext } from "../../context/ThemeContext";
 import ChatModal from '../../components/ChatModal';
+import { setRequests, setLoading, setError } from '../../store/requestSlice';
+import axios from 'axios';
 
 const RequestsSection = ({ setActiveSection }) => {
   const { theme } = useContext(ThemeContext);
+  const dispatch = useDispatch();
   const { requests } = useSelector((state) => state.requests);
   const { user } = useSelector((state) => state.app);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Fetch user's requests on component mount
+  useEffect(() => {
+    const fetchMyRequests = async () => {
+      dispatch(setLoading(true));
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/request/my-requests`,
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        // Format the requests for the frontend
+        const formattedRequests = response.data.requests.map(req => ({
+          id: req._id,
+          type: req.type,
+          status: req.status,
+          date: new Date(req.createdAt).toLocaleDateString(),
+          urgency: req.urgency,
+          description: req.description,
+          latitude: req.latitude,
+          longitude: req.longitude,
+          address: req.address,
+          location: req.location,
+          contactInfo: req.contactInfo,
+          survivorId: req.survivorId,
+          acceptedBy: req.acceptedBy,
+          chatEnabled: req.chatEnabled,
+          responders: req.responders || [], // Include responders array
+        }));
+        
+        dispatch(setRequests(formattedRequests));
+      } catch (err) {
+        console.error('Error fetching requests:', err);
+        dispatch(setError(err.response?.data?.message || 'Failed to fetch requests'));
+      } finally {
+        dispatch(setLoading(false));
+      }
+    };
+
+    if (user) {
+      fetchMyRequests();
+    }
+  }, [dispatch, user]);
 
   const handleOpenChat = (request) => {
     setSelectedRequest(request);
@@ -58,6 +109,39 @@ const RequestsSection = ({ setActiveSection }) => {
                   <p className={`text-sm mt-1 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
                     {request.description}
                   </p>
+                  {/* Location Information */}
+                  {(request.latitude || request.longitude || request.address) && (
+                    <div className={`text-xs mt-2 space-y-1 ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>
+                      {(request.latitude && request.longitude) && (
+                        <div>📍 {request.latitude}, {request.longitude}</div>
+                      )}
+                      {request.address && (
+                        <div>📮 {request.address}</div>
+                      )}
+                    </div>
+                  )}
+                  {/* Responders List */}
+                  {request.responders && request.responders.length > 0 && (
+                    <div className="mt-3">
+                      <p className={`text-xs font-semibold mb-2 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>
+                        {request.responders.length} Helper(s) Assigned:
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {request.responders.map((responder, index) => (
+                          <span 
+                            key={index}
+                            className={`px-2 py-1 text-xs rounded-full ${
+                              responder.userRole === 'NGO' ? 'bg-blue-100 text-blue-700' :
+                              responder.userRole === 'Volunteer' ? 'bg-green-100 text-green-700' :
+                              'bg-purple-100 text-purple-700'
+                            }`}
+                          >
+                            {responder.userName} ({responder.userRole})
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col items-end gap-2">
                   <span className={`px-3 py-1 text-xs rounded-full ${

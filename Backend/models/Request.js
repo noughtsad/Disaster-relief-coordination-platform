@@ -54,7 +54,7 @@ const RequestSchema = new Schema(
     survivorPhone: {
       type: String
     },
-    // Assignment info
+    // Assignment info - Primary responder
     acceptedBy: { 
       type: Schema.Types.ObjectId, 
       ref: 'User'
@@ -66,6 +66,32 @@ const RequestSchema = new Schema(
       type: String,
       enum: ['NGO', 'Volunteer', 'Supplier', null]
     },
+    // Multiple responders (NGOs, Volunteers, Suppliers who want to help)
+    responders: [{
+      userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+      },
+      userName: {
+        type: String,
+        required: true
+      },
+      userRole: {
+        type: String,
+        enum: ['NGO', 'Volunteer', 'Supplier'],
+        required: true
+      },
+      acceptedAt: {
+        type: Date,
+        default: Date.now
+      },
+      status: {
+        type: String,
+        enum: ['Active', 'Completed', 'Withdrawn'],
+        default: 'Active'
+      }
+    }],
     // Chat feature
     chatEnabled: { 
       type: Boolean, 

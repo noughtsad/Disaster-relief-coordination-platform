@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   Plus, 
@@ -9,12 +9,14 @@ import {
 import { 
   updateRequestStatus,
   acceptRequest, 
+  setRequests,
   setLoading as setRequestLoading, 
   setError as setRequestError, 
   clearError as clearRequestError 
 } from '../../store/requestSlice';
 import { ThemeContext } from "../../context/ThemeContext";
 import ChatModal from '../../components/ChatModal';
+import axios from 'axios';
 
 const ViewRequestsSection = () => {
   const { theme } = useContext(ThemeContext);
@@ -23,6 +25,57 @@ const ViewRequestsSection = () => {
   const { user } = useSelector((state) => state.app);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Fetch all requests function (can be called anytime)
+  const fetchAllRequests = async () => {
+    dispatch(setRequestLoading(true));
+    dispatch(clearRequestError());
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/request/all`,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      // Format the requests for the frontend
+      const formattedRequests = response.data.requests.map(req => ({
+        id: req._id,
+        type: req.type,
+        status: req.status,
+        date: new Date(req.createdAt).toLocaleDateString(),
+        urgency: req.urgency,
+        description: req.description,
+        latitude: req.latitude,
+        longitude: req.longitude,
+        address: req.address,
+        location: req.location,
+        contactInfo: req.contactInfo,
+        survivorId: req.survivorId?._id || req.survivorId,
+        survivorName: req.survivorName || req.survivorId?.name,
+        acceptedBy: req.acceptedBy?._id || req.acceptedBy,
+          chatEnabled: req.chatEnabled,
+          responders: req.responders || [], // Include responders array
+        }));
+        
+        dispatch(setRequests(formattedRequests));
+      } catch (err) {
+        console.error('Error fetching requests:', err);
+        dispatch(setRequestError(err.response?.data?.message || 'Failed to fetch requests'));
+      } finally {
+        dispatch(setRequestLoading(false));
+      }
+    };
+
+  // Fetch all requests on component mount
+  useEffect(() => {
+    if (user) {
+      fetchAllRequests();
+    }
+  }, [dispatch, user]);
 
   const handleMarkComplete = async (id) => {
     dispatch(setRequestLoading(true));
@@ -43,12 +96,32 @@ const ViewRequestsSection = () => {
     dispatch(setRequestLoading(true));
     dispatch(clearRequestError());
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      dispatch(acceptRequest({ id, acceptedBy: user?.id || 'ngo-1' }));
-      alert('Request accepted! You can now chat with the survivor.');
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/request/accept/${id}`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      // Update local state with the new request data
+      dispatch(acceptRequest({ 
+        id, 
+        acceptedBy: user?.id,
+        responders: response.data.request.responders
+      }));
+      
+      alert(`Request accepted successfully! Total responders: ${response.data.totalResponders}`);
+      
+      // Refresh the requests list to show updated data
+      await fetchAllRequests();
     } catch (err) {
-      dispatch(setRequestError(err.message));
+      console.error('Accept request error:', err);
+      dispatch(setRequestError(err.response?.data?.message || 'Failed to accept request'));
+      alert(err.response?.data?.message || 'Failed to accept request');
     } finally {
       dispatch(setRequestLoading(false));
     }
@@ -122,12 +195,47 @@ const ViewRequestsSection = () => {
                   </div>
                 </div>
                 <p
-                  className={`${
+                  className={`mb-3 ${
                     theme === "light" ? "text-gray-700" : "text-gray-300"
                   }`}
                 >
                   {request.description} {/* Using description from requestSlice */}
                 </p>
+
+                {/* Show coordinates if available */}
+                {request.latitude && request.longitude && (
+                  <div className={`text-xs ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>
+                    📍 Coordinates: {request.latitude}, {request.longitude}
+                    {request.address && <div className="mt-1">📮 {request.address}</div>}
+                  </div>
+                )}
+
+                {/* Show responders */}
+                {request.responders && request.responders.length > 0 && (
+                  <div className={`mt-3 p-2 rounded-lg ${
+                    theme === "light" ? "bg-blue-50 border border-blue-200" : "bg-blue-900/20 border border-blue-700"
+                  }`}>
+                    <p className={`text-xs font-semibold mb-1 ${
+                      theme === "light" ? "text-blue-800" : "text-blue-300"
+                    }`}>
+                      {request.responders.length} Helper{request.responders.length > 1 ? 's' : ''} Assigned:
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {request.responders.map((responder, idx) => (
+                        <span
+                          key={idx}
+                          className={`px-2 py-0.5 rounded text-xs ${
+                            theme === "light" 
+                              ? "bg-blue-100 text-blue-700" 
+                              : "bg-blue-800 text-blue-200"
+                          }`}
+                        >
+                          {responder.userName} ({responder.userRole})
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex flex-col items-end gap-2">
                 <span

@@ -1,53 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  requests: [
-    { 
-      id: 1, 
-      type: 'Shelter', 
-      status: 'Pending', 
-      date: '01-01-2025', 
-      urgency: 'High', 
-      description: 'Need temporary shelter for family of 4',
-      location: 'Downtown District',
-      latitude: '19.0760',
-      longitude: '72.8777',
-      address: 'Downtown District, Mumbai',
-      survivorId: 'survivor-1',
-      acceptedBy: null,
-      chatEnabled: false
-    },
-    { 
-      id: 2, 
-      type: 'Food', 
-      status: 'Approved', 
-      date: '01-01-2025', 
-      urgency: 'Medium', 
-      description: 'Food supplies for 1 week',
-      location: 'North Area',
-      latitude: '19.2183',
-      longitude: '72.9781',
-      address: 'North Area, Mumbai',
-      survivorId: 'survivor-1',
-      acceptedBy: 'ngo-1',
-      chatEnabled: true
-    },
-    { 
-      id: 3, 
-      type: 'Medical Supplies', 
-      status: 'Completed', 
-      date: '01-01-2025', 
-      urgency: 'High', 
-      description: 'First aid kit and medications',
-      location: 'East Zone',
-      latitude: '19.1136',
-      longitude: '72.8697',
-      address: 'East Zone, Mumbai',
-      survivorId: 'survivor-1',
-      acceptedBy: 'volunteer-1',
-      chatEnabled: true
-    }
-  ],
+  requests: [], // Will be populated dynamically from backend API
   loading: false,
   error: null,
 };
