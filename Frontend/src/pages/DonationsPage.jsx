@@ -93,7 +93,7 @@ const DonationsPage = () => {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            Pay up
+            Every Rupee Counts
           </motion.h1>
           <motion.div 
             className="space-y-2"
@@ -101,12 +101,12 @@ const DonationsPage = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
-            <p className={`text-lg sm:text-xl md:text-2xl font-semibold ${textSub}`}>
+            {/* <p className={`text-lg sm:text-xl md:text-2xl font-semibold ${textSub}`}>
               Trust me, we got this
             </p>
             <p className={`text-lg sm:text-xl md:text-2xl font-semibold ${textSub}`}>
               Just Do It.
-            </p>
+            </p> */}
           </motion.div>
           <motion.div 
             className="mt-6 sm:mt-8"
@@ -235,9 +235,9 @@ const DonationsPage = () => {
           {/* Right Side - QR Code */}
           <div className="flex flex-col items-center justify-center">
             <div className={`rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl border text-center ${bgCard}`}>
-              <h3 className={`text-xl sm:text-2xl font-bold mb-3 sm:mb-4 ${textMain}`}>
+              {/* <h3 className={`text-xl sm:text-2xl font-bold mb-3 sm:mb-4 ${textMain}`}>
                 Communism for the win?
-              </h3>
+              </h3> */}
               
               {/* QR Code */}
               <div className="bg-white p-4 sm:p-6 rounded-xl shadow-inner mb-4 sm:mb-6">

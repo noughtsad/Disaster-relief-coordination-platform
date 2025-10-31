@@ -79,3 +79,13 @@ export async function deleteNgo(req, res) {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 }
+
+export async function getAllNgos(req, res) {
+  try {
+    const ngos = await Ngo.find().populate("owner", "name email");
+    return res.status(200).json({ ngos });
+  } catch (error) {
+    console.error("Error fetching all NGOs:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+}
