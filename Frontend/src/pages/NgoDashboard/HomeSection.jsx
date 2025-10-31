@@ -7,6 +7,7 @@ import {
   AlertCircle 
 } from "lucide-react";
 import { ThemeContext } from "../../context/ThemeContext";
+import MapComponent from "../../components/Map";
 
 const HomeSection = () => {
   const { theme } = useContext(ThemeContext);
@@ -219,6 +220,7 @@ const HomeSection = () => {
           </div>
         </div>
       </div>
+      <MapComponent />
     </div>
   );
 };

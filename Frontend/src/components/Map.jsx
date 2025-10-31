@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
-export default function MapComponent() {
+export default function MapComponent({ ngos = [], showNgoMarkers = false }) {
   const mapRef = useRef(null);
   const googleMapRef = useRef(null);
-  const markerRef = useRef(null);
+  const userMarkerRef = useRef(null);
+  const ngoMarkersRef = useRef([]);
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
   
   const [userLocation, setUserLocation] = useState(null);
@@ -107,7 +108,7 @@ export default function MapComponent() {
         });
 
         // Add a marker at user's location
-        markerRef.current = new window.google.maps.Marker({
+        userMarkerRef.current = new window.google.maps.Marker({
           position: userLocation,
           map: googleMapRef.current,
           title: locationError ? 'Default Location (Mumbai)' : 'Your Location',
@@ -122,21 +123,115 @@ export default function MapComponent() {
           },
         });
 
-        // Add info window
-        const infoWindow = new window.google.maps.InfoWindow({
+        // Add info window for user location
+        const userInfoWindow = new window.google.maps.InfoWindow({
           content: locationError 
             ? `<div style="padding: 8px;"><strong>Default Location</strong><br/>Location access denied or unavailable</div>`
             : `<div style="padding: 8px;"><strong>You are here</strong><br/>Lat: ${userLocation.lat.toFixed(6)}, Lng: ${userLocation.lng.toFixed(6)}</div>`,
         });
 
-        markerRef.current.addListener('click', () => {
-          infoWindow.open(googleMapRef.current, markerRef.current);
+        userMarkerRef.current.addListener('click', () => {
+          userInfoWindow.open(googleMapRef.current, userMarkerRef.current);
         });
+
+        // Add NGO markers if enabled
+        if (showNgoMarkers && ngos.length > 0) {
+          addNgoMarkers();
+        }
 
         console.log('Map initialized successfully at user location');
       } catch (error) {
         console.error('Error initializing map:', error);
       }
+    };
+
+    const addNgoMarkers = () => {
+      // Clear existing NGO markers
+      ngoMarkersRef.current.forEach(marker => marker.setMap(null));
+      ngoMarkersRef.current = [];
+
+      ngos.forEach((ngo) => {
+        const ngoLat = parseFloat(ngo.ngoLatitude);
+        const ngoLng = parseFloat(ngo.ngoLongitude);
+
+        if (isNaN(ngoLat) || isNaN(ngoLng)) {
+          console.warn(`Invalid coordinates for NGO: ${ngo.ngoName}`);
+          return;
+        }
+
+        const ngoPosition = { lat: ngoLat, lng: ngoLng };
+
+        // Create custom NGO icon (red marker)
+        const ngoMarker = new window.google.maps.Marker({
+          position: ngoPosition,
+          map: googleMapRef.current,
+          title: ngo.ngoName,
+          animation: window.google.maps.Animation.DROP,
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: '#DC2626', // Red color for NGOs
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2,
+          },
+        });
+
+        // Calculate distance from user location (simple Haversine formula)
+        const distance = calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          ngoLat,
+          ngoLng
+        );
+
+        // Create info window for NGO
+        const ngoInfoWindow = new window.google.maps.InfoWindow({
+          content: `
+            <div style="padding: 12px; max-width: 250px;">
+              <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #1F2937;">
+                ${ngo.ngoName}
+              </h3>
+              <div style="font-size: 14px; color: #4B5563; margin-bottom: 6px;">
+                <strong>Contact:</strong> ${ngo.ngoContact}
+              </div>
+              ${ngo.ngoDescription ? `
+                <div style="font-size: 13px; color: #6B7280; margin-bottom: 6px;">
+                  ${ngo.ngoDescription}
+                </div>
+              ` : ''}
+              <div style="font-size: 13px; color: #059669; font-weight: 500;">
+                📍 ${distance.toFixed(2)} km away
+              </div>
+              <div style="font-size: 11px; color: #9CA3AF; margin-top: 6px;">
+                Lat: ${ngoLat.toFixed(6)}, Lng: ${ngoLng.toFixed(6)}
+              </div>
+            </div>
+          `,
+        });
+
+        ngoMarker.addListener('click', () => {
+          ngoInfoWindow.open(googleMapRef.current, ngoMarker);
+        });
+
+        ngoMarkersRef.current.push(ngoMarker);
+      });
+
+      console.log(`Added ${ngoMarkersRef.current.length} NGO markers to map`);
+    };
+
+    const calculateDistance = (lat1, lon1, lat2, lon2) => {
+      // Haversine formula to calculate distance between two points
+      const R = 6371; // Radius of the Earth in km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = R * c;
+      return distance;
     };
 
     loadGoogleMapsScript();
@@ -146,11 +241,94 @@ export default function MapComponent() {
       if (googleMapRef.current) {
         googleMapRef.current = null;
       }
-      if (markerRef.current) {
-        markerRef.current = null;
+      if (userMarkerRef.current) {
+        userMarkerRef.current = null;
       }
+      ngoMarkersRef.current.forEach(marker => marker.setMap(null));
+      ngoMarkersRef.current = [];
     };
   }, [apiKey, userLocation]);
+
+  // Re-add NGO markers when ngos prop changes
+  useEffect(() => {
+    if (googleMapRef.current && showNgoMarkers && ngos.length > 0) {
+      // Clear existing markers
+      ngoMarkersRef.current.forEach(marker => marker.setMap(null));
+      ngoMarkersRef.current = [];
+
+      // Add new markers
+      ngos.forEach((ngo) => {
+        const ngoLat = parseFloat(ngo.ngoLatitude);
+        const ngoLng = parseFloat(ngo.ngoLongitude);
+
+        if (isNaN(ngoLat) || isNaN(ngoLng)) {
+          console.warn(`Invalid coordinates for NGO: ${ngo.ngoName}`);
+          return;
+        }
+
+        const ngoPosition = { lat: ngoLat, lng: ngoLng };
+
+        const ngoMarker = new window.google.maps.Marker({
+          position: ngoPosition,
+          map: googleMapRef.current,
+          title: ngo.ngoName,
+          animation: window.google.maps.Animation.DROP,
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: '#DC2626',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2,
+          },
+        });
+
+        const distance = ((lat1, lon1, lat2, lon2) => {
+          const R = 6371;
+          const dLat = (lat2 - lat1) * Math.PI / 180;
+          const dLon = (lon2 - lon1) * Math.PI / 180;
+          const a = 
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          return R * c;
+        })(userLocation.lat, userLocation.lng, ngoLat, ngoLng);
+
+        const ngoInfoWindow = new window.google.maps.InfoWindow({
+          content: `
+            <div style="padding: 12px; max-width: 250px;">
+              <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #1F2937;">
+                ${ngo.ngoName}
+              </h3>
+              <div style="font-size: 14px; color: #4B5563; margin-bottom: 6px;">
+                <strong>Contact:</strong> ${ngo.ngoContact}
+              </div>
+              ${ngo.ngoDescription ? `
+                <div style="font-size: 13px; color: #6B7280; margin-bottom: 6px;">
+                  ${ngo.ngoDescription}
+                </div>
+              ` : ''}
+              <div style="font-size: 13px; color: #059669; font-weight: 500;">
+                📍 ${distance.toFixed(2)} km away
+              </div>
+              <div style="font-size: 11px; color: #9CA3AF; margin-top: 6px;">
+                Lat: ${ngoLat.toFixed(6)}, Lng: ${ngoLng.toFixed(6)}
+              </div>
+            </div>
+          `,
+        });
+
+        ngoMarker.addListener('click', () => {
+          ngoInfoWindow.open(googleMapRef.current, ngoMarker);
+        });
+
+        ngoMarkersRef.current.push(ngoMarker);
+      });
+
+      console.log(`Updated ${ngoMarkersRef.current.length} NGO markers on map`);
+    }
+  }, [ngos, showNgoMarkers, userLocation]);
 
   if (!apiKey) {
     return (

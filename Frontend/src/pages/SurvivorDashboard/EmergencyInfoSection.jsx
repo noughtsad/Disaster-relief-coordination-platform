@@ -22,19 +22,19 @@ const EmergencyInfoSection = () => {
         <div className="grid md:grid-cols-2 gap-4">
           <div className={`p-4 rounded-lg border ${theme === "light" ? "border-red-200 bg-red-50" : "border-red-800 bg-red-900/20"}`}>
             <h4 className="font-medium text-red-700">Police</h4>
-            <p className="text-2xl font-bold text-red-800">911</p>
+            <p className="text-2xl font-bold text-red-800">100</p>
           </div>
           <div className={`p-4 rounded-lg border ${theme === "light" ? "border-red-200 bg-red-50" : "border-red-800 bg-red-900/20"}`}>
             <h4 className="font-medium text-red-700">Fire Department</h4>
-            <p className="text-2xl font-bold text-red-800">911</p>
+            <p className="text-2xl font-bold text-red-800">101</p>
           </div>
           <div className={`p-4 rounded-lg border ${theme === "light" ? "border-blue-200 bg-blue-50" : "border-blue-800 bg-blue-900/20"}`}>
             <h4 className="font-medium text-blue-700">Medical Emergency</h4>
-            <p className="text-2xl font-bold text-blue-800">911</p>
+            <p className="text-2xl font-bold text-blue-800">108</p>
           </div>
           <div className={`p-4 rounded-lg border ${theme === "light" ? "border-green-200 bg-green-50" : "border-green-800 bg-green-900/20"}`}>
             <h4 className="font-medium text-green-700">Disaster Relief</h4>
-            <p className="text-2xl font-bold text-green-800">(555) 123-HELP</p>
+            <p className="text-2xl font-bold text-green-800">112</p>
           </div>
         </div>
       </div>

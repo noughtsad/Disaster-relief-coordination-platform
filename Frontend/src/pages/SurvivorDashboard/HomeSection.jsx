@@ -1,6 +1,7 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSelector } from 'react-redux';
 import MapComponent from "../../components/Map";
+import axios from "axios";
 import { 
   List, 
   CheckCircle, 
@@ -12,13 +13,63 @@ import { ThemeContext } from "../../context/ThemeContext";
 const HomeSection = ({ setActiveSection, alerts = [] }) => {
   const { theme } = useContext(ThemeContext);
   const { requests } = useSelector((state) => state.requests);
+  const [ngos, setNgos] = useState([]);
+  const [loadingNgos, setLoadingNgos] = useState(true);
+
+  useEffect(() => {
+    // Fetch all NGOs
+    const fetchNgos = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/ngo/all`,
+          { withCredentials: true }
+        );
+        setNgos(response.data.ngos || []);
+        console.log('Fetched NGOs:', response.data.ngos);
+      } catch (error) {
+        console.error('Error fetching NGOs:', error);
+      } finally {
+        setLoadingNgos(false);
+      }
+    };
+
+    fetchNgos();
+  }, []);
 
   return (
     <div>
       <h2 className={`text-xl sm:text-2xl font-bold drop-shadow mb-4 sm:mb-6 ${theme === "light" ? "text-black" : "text-white"}`}>
         Dashboard
       </h2>
-      <MapComponent />
+      
+      {/* Map with NGO markers */}
+      {loadingNgos ? (
+        <div className={`w-full h-96 flex items-center justify-center rounded border ${
+          theme === "light" ? "bg-gray-100 border-gray-300" : "bg-gray-800 border-gray-700"
+        }`}>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-3"></div>
+            <p className={theme === "light" ? "text-gray-700" : "text-gray-300"}>
+              Loading nearby NGOs...
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="mb-6">
+          <MapComponent ngos={ngos} showNgoMarkers={true} />
+          <div className={`mt-2 text-sm ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
+            <span className="inline-flex items-center mr-4">
+              <span className="w-3 h-3 rounded-full bg-indigo-600 mr-2"></span>
+              Your Location
+            </span>
+            <span className="inline-flex items-center">
+              <span className="w-3 h-3 rounded-full bg-red-600 mr-2"></span>
+              NGO Locations ({ngos.length})
+            </span>
+          </div>
+        </div>
+      )}
+      
       {/* Quick Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div className={`backdrop-blur border rounded-xl p-4 sm:p-6 shadow-lg ${
