@@ -14,7 +14,6 @@ const RequestsSection = ({ setActiveSection }) => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  // Fetch user's requests on component mount
   useEffect(() => {
     const fetchMyRequests = async () => {
       dispatch(setLoading(true));
@@ -45,7 +44,7 @@ const RequestsSection = ({ setActiveSection }) => {
           survivorId: req.survivorId,
           acceptedBy: req.acceptedBy,
           chatEnabled: req.chatEnabled,
-          responders: req.responders || [], // Include responders array
+          responders: req.responders || [],
         }));
         
         dispatch(setRequests(formattedRequests));
@@ -143,7 +142,7 @@ const RequestsSection = ({ setActiveSection }) => {
         theme === "light" ? "bg-white/95 border-gray-200" : "bg-gray-900/95 border-gray-700"
       }`}>
         <div className={`p-4 border-b ${
-          theme === "light" ? "border-gray-200 bg-gray-50" : "border-gray-700 bg-gray-800"
+          theme === "light" ? "border-gray-200 bg-gray-50" : "bg-gray-800"
         }`}>
           <div className="flex justify-between items-center">
             <h3 className={`font-semibold text-lg ${theme === "light" ? "text-indigo-700" : "text-indigo-400"}`}>
@@ -241,7 +240,7 @@ const RequestsSection = ({ setActiveSection }) => {
                   )}
                   
                   {/* Chat Button (only for Ongoing/Complete/Verified requests with chat enabled) */}
-                  {request.chatEnabled && (request.status === 'Ongoing' || request.status === 'Complete' || request.status === 'Verified') && (
+                  {request.chatEnabled && (
                     <button 
                       onClick={() => handleOpenChat(request)}
                       className="px-3 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition flex items-center gap-2"
@@ -265,16 +264,14 @@ const RequestsSection = ({ setActiveSection }) => {
       </div>
 
       {/* Chat Modal */}
-      <ChatModal
-        isOpen={isChatOpen}
-        onClose={handleCloseChat}
-        request={selectedRequest}
-        currentUser={{
-          id: user?.id || 'survivor-1',
-          name: user?.name || 'Survivor',
-          role: 'Survivor'
-        }}
-      />
+      {selectedRequest && (
+        <ChatModal
+          isOpen={isChatOpen}
+          onClose={handleCloseChat}
+          requestId={selectedRequest.id}
+          theme={theme} // Pass theme prop
+        />
+      )}
     </div>
   );
 };

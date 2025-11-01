@@ -18,18 +18,20 @@ import { ThemeContext } from "../../context/ThemeContext";
 import ChatModal from '../../components/ChatModal';
 import axios from 'axios';
 
-const AcceptedRequestsSection = () => {
+const NewRequestsSection = () => {
   const { theme } = useContext(ThemeContext);
   const dispatch = useDispatch();
-  const { acceptedRequests, loading, error } = useSelector((state) => state.requests);
+  const { pendingRequests, loading, error } = useSelector((state) => state.requests);
   const { user } = useSelector((state) => state.app);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   const loadRequests = useCallback(() => {
     if (user && user.userType === 'NGO') {
-      dispatch(fetchAcceptedRequests());
+      dispatch(fetchPendingRequests());
     }
+    console.log('Pending Requests:', pendingRequests);
+    // console.log('Accepted Requests:', acceptedRequests); // Not needed here
   }, [dispatch, user]);
 
   useEffect(() => {
@@ -59,11 +61,29 @@ const AcceptedRequestsSection = () => {
       alert(response.data.message || 'Request marked as complete! Awaiting survivor verification.');
       
       // Refresh the requests list
-      loadRequests(); // Use loadRequests to refresh accepted list
+      loadRequests(); // Use loadRequests to refresh pending list
     } catch (err) {
       console.error('Mark complete error:', err);
       dispatch(setRequestError(err.response?.data?.message || 'Failed to mark request as complete'));
       alert(err.response?.data?.message || 'Failed to mark request as complete');
+    } finally {
+      dispatch(setRequestLoading(false));
+    }
+  };
+
+  const handleAcceptRequest = async (id) => {
+    dispatch(setRequestLoading(true));
+    dispatch(clearRequestError());
+    try {
+      await dispatch(acceptRequestAsync(id)).unwrap(); // Dispatch async thunk
+      
+      alert(`Request accepted successfully!`);
+      
+      loadRequests(); // Refresh both lists (will update pending and accepted in store)
+    } catch (err) {
+      console.error('Accept request error:', err);
+      dispatch(setRequestError(err));
+      alert(err || 'Failed to accept request');
     } finally {
       dispatch(setRequestLoading(false));
     }
@@ -188,7 +208,15 @@ const AcceptedRequestsSection = () => {
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
-        {/* Accept Button (ONLY for Accepted Requests) - Removed from here, now in NewRequestsSection */}
+        {/* Accept Button (only for Pending requests) */}
+        {request.status === 'Pending' && (
+          <button
+            onClick={() => handleAcceptRequest(request.id)}
+            className="px-3 sm:px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition"
+          >
+            Accept Request
+          </button>
+        )}
         
         {/* Mark Complete Button (only for Ongoing requests if user is a responder) */}
         {request.status === 'Ongoing' && (
@@ -200,8 +228,8 @@ const AcceptedRequestsSection = () => {
           </button>
         )}
         
-        {/* Chat Button (only for Ongoing/Complete requests with chat enabled) */}
-        {request.chatEnabled && (
+        {/* Chat Button (ONLY for Accepted/Ongoing requests - NOT for New Requests) */}
+        {/* {request.chatEnabled && (
           <button
             onClick={() => handleOpenChat(request)}
             className="px-3 sm:px-4 py-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition flex items-center gap-2"
@@ -209,7 +237,7 @@ const AcceptedRequestsSection = () => {
             <MessageCircle className="w-4 h-4" />
             Open Chat
           </button>
-        )}
+        )} */}
 
         <button className="px-3 sm:px-4 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700">
           View Details
@@ -222,7 +250,7 @@ const AcceptedRequestsSection = () => {
     return (
       <div className={`text-center py-8 ${
         theme === 'light' ? 'text-gray-700' : 'text-gray-300'
-      }`}>Loading accepted requests...
+      }`}>Loading new requests...
       </div>
     );
   }
@@ -241,22 +269,25 @@ const AcceptedRequestsSection = () => {
             theme === "light" ? "text-gray-900" : "text-white"
           }`}
         >
-          Accepted Requests
+          New Requests
         </h1>
       </div>
 
-      {/* Accepted Requests Section */}
-      <div className="grid gap-4 sm:gap-6">
-        {acceptedRequests.length === 0 ? (
+      {/* Pending Requests Section */}
+      {/* <h2 className={`text-2xl font-bold mb-4 ${
+        theme === "light" ? "text-gray-900" : "text-white"
+      }`}>Pending Requests</h2> */}
+      <div className="grid gap-4 sm:gap-6 mb-8">
+        {pendingRequests.length === 0 ? (
           <p className={`text-center ${
             theme === "light" ? "text-gray-600" : "text-gray-400"
-          }`}>No accepted requests found.</p>
+          }`}>No new requests found.</p>
         ) : (
-          acceptedRequests.map(renderRequestCard)
+          pendingRequests.map(renderRequestCard)
         )}
       </div>
 
-      {/* Chat Modal */}
+      {/* Chat Modal (only if needed for some reason, but typically only for accepted requests) */}
       {selectedRequest && isChatOpen && (
         <ChatModal
           isOpen={isChatOpen}
@@ -269,4 +300,4 @@ const AcceptedRequestsSection = () => {
   );
 };
 
-export default AcceptedRequestsSection;
+export default NewRequestsSection;

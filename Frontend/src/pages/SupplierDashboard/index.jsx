@@ -7,6 +7,7 @@ import {
   User,
   Menu,
   X,
+  MessageSquare,
 } from "lucide-react";
 import { ThemeContext } from "../../context/ThemeContext";
 
@@ -16,6 +17,7 @@ import ManageInventorySection from './ManageInventorySection';
 import ViewOrdersSection from './ViewOrdersSection';
 import ManageDeliveriesSection from './ManageDeliveriesSection';
 import ProfileSection from './ProfileSection';
+import CommunicationsSection from './CommunicationsSection';
 
 export default function SupplierDashboard() {
   const { theme } = useContext(ThemeContext);
@@ -46,9 +48,39 @@ export default function SupplierDashboard() {
 
   // Mock data for orders
   const [orders] = useState([
-    { id: 1, item: "Water Bottles", quantity: 5000, ngo: "Red Cross", date: "2025-10-01", status: "Pending", deliveryDate: "2025-10-05" },
-    { id: 2, item: "Emergency Tents", quantity: 50, ngo: "Local Aid Group", date: "2025-09-29", status: "Delivered", deliveryDate: "2025-10-02" },
-    { id: 3, item: "First Aid Kits", quantity: 100, ngo: "Health Care United", date: "2025-09-28", status: "Processing", deliveryDate: "2025-10-04" },
+    {
+      id: 1,
+      requestId: "654321098765432109876545", // Example requestId
+      item: "Water Bottles",
+      quantity: 5000,
+      ngo: "Red Cross",
+      date: "2025-10-01",
+      status: "Pending",
+      deliveryDate: "2025-10-05",
+      chatEnabled: true,
+    },
+    {
+      id: 2,
+      requestId: "654321098765432109876546", // Example requestId
+      item: "Emergency Tents",
+      quantity: 50,
+      ngo: "Local Aid Group",
+      date: "2025-09-29",
+      status: "Delivered",
+      deliveryDate: "2025-10-02",
+      chatEnabled: true,
+    },
+    {
+      id: 3,
+      requestId: "654321098765432109876547", // Example requestId
+      item: "First Aid Kits",
+      quantity: 100,
+      ngo: "Health Care United",
+      date: "2025-09-28",
+      status: "Processing",
+      deliveryDate: "2025-10-04",
+      chatEnabled: true,
+    },
   ]);
 
   // Mock data for deliveries
@@ -69,6 +101,8 @@ export default function SupplierDashboard() {
         return <ManageDeliveriesSection theme={theme} deliveries={deliveries} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />;
       case 'profile':
         return <ProfileSection theme={theme} supplierProfile={supplierProfile} />;
+      case 'communications':
+        return <CommunicationsSection />;
       default:
         return <HomeSection theme={theme} supplierProfile={supplierProfile} orders={orders} inventory={inventory} />;
     }
@@ -208,6 +242,26 @@ export default function SupplierDashboard() {
               <div className="flex items-center">
                 <User className="mr-3 h-5 w-5" />
                 Profile
+              </div>
+            </button>
+            <button
+              onClick={() => {
+                setActiveSection('communications');
+                setIsMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors ${
+                activeSection === 'communications'
+                  ? theme === 'light'
+                    ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
+                    : 'bg-blue-900 text-blue-100'
+                  : theme === 'light'
+                  ? 'text-gray-700 hover:bg-gray-100'
+                  : 'text-gray-300 hover:bg-gray-700'
+              }`}
+            >
+              <div className="flex items-center">
+                <MessageSquare className="mr-3 h-5 w-5" />
+                Communications
               </div>
             </button>
           </div>

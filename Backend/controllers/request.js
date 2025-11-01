@@ -34,7 +34,7 @@ export async function createRequest(req, res) {
       survivorName: user.name,
       survivorPhone: user.phone || contactInfo,
       status: 'Pending',
-      chatEnabled: false
+      chatEnabled: true // Set chatEnabled to true by default for new requests
     });
 
     return res.status(201).json({
@@ -53,7 +53,14 @@ export async function createRequest(req, res) {
 // Get all requests (for NGOs/Volunteers)
 export async function getAllRequests(req, res) {
   try {
-    const requests = await Request.find()
+    const { status } = req.query; // Get status from query parameters
+    const filter = {};
+
+    if (status) {
+      filter.status = status;
+    }
+
+    const requests = await Request.find(filter)
       .populate('survivorId', 'name phone email')
       .populate('acceptedBy', 'name userType')
       .populate('responders.userId', 'name userType')
@@ -431,8 +438,8 @@ export async function getMyAcceptedRequests(req, res) {
     const userId = req.user.id;
     
     const requests = await Request.find({
-      'responders.userId': userId,
-      'responders.status': 'Active'
+      acceptedBy: userId, // Filter by the primary acceptor
+      status: 'Ongoing' // Only show requests that are currently ongoing
     })
       .populate('survivorId', 'name phone email')
       .populate('responders.userId', 'name userType')

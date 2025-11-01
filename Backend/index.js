@@ -1,16 +1,30 @@
 import express from "express";
 import mongoose from "mongoose";
 import Feedback from "./models/Feedback.js";
+import Request from "./models/Request.js";
 import * as math from "./mathModule.js";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
 import requestRoutes from "./routes/request.js";
+import chatRoutes from "./routes/chat.js";
 import passport from "passport";
 import cors from "cors";
 import ngoRoutes from "./routes/ngo.js";
 import cookieParser from "cookie-parser";
+import { createServer } from "http";
+import { Server } from "socket.io";
+
 const app = express();
 dotenv.config();
+
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:5176", process.env.FRONTEND_URL],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 
@@ -71,6 +85,7 @@ app.get("/math", (req, res) => {
 app.use("/auth", authRoutes);
 app.use("/ngo", ngoRoutes);
 app.use("/request", requestRoutes);
+app.use("/chat", chatRoutes);
 
 app.get("/" , (req,res) =>{
   res.send("Welcome to Disaster Relief Coordination Platform API")
@@ -80,6 +95,71 @@ app.use((req, res) => {
   res.status(404).send("Route not found");
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}/`);
+io.on("connection", (socket) => {
+
+  socket.on("joinRoom", async ({ requestId, userId, userRole }) => {
+    try {
+      const request = await Request.findById(requestId);
+      if (!request) {
+        socket.emit("error", "Request not found");
+        return;
+      }
+
+      const isParticipant = 
+        request.survivorId.toString() === userId ||
+        (request.acceptedBy && request.acceptedBy.toString() === userId) ||
+        request.responders.some(r => r.userId.toString() === userId);
+
+      if (!isParticipant) {
+        socket.emit("error", "User not authorized for this room");
+        return;
+      }
+
+      socket.join(requestId);
+
+      const pastMessages = request.chatMessages.slice(-100);
+      socket.emit("pastMessages", pastMessages);
+
+    } catch (error) {
+      console.error("Error joining room:", error);
+      socket.emit("error", "Failed to join room");
+    }
+  });
+
+  socket.on("sendMessage", async ({ requestId, sender, onModel, messageContent }) => {
+    try {
+      const request = await Request.findById(requestId);
+      if (!request) {
+        console.error("Request not found for chat message");
+        socket.emit("error", "Request not found for chat message");
+        return;
+      }
+
+      const newMessage = {
+        sender,
+        onModel,
+        messageContent,
+        createdAt: new Date(),
+      };
+
+      request.chatMessages.push(newMessage);
+      await request.save();
+
+      const savedMessage = request.chatMessages[request.chatMessages.length - 1];
+
+      io.to(requestId).emit("newMessage", savedMessage);
+    } catch (error) {
+      console.error("Error sending message:", error.message);
+      console.error("Error stack:", error.stack);
+      socket.emit("error", "Failed to send message");
+    }
+  });
+
+  socket.on("disconnect", () => {
+    return;
+  });
+});
+
+httpServer.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}/`);
 });

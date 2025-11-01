@@ -1,7 +1,21 @@
-import React from 'react';
-import { List, Truck, Package, CheckCircle, Calendar } from 'lucide-react';
+import React, { useState, useContext } from "react";
+import { List, Truck, Package, CheckCircle, Calendar, MessageCircle } from 'lucide-react';
+import ChatModal from '../../components/ChatModal';
 
-export default function HomeSection({ theme, supplierProfile, orders, inventory }) {
+export default function HomeSection({ theme, supplierProfile, orders: initialOrders, inventory }) {
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState(null);
+  const [orders, setOrders] = useState(initialOrders);
+
+  const openChatModal = (requestId) => {
+    setSelectedRequestId(requestId);
+    setIsChatModalOpen(true);
+  };
+
+  const closeChatModal = () => {
+    setIsChatModalOpen(false);
+    setSelectedRequestId(null);
+  };
   return (
     <div className="space-y-8">
       <h1 className={`text-3xl font-bold mb-6 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
@@ -61,13 +75,23 @@ export default function HomeSection({ theme, supplierProfile, orders, inventory 
                 <p className={`font-medium ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{order.item} ({order.quantity})</p>
                 <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>For: {order.ngo}</p>
               </div>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                order.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                order.status === 'Processing' ? 'bg-blue-100 text-blue-800' :
-                'bg-green-100 text-green-800'
-              }`}>
-                {order.status}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  order.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                  order.status === 'Processing' ? 'bg-blue-100 text-blue-800' :
+                  'bg-green-100 text-green-800'
+                }`}>
+                  {order.status}
+                </span>
+                {order.chatEnabled && (
+                  <button 
+                    onClick={() => openChatModal(order.requestId)}
+                    className="p-1 rounded-full text-indigo-600 hover:bg-indigo-100 transition"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -91,6 +115,14 @@ export default function HomeSection({ theme, supplierProfile, orders, inventory 
           )}
         </div>
       </div>
+      {selectedRequestId && (
+        <ChatModal
+          isOpen={isChatModalOpen}
+          onClose={closeChatModal}
+          requestId={selectedRequestId}
+          theme={theme} // Pass theme prop
+        />
+      )}
     </div>
   );
 }

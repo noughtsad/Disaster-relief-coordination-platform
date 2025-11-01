@@ -97,6 +97,28 @@ const RequestSchema = new Schema(
       type: Boolean, 
       default: false 
     },
+    chatMessages: [
+      {
+        sender: {
+          type: Schema.Types.ObjectId,
+          required: true,
+          refPath: 'chatMessages.onModel',
+        },
+        onModel: {
+          type: String,
+          required: true,
+          enum: ['User', 'Ngo'],
+        },
+        messageContent: {
+          type: String,
+          required: true,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
     // Completion tracking
     completedBy: {
       type: Schema.Types.ObjectId,

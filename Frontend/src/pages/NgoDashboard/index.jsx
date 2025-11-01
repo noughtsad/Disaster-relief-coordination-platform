@@ -16,7 +16,8 @@ import { ThemeContext } from "../../context/ThemeContext";
 // Import all section components
 import HomeSection from './HomeSection';
 import ManageDonationsSection from './ManageDonationsSection';
-import ViewRequestsSection from './ViewRequestsSection';
+import NewRequestsSection from './NewRequestsSection'; // New import
+import AcceptedRequestsSection from './ViewRequestsSection'; // New import
 import CommunicationsSection from './CommunicationsSection';
 import ProfileSection from './ProfileSection';
 import ImpactTrackingSection from './ImpactTrackingSection';
@@ -42,8 +43,10 @@ export default function NgoDashboard() {
         return <HomeSection />;
       case "donations":
         return <ManageDonationsSection />;
-      case "requests":
-        return <ViewRequestsSection />;
+      case "newRequests": // New case
+        return <NewRequestsSection />;
+      case "acceptedRequests": // New case
+        return <AcceptedRequestsSection />;
       case "impact":
         return <ImpactTrackingSection />;
       case "communications":
@@ -138,11 +141,26 @@ export default function NgoDashboard() {
             </button>
             <button
               onClick={() => {
-                setActiveSection("requests");
+                setActiveSection("newRequests");
                 setIsMobileMenuOpen(false);
               }}
               className={`w-full flex items-center text-left hover:text-blue-600 ${
-                activeSection === "requests"
+                activeSection === "newRequests"
+                  ? "text-blue-600 font-semibold"
+                  : theme === "light"
+                  ? "text-gray-700"
+                  : "text-gray-300"
+              }`}
+            >
+              <List className="w-5 h-5 mr-3" /> New Requests
+            </button>
+            <button
+              onClick={() => {
+                setActiveSection("acceptedRequests");
+                setIsMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center text-left hover:text-blue-600 ${
+                activeSection === "acceptedRequests"
                   ? "text-blue-600 font-semibold"
                   : theme === "light"
                   ? "text-gray-700"

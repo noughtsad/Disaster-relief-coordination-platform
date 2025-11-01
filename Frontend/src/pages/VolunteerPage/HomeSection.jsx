@@ -1,17 +1,32 @@
-import React, { useContext } from "react";
-import { 
+import React, { useContext, useState } from "react";
+import {
   Calendar,
   Clock,
   CheckCircle,
   Star,
   Award,
-  Heart
+  Heart,
+  MessageCircle // Import MessageCircle icon
 } from "lucide-react";
 import { motion } from 'framer-motion';
 import { ThemeContext } from "../../context/ThemeContext";
+import ChatModal from '../../components/ChatModal'; // Import ChatModal
 
-const HomeSection = ({ volunteerProfile, schedule, opportunities, handleApplyForOpportunity }) => {
+const HomeSection = ({ volunteerProfile, schedule: initialSchedule, opportunities, handleApplyForOpportunity }) => {
   const { theme } = useContext(ThemeContext);
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState(null);
+  const [schedule, setSchedule] = useState(initialSchedule);
+
+  const openChatModal = (requestId) => {
+    setSelectedRequestId(requestId);
+    setIsChatModalOpen(true);
+  };
+
+  const closeChatModal = () => {
+    setIsChatModalOpen(false);
+    setSelectedRequestId(null);
+  };
 
   return (
     <motion.div 
@@ -117,13 +132,23 @@ const HomeSection = ({ volunteerProfile, schedule, opportunities, handleApplyFor
                   <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>{item.date} • {item.time}</p>
                   <p className={`text-sm ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}>{item.location}</p>
                 </div>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  item.status === 'confirmed' 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {item.status}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    item.status === 'confirmed' 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {item.status}
+                  </span>
+                  {item.chatEnabled && (
+                    <button 
+                      onClick={() => openChatModal(item.requestId)}
+                      className="p-1 rounded-full text-indigo-600 hover:bg-indigo-100 transition"
+                    >
+                      <MessageCircle className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -165,6 +190,14 @@ const HomeSection = ({ volunteerProfile, schedule, opportunities, handleApplyFor
           </div>
         </div>
       </div>
+      {selectedRequestId && (
+        <ChatModal
+          isOpen={isChatModalOpen}
+          onClose={closeChatModal}
+          requestId={selectedRequestId}
+          theme={theme} // Pass theme prop
+        />
+      )}
     </motion.div>
   );
 };

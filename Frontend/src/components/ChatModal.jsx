@@ -1,98 +1,82 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import io from 'socket.io-client';
+import axios from 'axios';
 import { X, Send, User, Paperclip, Smile } from 'lucide-react';
-import { ThemeContext } from '../context/ThemeContext';
+import { useSelector } from 'react-redux';
 
-const ChatModal = ({ isOpen, onClose, request, currentUser }) => {
-  const { theme } = useContext(ThemeContext);
+const socket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'); // Connect to your backend URL
+
+const ChatModal = ({ isOpen, onClose, requestId, theme }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
+  const user = useSelector(state => state.app.user); 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Sample initial messages (in real app, these would come from backend/socket)
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   useEffect(() => {
     if (isOpen) {
-      setMessages([
-        {
-          id: 1,
-          senderId: request?.survivorId || 'survivor-1',
-          senderName: 'John Doe',
-          senderRole: 'Survivor',
-          text: 'Hello, thank you for accepting my request.',
-          timestamp: new Date(Date.now() - 3600000).toISOString(),
-        },
-        {
-          id: 2,
-          senderId: currentUser?.id || 'ngo-1',
-          senderName: currentUser?.name || 'Relief Organization',
-          senderRole: currentUser?.role || 'NGO',
-          text: 'We are here to help. Can you provide more details about your current situation?',
-          timestamp: new Date(Date.now() - 3000000).toISOString(),
-        },
-      ]);
-      
-      // Focus input when modal opens
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
     }
-  }, [isOpen, request, currentUser]);
 
-  // Auto-scroll to bottom when new messages arrive
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (!isOpen || !requestId || !user) {
+      return;
+    }
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+    socket.emit('joinRoom', { requestId, userId: user._id, userRole: user.userType });
+
+    socket.on('pastMessages', (pastMessages) => {
+      setMessages(pastMessages);
+      scrollToBottom();
+    });
+
+    socket.on('newMessage', (message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+      scrollToBottom();
+    });
+
+    socket.on('error', (error) => {
+      console.error('Socket error:', error);
+    });
+
+    const fetchChatHistory = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/chat/${requestId}`,
+          { withCredentials: true } // Add withCredentials
+        );
+        setMessages(response.data);
+        scrollToBottom();
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+      }
+    };
+    fetchChatHistory();
+
+    return () => {
+      socket.off('pastMessages');
+      socket.off('newMessage');
+      socket.off('error');
+    };
+  }, [isOpen, requestId, user]);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
-    
-    if (newMessage.trim() === '') return;
-
-    const message = {
-      id: messages.length + 1,
-      senderId: currentUser?.id || 'current-user',
-      senderName: currentUser?.name || 'You',
-      senderRole: currentUser?.role || 'User',
-      text: newMessage,
-      timestamp: new Date().toISOString(),
-    };
-
-    setMessages([...messages, message]);
-    setNewMessage('');
-
-    // Simulate typing indicator (in real app, this would come from socket)
-    setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-    }, 2000);
-
-    // TODO: Send message via socket.io
-    // socket.emit('sendMessage', { requestId: request.id, message });
-  };
-
-  const formatTime = (timestamp) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
-
-  const isCurrentUser = (senderId) => {
-    return senderId === (currentUser?.id || 'current-user');
+    if (newMessage.trim() && user) {
+      const messagePayload = {
+        requestId,
+        sender: user._id,
+        onModel: user.userType === 'NGO' ? 'Ngo' : 'User',
+        messageContent: newMessage,
+      };
+      socket.emit('sendMessage', messagePayload);
+      setNewMessage('');
+    }
   };
 
   if (!isOpen) return null;
@@ -112,12 +96,12 @@ const ChatModal = ({ isOpen, onClose, request, currentUser }) => {
             <h2 className={`text-lg sm:text-xl font-bold ${
               theme === 'light' ? 'text-gray-900' : 'text-white'
             }`}>
-              Chat - {request?.type || 'Request'} Support
+              Chat - Request Support
             </h2>
             <p className={`text-xs sm:text-sm mt-1 ${
               theme === 'light' ? 'text-gray-600' : 'text-gray-400'
             }`}>
-              Request #{request?.id} • {request?.urgency} Priority
+              Request ID: {requestId}
             </p>
           </div>
           <button
@@ -138,94 +122,67 @@ const ChatModal = ({ isOpen, onClose, request, currentUser }) => {
         }`}>
           {messages.map((message) => (
             <div
-              key={message.id}
-              className={`flex ${isCurrentUser(message.senderId) ? 'justify-end' : 'justify-start'}`}
+              key={message._id}
+              className={`flex ${message.sender._id === user._id ? 'justify-end' : 'justify-start'}`}
             >
               <div className={`flex gap-2 sm:gap-3 max-w-[85%] sm:max-w-[70%] ${
-                isCurrentUser(message.senderId) ? 'flex-row-reverse' : 'flex-row'
+                message.sender._id === user._id ? 'flex-row-reverse' : 'flex-row'
               }`}>
                 {/* Avatar */}
                 <div className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ${
-                  isCurrentUser(message.senderId)
-                    ? 'bg-indigo-600'
-                    : message.senderRole === 'Survivor'
+                  message.sender.userType === 'Survivor'
                     ? 'bg-green-600'
-                    : message.senderRole === 'NGO'
+                    : message.sender.userType === 'NGO'
                     ? 'bg-blue-600'
-                    : message.senderRole === 'Volunteer'
+                    : message.sender.userType === 'Volunteer'
                     ? 'bg-purple-600'
-                    : 'bg-orange-600'
+                    : message.sender.userType === 'Supplier'
+                    ? 'bg-orange-600'
+                    : 'bg-gray-400'
                 }`}>
                   <User className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
 
                 {/* Message Content */}
                 <div className={`flex flex-col ${
-                  isCurrentUser(message.senderId) ? 'items-end' : 'items-start'
+                  message.sender._id === user._id ? 'items-end' : 'items-start'
                 }`}>
                   <div className={`flex items-baseline gap-2 mb-1 ${
-                    isCurrentUser(message.senderId) ? 'flex-row-reverse' : 'flex-row'
+                    message.sender._id === user._id ? 'flex-row-reverse' : 'flex-row'
                   }`}>
                     <span className={`text-xs sm:text-sm font-semibold ${
                       theme === 'light' ? 'text-gray-700' : 'text-gray-300'
                     }`}>
-                      {message.senderName}
+                      {message.sender.name || message.sender.username || 'Unknown'}
                     </span>
                     <span className={`text-xs ${
                       theme === 'light' ? 'text-gray-500' : 'text-gray-500'
                     }`}>
-                      {message.senderRole}
+                      {message.sender.userType}
                     </span>
                   </div>
                   
                   <div className={`px-3 sm:px-4 py-2 sm:py-3 rounded-2xl ${
-                    isCurrentUser(message.senderId)
+                    message.sender._id === user._id
                       ? 'bg-indigo-600 text-white rounded-tr-sm'
                       : theme === 'light'
                       ? 'bg-white text-gray-900 rounded-tl-sm shadow-sm'
                       : 'bg-gray-700 text-gray-100 rounded-tl-sm'
                   }`}>
                     <p className="text-sm sm:text-base break-words whitespace-pre-wrap">
-                      {message.text}
+                      {message.messageContent}
                     </p>
                   </div>
                   
                   <span className={`text-xs mt-1 ${
                     theme === 'light' ? 'text-gray-500' : 'text-gray-500'
                   }`}>
-                    {formatTime(message.timestamp)}
+                    {new Date(message.createdAt).toLocaleTimeString()}
                   </span>
                 </div>
               </div>
             </div>
           ))}
-
-          {/* Typing Indicator */}
-          {isTyping && (
-            <div className="flex justify-start">
-              <div className="flex gap-3 max-w-[70%]">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center">
-                  <User className="w-5 h-5 text-white" />
-                </div>
-                <div className={`px-4 py-3 rounded-2xl rounded-tl-sm ${
-                  theme === 'light' ? 'bg-white shadow-sm' : 'bg-gray-700'
-                }`}>
-                  <div className="flex gap-1">
-                    <span className={`w-2 h-2 rounded-full animate-bounce ${
-                      theme === 'light' ? 'bg-gray-400' : 'bg-gray-400'
-                    }`} style={{ animationDelay: '0ms' }}></span>
-                    <span className={`w-2 h-2 rounded-full animate-bounce ${
-                      theme === 'light' ? 'bg-gray-400' : 'bg-gray-400'
-                    }`} style={{ animationDelay: '150ms' }}></span>
-                    <span className={`w-2 h-2 rounded-full animate-bounce ${
-                      theme === 'light' ? 'bg-gray-400' : 'bg-gray-400'
-                    }`} style={{ animationDelay: '300ms' }}></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          
           <div ref={messagesEndRef} />
         </div>
 
@@ -234,18 +191,6 @@ const ChatModal = ({ isOpen, onClose, request, currentUser }) => {
           theme === 'light' ? 'border-gray-200 bg-white' : 'border-gray-700 bg-gray-900'
         }`}>
           <form onSubmit={handleSendMessage} className="flex gap-2 sm:gap-3">
-            {/* Attachment Button (Optional) */}
-            <button
-              type="button"
-              className={`p-2 sm:p-2.5 rounded-lg transition hidden sm:block ${
-                theme === 'light'
-                  ? 'hover:bg-gray-100 text-gray-600'
-                  : 'hover:bg-gray-700 text-gray-400'
-              }`}
-            >
-              <Paperclip className="w-5 h-5" />
-            </button>
-
             {/* Message Input */}
             <div className="flex-1 relative">
               <input
@@ -262,18 +207,6 @@ const ChatModal = ({ isOpen, onClose, request, currentUser }) => {
               />
             </div>
 
-            {/* Emoji Button (Optional) */}
-            <button
-              type="button"
-              className={`p-2 sm:p-2.5 rounded-lg transition hidden sm:block ${
-                theme === 'light'
-                  ? 'hover:bg-gray-100 text-gray-600'
-                  : 'hover:bg-gray-700 text-gray-400'
-              }`}
-            >
-              <Smile className="w-5 h-5" />
-            </button>
-
             {/* Send Button */}
             <button
               type="submit"
@@ -289,8 +222,6 @@ const ChatModal = ({ isOpen, onClose, request, currentUser }) => {
               <Send className="w-5 h-5" />
             </button>
           </form>
-
-          {/* Info Text */}
           <p className={`text-xs mt-3 text-center ${
             theme === 'light' ? 'text-gray-500' : 'text-gray-500'
           }`}>

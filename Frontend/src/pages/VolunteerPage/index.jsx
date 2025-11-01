@@ -7,7 +7,8 @@ import {
   BookOpen,
   XCircle,
   Menu,
-  X
+  X,
+  MessageSquare
 } from "lucide-react";
 import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
@@ -19,6 +20,7 @@ import OpportunitiesSection from './OpportunitiesSection';
 import ScheduleSection from './ScheduleSection';
 import TrainingSection from './TrainingSection';
 import ProfileSection from './ProfileSection';
+import CommunicationsSection from './CommunicationsSection';
 
 export default function VolunteerPage() {
   const { theme } = useContext(ThemeContext);
@@ -100,22 +102,26 @@ export default function VolunteerPage() {
   const [schedule, setSchedule] = useState([
     {
       id: 1,
+      requestId: "654321098765432109876543", // Example requestId
       title: "Shelter Management",
       date: "2025-10-05",
       time: "9:00 AM - 5:00 PM",
       location: "Emergency Shelter #3",
       status: "confirmed",
-      organization: "Disaster Relief Org"
+      organization: "Disaster Relief Org",
+      chatEnabled: true,
     },
     {
       id: 2,
+      requestId: "654321098765432109876544", // Example requestId
       title: "Supply Distribution",
       date: "2025-10-08",
       time: "2:00 PM - 6:00 PM",
       location: "Community Center",
       status: "pending",
-      organization: "Local Aid Group"
-    }
+      organization: "Local Aid Group",
+      chatEnabled: true,
+    },
   ]);
 
   // Mock training modules
@@ -178,6 +184,7 @@ export default function VolunteerPage() {
     { id: 'schedule', label: 'My Schedule', icon: Calendar, count: schedule.length },
     { id: 'training', label: 'Training', icon: BookOpen, count: trainingModules.filter(m => !m.completed).length },
     { id: 'profile', label: 'Profile', icon: User, count: null },
+    { id: 'communications', label: 'Communications', icon: MessageSquare, count: null },
   ];
 
   const renderContent = () => {
@@ -203,6 +210,8 @@ export default function VolunteerPage() {
         return <TrainingSection trainingModules={trainingModules} />;
       case 'profile':
         return <ProfileSection volunteerProfile={volunteerProfile} />;
+      case 'communications':
+        return <CommunicationsSection />;
       default:
         return <HomeSection 
           volunteerProfile={volunteerProfile} 
