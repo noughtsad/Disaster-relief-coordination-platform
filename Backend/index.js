@@ -147,7 +147,14 @@ io.on("connection", (socket) => {
 
       const savedMessage = request.chatMessages[request.chatMessages.length - 1];
 
-      io.to(requestId).emit("newMessage", savedMessage);
+      // Populate the sender field before emitting
+      const populatedMessage = await Request.populate(savedMessage, {
+        path: 'sender',
+        model: 'User',
+        select: 'name username userType'
+      });
+      
+      io.to(requestId).emit("newMessage", populatedMessage);
     } catch (error) {
       console.error("Error sending message:", error.message);
       console.error("Error stack:", error.stack);

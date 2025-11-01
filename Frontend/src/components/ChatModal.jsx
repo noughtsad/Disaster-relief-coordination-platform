@@ -36,7 +36,26 @@ const ChatModal = ({ isOpen, onClose, requestId, theme }) => {
     });
 
     socket.on('newMessage', (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+      setMessages((prevMessages) => {
+        // Try to find a matching optimistic message to replace
+        const existingIndex = prevMessages.findIndex(
+          (msg) =>
+            (msg.messageContent === message.messageContent &&
+              msg.sender._id === message.sender._id &&
+              msg._id.startsWith('temp-')) || // Match optimistic message by content and sender
+            msg._id === message._id // Match actual ID if already updated
+        );
+
+        if (existingIndex > -1) {
+          // Replace optimistic message with server-confirmed message
+          const updatedMessages = [...prevMessages];
+          updatedMessages[existingIndex] = message;
+          return updatedMessages;
+        } else {
+          // Add new message
+          return [...prevMessages, message];
+        }
+      });
       scrollToBottom();
     });
 
@@ -74,6 +93,23 @@ const ChatModal = ({ isOpen, onClose, requestId, theme }) => {
         onModel: user.userType === 'NGO' ? 'Ngo' : 'User',
         messageContent: newMessage,
       };
+
+      // Optimistically add message to UI
+      const optimisticMessage = {
+        _id: `temp-${user._id}-${Math.random().toString(36).substring(7)}`,
+        requestId,
+        sender: {
+          _id: user._id,
+          name: user.name || user.email || 'Unknown',
+          userType: user.userType,
+        },
+        onModel: user.userType === 'NGO' ? 'Ngo' : 'User',
+        messageContent: newMessage,
+        createdAt: new Date().toISOString(),
+      };
+      setMessages((prevMessages) => [...prevMessages, optimisticMessage]);
+      scrollToBottom();
+      
       socket.emit('sendMessage', messagePayload);
       setNewMessage('');
     }
