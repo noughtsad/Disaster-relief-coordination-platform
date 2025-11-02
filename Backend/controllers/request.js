@@ -468,3 +468,46 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   const distance = R * c;
   return distance;
 }
+
+// Get requests for NGO map display (pending and accepted by this NGO)
+export async function getRequestsForNgoMap(req, res) {
+  try {
+    const userId = req.user.id;
+
+    // Get pending requests (not accepted by anyone)
+    const pendingRequests = await Request.find({ 
+      status: 'Pending'
+    })
+      .populate('survivorId', 'name phone email')
+      .select('type urgency description latitude longitude address contactInfo survivorId survivorName survivorPhone status createdAt')
+      .sort({ urgency: -1, createdAt: -1 }); // High urgency first
+
+    // Get requests accepted by this NGO
+    const acceptedRequests = await Request.find({
+      $or: [
+        { acceptedBy: userId }, // Primary responder
+        { 'responders.userId': userId } // Or in responders list
+      ],
+      status: { $in: ['Ongoing', 'Complete'] } // Exclude Verified and Rejected
+    })
+      .populate('survivorId', 'name phone email')
+      .populate('acceptedBy', 'name userType')
+      .populate('responders.userId', 'name userType')
+      .sort({ createdAt: -1 });
+
+    return res.json({
+      pendingRequests,
+      acceptedRequests,
+      counts: {
+        pending: pendingRequests.length,
+        accepted: acceptedRequests.length
+      }
+    });
+  } catch (error) {
+    console.error("Get requests for NGO map error:", error);
+    return res.status(500).json({ 
+      message: "Error fetching requests for map", 
+      error: error.message 
+    });
+  }
+}

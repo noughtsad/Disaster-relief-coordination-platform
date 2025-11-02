@@ -1,10 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 
-export default function MapComponent({ ngos = [], showNgoMarkers = false }) {
+export default function MapComponent({ 
+  ngos = [], 
+  showNgoMarkers = false,
+  pendingRequests = [],
+  acceptedRequests = [],
+  showRequestMarkers = false,
+  ngoLocation = null // NGO's own location to center map
+}) {
   const mapRef = useRef(null);
   const googleMapRef = useRef(null);
   const userMarkerRef = useRef(null);
   const ngoMarkersRef = useRef([]);
+  const pendingRequestMarkersRef = useRef([]);
+  const acceptedRequestMarkersRef = useRef([]);
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
   
   const [userLocation, setUserLocation] = useState(null);
@@ -14,6 +23,12 @@ export default function MapComponent({ ngos = [], showNgoMarkers = false }) {
   const fallbackPosition = { lat: 19.0728521, lng: 72.8973513 };
 
   useEffect(() => {
+    // If ngoLocation is provided, use it; otherwise get user's location
+    if (ngoLocation) {
+      setUserLocation(ngoLocation);
+      return;
+    }
+
     // Get user's location
     if (navigator.geolocation) {
       console.log('Requesting user location...');
@@ -42,7 +57,7 @@ export default function MapComponent({ ngos = [], showNgoMarkers = false }) {
       setLocationError('Geolocation not supported');
       setUserLocation(fallbackPosition);
     }
-  }, []);
+  }, [ngoLocation]);
 
   useEffect(() => {
     // If no API key, don't try to load
@@ -139,6 +154,12 @@ export default function MapComponent({ ngos = [], showNgoMarkers = false }) {
           addNgoMarkers();
         }
 
+        // Add request markers if enabled
+        if (showRequestMarkers) {
+          if (pendingRequests.length > 0) addPendingRequestMarkers();
+          if (acceptedRequests.length > 0) addAcceptedRequestMarkers();
+        }
+
         console.log('Map initialized successfully at user location');
       } catch (error) {
         console.error('Error initializing map:', error);
@@ -220,6 +241,193 @@ export default function MapComponent({ ngos = [], showNgoMarkers = false }) {
       console.log(`Added ${ngoMarkersRef.current.length} NGO markers to map`);
     };
 
+    const addPendingRequestMarkers = () => {
+      // Clear existing pending request markers
+      pendingRequestMarkersRef.current.forEach(marker => marker.setMap(null));
+      pendingRequestMarkersRef.current = [];
+
+      pendingRequests.forEach((request) => {
+        const reqLat = parseFloat(request.latitude);
+        const reqLng = parseFloat(request.longitude);
+
+        if (isNaN(reqLat) || isNaN(reqLng)) {
+          console.warn(`Invalid coordinates for request: ${request.type}`);
+          return;
+        }
+
+        const requestPosition = { lat: reqLat, lng: reqLng };
+
+        // Orange marker for pending requests
+        const requestMarker = new window.google.maps.Marker({
+          position: requestPosition,
+          map: googleMapRef.current,
+          title: `${request.type} - ${request.urgency} Urgency`,
+          animation: window.google.maps.Animation.DROP,
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: '#F59E0B', // Orange for pending
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2,
+          },
+        });
+
+        const distance = calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          reqLat,
+          reqLng
+        );
+
+        const urgencyColor = request.urgency === 'High' ? '#DC2626' : 
+                            request.urgency === 'Medium' ? '#F59E0B' : '#10B981';
+
+        const requestInfoWindow = new window.google.maps.InfoWindow({
+          content: `
+            <div style="padding: 12px; max-width: 280px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #1F2937;">
+                  ${request.type}
+                </h3>
+                <span style="background: ${urgencyColor}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                  ${request.urgency}
+                </span>
+              </div>
+              <div style="font-size: 13px; color: #6B7280; margin-bottom: 6px;">
+                ${request.description}
+              </div>
+              ${request.survivorName ? `
+                <div style="font-size: 13px; color: #4B5563; margin-bottom: 4px;">
+                  <strong>Survivor:</strong> ${request.survivorName}
+                </div>
+              ` : ''}
+              ${request.contactInfo || request.survivorPhone ? `
+                <div style="font-size: 13px; color: #4B5563; margin-bottom: 4px;">
+                  <strong>Contact:</strong> ${request.contactInfo || request.survivorPhone}
+                </div>
+              ` : ''}
+              ${request.address ? `
+                <div style="font-size: 12px; color: #6B7280; margin-bottom: 6px;">
+                  📍 ${request.address}
+                </div>
+              ` : ''}
+              <div style="font-size: 13px; color: #F59E0B; font-weight: 500; margin-top: 6px;">
+                🆘 Pending Help - ${distance.toFixed(2)} km away
+              </div>
+              <div style="font-size: 11px; color: #9CA3AF; margin-top: 4px;">
+                Posted: ${new Date(request.createdAt).toLocaleDateString()}
+              </div>
+            </div>
+          `,
+        });
+
+        requestMarker.addListener('click', () => {
+          requestInfoWindow.open(googleMapRef.current, requestMarker);
+        });
+
+        pendingRequestMarkersRef.current.push(requestMarker);
+      });
+
+      console.log(`Added ${pendingRequestMarkersRef.current.length} pending request markers to map`);
+    };
+
+    const addAcceptedRequestMarkers = () => {
+      // Clear existing accepted request markers
+      acceptedRequestMarkersRef.current.forEach(marker => marker.setMap(null));
+      acceptedRequestMarkersRef.current = [];
+
+      acceptedRequests.forEach((request) => {
+        const reqLat = parseFloat(request.latitude);
+        const reqLng = parseFloat(request.longitude);
+
+        if (isNaN(reqLat) || isNaN(reqLng)) {
+          console.warn(`Invalid coordinates for request: ${request.type}`);
+          return;
+        }
+
+        const requestPosition = { lat: reqLat, lng: reqLng };
+
+        // Green marker for accepted requests
+        const requestMarker = new window.google.maps.Marker({
+          position: requestPosition,
+          map: googleMapRef.current,
+          title: `${request.type} - ${request.status}`,
+          animation: window.google.maps.Animation.DROP,
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: '#10B981', // Green for accepted
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2,
+          },
+        });
+
+        const distance = calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          reqLat,
+          reqLng
+        );
+
+        const urgencyColor = request.urgency === 'High' ? '#DC2626' : 
+                            request.urgency === 'Medium' ? '#F59E0B' : '#10B981';
+
+        const requestInfoWindow = new window.google.maps.InfoWindow({
+          content: `
+            <div style="padding: 12px; max-width: 280px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #1F2937;">
+                  ${request.type}
+                </h3>
+                <span style="background: ${urgencyColor}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                  ${request.urgency}
+                </span>
+              </div>
+              <div style="font-size: 13px; color: #6B7280; margin-bottom: 6px;">
+                ${request.description}
+              </div>
+              ${request.survivorName ? `
+                <div style="font-size: 13px; color: #4B5563; margin-bottom: 4px;">
+                  <strong>Survivor:</strong> ${request.survivorName}
+                </div>
+              ` : ''}
+              ${request.contactInfo || request.survivorPhone ? `
+                <div style="font-size: 13px; color: #4B5563; margin-bottom: 4px;">
+                  <strong>Contact:</strong> ${request.contactInfo || request.survivorPhone}
+                </div>
+              ` : ''}
+              ${request.address ? `
+                <div style="font-size: 12px; color: #6B7280; margin-bottom: 6px;">
+                  📍 ${request.address}
+                </div>
+              ` : ''}
+              <div style="background: #10B981; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 500; margin-top: 6px; display: inline-block;">
+                ✓ You're helping - ${request.status}
+              </div>
+              <div style="font-size: 13px; color: #059669; font-weight: 500; margin-top: 4px;">
+                📍 ${distance.toFixed(2)} km away
+              </div>
+              ${request.responders && request.responders.length > 0 ? `
+                <div style="font-size: 11px; color: #6B7280; margin-top: 4px;">
+                  ${request.responders.length} responder(s) helping
+                </div>
+              ` : ''}
+            </div>
+          `,
+        });
+
+        requestMarker.addListener('click', () => {
+          requestInfoWindow.open(googleMapRef.current, requestMarker);
+        });
+
+        acceptedRequestMarkersRef.current.push(requestMarker);
+      });
+
+      console.log(`Added ${acceptedRequestMarkersRef.current.length} accepted request markers to map`);
+    };
+
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
       // Haversine formula to calculate distance between two points
       const R = 6371; // Radius of the Earth in km
@@ -246,6 +454,10 @@ export default function MapComponent({ ngos = [], showNgoMarkers = false }) {
       }
       ngoMarkersRef.current.forEach(marker => marker.setMap(null));
       ngoMarkersRef.current = [];
+      pendingRequestMarkersRef.current.forEach(marker => marker.setMap(null));
+      pendingRequestMarkersRef.current = [];
+      acceptedRequestMarkersRef.current.forEach(marker => marker.setMap(null));
+      acceptedRequestMarkersRef.current = [];
     };
   }, [apiKey, userLocation]);
 
@@ -329,6 +541,142 @@ export default function MapComponent({ ngos = [], showNgoMarkers = false }) {
       console.log(`Updated ${ngoMarkersRef.current.length} NGO markers on map`);
     }
   }, [ngos, showNgoMarkers, userLocation]);
+
+  // Re-add request markers when requests prop changes
+  useEffect(() => {
+    if (googleMapRef.current && showRequestMarkers && userLocation) {
+      // Clear existing pending request markers
+      pendingRequestMarkersRef.current.forEach(marker => marker.setMap(null));
+      pendingRequestMarkersRef.current = [];
+      
+      // Clear existing accepted request markers
+      acceptedRequestMarkersRef.current.forEach(marker => marker.setMap(null));
+      acceptedRequestMarkersRef.current = [];
+
+      // Add pending requests
+      if (pendingRequests.length > 0) {
+        pendingRequests.forEach((request) => {
+          const reqLat = parseFloat(request.latitude);
+          const reqLng = parseFloat(request.longitude);
+
+          if (isNaN(reqLat) || isNaN(reqLng)) return;
+
+          const requestPosition = { lat: reqLat, lng: reqLng };
+          const requestMarker = new window.google.maps.Marker({
+            position: requestPosition,
+            map: googleMapRef.current,
+            title: `${request.type} - ${request.urgency} Urgency`,
+            animation: window.google.maps.Animation.DROP,
+            icon: {
+              path: window.google.maps.SymbolPath.CIRCLE,
+              scale: 10,
+              fillColor: '#F59E0B',
+              fillOpacity: 1,
+              strokeColor: '#ffffff',
+              strokeWeight: 2,
+            },
+          });
+
+          const distance = ((lat1, lon1, lat2, lon2) => {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+              Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+          })(userLocation.lat, userLocation.lng, reqLat, reqLng);
+
+          const urgencyColor = request.urgency === 'High' ? '#DC2626' : 
+                              request.urgency === 'Medium' ? '#F59E0B' : '#10B981';
+
+          const requestInfoWindow = new window.google.maps.InfoWindow({
+            content: `
+              <div style="padding: 12px; max-width: 280px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                  <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #1F2937;">${request.type}</h3>
+                  <span style="background: ${urgencyColor}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">${request.urgency}</span>
+                </div>
+                <div style="font-size: 13px; color: #6B7280; margin-bottom: 6px;">${request.description}</div>
+                ${request.survivorName ? `<div style="font-size: 13px; color: #4B5563; margin-bottom: 4px;"><strong>Survivor:</strong> ${request.survivorName}</div>` : ''}
+                ${request.contactInfo || request.survivorPhone ? `<div style="font-size: 13px; color: #4B5563; margin-bottom: 4px;"><strong>Contact:</strong> ${request.contactInfo || request.survivorPhone}</div>` : ''}
+                ${request.address ? `<div style="font-size: 12px; color: #6B7280; margin-bottom: 6px;">📍 ${request.address}</div>` : ''}
+                <div style="font-size: 13px; color: #F59E0B; font-weight: 500; margin-top: 6px;">🆘 Pending Help - ${distance.toFixed(2)} km away</div>
+              </div>
+            `,
+          });
+
+          requestMarker.addListener('click', () => requestInfoWindow.open(googleMapRef.current, requestMarker));
+          pendingRequestMarkersRef.current.push(requestMarker);
+        });
+      }
+
+      // Add accepted requests
+      if (acceptedRequests.length > 0) {
+        acceptedRequests.forEach((request) => {
+          const reqLat = parseFloat(request.latitude);
+          const reqLng = parseFloat(request.longitude);
+
+          if (isNaN(reqLat) || isNaN(reqLng)) return;
+
+          const requestPosition = { lat: reqLat, lng: reqLng };
+          const requestMarker = new window.google.maps.Marker({
+            position: requestPosition,
+            map: googleMapRef.current,
+            title: `${request.type} - ${request.status}`,
+            animation: window.google.maps.Animation.DROP,
+            icon: {
+              path: window.google.maps.SymbolPath.CIRCLE,
+              scale: 10,
+              fillColor: '#10B981',
+              fillOpacity: 1,
+              strokeColor: '#ffffff',
+              strokeWeight: 2,
+            },
+          });
+
+          const distance = ((lat1, lon1, lat2, lon2) => {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+              Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+          })(userLocation.lat, userLocation.lng, reqLat, reqLng);
+
+          const urgencyColor = request.urgency === 'High' ? '#DC2626' : 
+                              request.urgency === 'Medium' ? '#F59E0B' : '#10B981';
+
+          const requestInfoWindow = new window.google.maps.InfoWindow({
+            content: `
+              <div style="padding: 12px; max-width: 280px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                  <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #1F2937;">${request.type}</h3>
+                  <span style="background: ${urgencyColor}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">${request.urgency}</span>
+                </div>
+                <div style="font-size: 13px; color: #6B7280; margin-bottom: 6px;">${request.description}</div>
+                ${request.survivorName ? `<div style="font-size: 13px; color: #4B5563; margin-bottom: 4px;"><strong>Survivor:</strong> ${request.survivorName}</div>` : ''}
+                ${request.contactInfo || request.survivorPhone ? `<div style="font-size: 13px; color: #4B5563; margin-bottom: 4px;"><strong>Contact:</strong> ${request.contactInfo || request.survivorPhone}</div>` : ''}
+                ${request.address ? `<div style="font-size: 12px; color: #6B7280; margin-bottom: 6px;">📍 ${request.address}</div>` : ''}
+                <div style="background: #10B981; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 500; margin-top: 6px; display: inline-block;">✓ You're helping - ${request.status}</div>
+                <div style="font-size: 13px; color: #059669; font-weight: 500; margin-top: 4px;">📍 ${distance.toFixed(2)} km away</div>
+              </div>
+            `,
+          });
+
+          requestMarker.addListener('click', () => requestInfoWindow.open(googleMapRef.current, requestMarker));
+          acceptedRequestMarkersRef.current.push(requestMarker);
+        });
+      }
+
+      console.log(`Updated request markers: ${pendingRequestMarkersRef.current.length} pending, ${acceptedRequestMarkersRef.current.length} accepted`);
+    }
+  }, [pendingRequests, acceptedRequests, showRequestMarkers, userLocation]);
 
   if (!apiKey) {
     return (

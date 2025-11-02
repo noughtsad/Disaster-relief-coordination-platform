@@ -10,7 +10,8 @@ import {
   getRequestsByLocation,
   getRequestResponders,
   withdrawFromRequest,
-  getMyAcceptedRequests
+  getMyAcceptedRequests,
+  getRequestsForNgoMap
 } from "../controllers/request.js";
 import { isAuthenticated } from "../middlewares/isAuthenticated.js";
 
@@ -21,6 +22,9 @@ router.post("/create", isAuthenticated, createRequest);
 
 // Get all requests (NGOs/Volunteers/Suppliers)
 router.get("/all", isAuthenticated, getAllRequests);
+
+// Get requests for NGO map (pending + accepted by this NGO)
+router.get("/ngo-map", isAuthenticated, getRequestsForNgoMap);
 
 // Get my requests (Survivors)
 router.get("/my-requests", isAuthenticated, getMyRequests);

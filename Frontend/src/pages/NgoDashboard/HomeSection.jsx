@@ -1,5 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSelector } from 'react-redux';
+import axios from "axios";
 import { 
   DollarSign, 
   Heart, 
@@ -14,6 +15,31 @@ const HomeSection = () => {
   const { requests } = useSelector((state) => state.requests);
   const { donations } = useSelector((state) => state.donations);
   const { ngoProfile } = useSelector((state) => state.ngo);
+
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [acceptedRequests, setAcceptedRequests] = useState([]);
+  const [loadingRequests, setLoadingRequests] = useState(true);
+
+  useEffect(() => {
+    // Fetch requests for map display
+    const fetchMapRequests = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/request/ngo-map`,
+          { withCredentials: true }
+        );
+        setPendingRequests(response.data.pendingRequests || []);
+        setAcceptedRequests(response.data.acceptedRequests || []);
+        console.log('Fetched map requests:', response.data);
+      } catch (error) {
+        console.error('Error fetching map requests:', error);
+      } finally {
+        setLoadingRequests(false);
+      }
+    };
+
+    fetchMapRequests();
+  }, []);
 
   return (
     <div>
@@ -220,7 +246,58 @@ const HomeSection = () => {
           </div>
         </div>
       </div>
-      <MapComponent />
+
+      {/* Map with Request Markers */}
+      <div className="mt-6">
+        <h3
+          className={`text-lg font-semibold mb-4 ${
+            theme === "light" ? "text-gray-900" : "text-white"
+          }`}
+        >
+          Request Locations
+        </h3>
+        
+        {loadingRequests ? (
+          <div className={`w-full h-96 flex items-center justify-center rounded border ${
+            theme === "light" ? "bg-gray-100 border-gray-300" : "bg-gray-800 border-gray-700"
+          }`}>
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-3"></div>
+              <p className={theme === "light" ? "text-gray-700" : "text-gray-300"}>
+                Loading requests...
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <MapComponent 
+              pendingRequests={pendingRequests}
+              acceptedRequests={acceptedRequests}
+              showRequestMarkers={true}
+              ngoLocation={ngoProfile.ngoLatitude && ngoProfile.ngoLongitude ? {
+                lat: parseFloat(ngoProfile.ngoLatitude),
+                lng: parseFloat(ngoProfile.ngoLongitude)
+              } : null}
+            />
+            <div className={`mt-2 text-sm ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
+              <div className="flex flex-wrap gap-4">
+                <span className="inline-flex items-center">
+                  <span className="w-3 h-3 rounded-full bg-indigo-600 mr-2"></span>
+                  Your NGO Location
+                </span>
+                <span className="inline-flex items-center">
+                  <span className="w-3 h-3 rounded-full bg-orange-500 mr-2"></span>
+                  Pending Requests ({pendingRequests.length})
+                </span>
+                <span className="inline-flex items-center">
+                  <span className="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
+                  Your Accepted Requests ({acceptedRequests.length})
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
