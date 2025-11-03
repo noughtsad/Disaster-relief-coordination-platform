@@ -12,7 +12,7 @@ const RequestSchema = new Schema(
     status: { 
       type: String, 
       required: true,
-      enum: ['Pending', 'Ongoing', 'Complete', 'Verified', 'Rejected'],
+      enum: ['Pending', 'Ongoing', 'Awaiting Supplier', 'In Transit', 'Delivered', 'Complete', 'Verified', 'Rejected'],
       default: 'Pending'
     },
     urgency: { 

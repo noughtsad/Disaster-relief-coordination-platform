@@ -439,7 +439,7 @@ export async function getMyAcceptedRequests(req, res) {
     
     const requests = await Request.find({
       acceptedBy: userId, // Filter by the primary acceptor
-      status: 'Ongoing' // Only show requests that are currently ongoing
+      status: { $in: ['Ongoing', 'Awaiting Supplier', 'In Transit', 'Delivered', 'Complete'] } // Show all active statuses
     })
       .populate('survivorId', 'name phone email')
       .populate('responders.userId', 'name userType')

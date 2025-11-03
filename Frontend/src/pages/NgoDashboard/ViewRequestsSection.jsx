@@ -4,7 +4,10 @@ import {
   Plus, 
   MapPin, 
   Calendar,
-  MessageCircle
+  MessageCircle,
+  Package,
+  Truck,
+  CheckCircle
 } from "lucide-react";
 import { 
   fetchPendingRequests,
@@ -16,6 +19,7 @@ import {
 } from '../../store/requestSlice';
 import { ThemeContext } from "../../context/ThemeContext";
 import ChatModal from '../../components/ChatModal';
+import SupplierSelectionModal from '../../components/SupplierSelectionModal';
 import axios from 'axios';
 
 const AcceptedRequestsSection = () => {
@@ -25,6 +29,10 @@ const AcceptedRequestsSection = () => {
   const { user } = useSelector((state) => state.app);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isSupplierModalOpen, setIsSupplierModalOpen] = useState(false);
+  const [selectedRequestForSupplier, setSelectedRequestForSupplier] = useState(null);
+  const ngoProfile = useSelector((state) => state.ngo.ngoProfile);
+  const [fulfillmentsByRequest, setFulfillmentsByRequest] = useState({});
 
   const loadRequests = useCallback(() => {
     if (user && user.userType === 'NGO') {
@@ -35,6 +43,63 @@ const AcceptedRequestsSection = () => {
   useEffect(() => {
     loadRequests();
   }, [loadRequests]);
+
+  // Fetch fulfillments for all accepted requests
+  useEffect(() => {
+    const fetchFulfillments = async () => {
+      if (acceptedRequests.length === 0) return;
+
+      const fulfillmentsMap = {};
+      
+      for (const request of acceptedRequests) {
+        try {
+          const response = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URL}/fulfillment/request/${request.id}`,
+            { withCredentials: true }
+          );
+          fulfillmentsMap[request.id] = response.data.fulfillments || [];
+        } catch (error) {
+          console.error(`Error fetching fulfillments for request ${request.id}:`, error);
+          fulfillmentsMap[request.id] = [];
+        }
+      }
+      
+      setFulfillmentsByRequest(fulfillmentsMap);
+    };
+
+    fetchFulfillments();
+  }, [acceptedRequests]);
+
+  const handleMarkReceived = async (fulfillmentId, requestId) => {
+    if (!window.confirm('Confirm that supplies have been received?')) return;
+
+    try {
+      await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/fulfillment/delivered/${fulfillmentId}`,
+        {},
+        { withCredentials: true }
+      );
+      
+      alert('Supplies marked as received successfully!');
+      
+      // Refresh fulfillments for this request
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/fulfillment/request/${requestId}`,
+        { withCredentials: true }
+      );
+      
+      setFulfillmentsByRequest(prev => ({
+        ...prev,
+        [requestId]: response.data.fulfillments || []
+      }));
+      
+      // Refresh the requests list
+      loadRequests();
+    } catch (error) {
+      console.error('Error marking supplies as received:', error);
+      alert(error.response?.data?.message || 'Failed to mark supplies as received');
+    }
+  };
 
   const handleMarkComplete = async (id) => {
     const completionNotes = prompt('Optional: Add any notes about the completion (e.g., items delivered, services provided):');
@@ -159,6 +224,71 @@ const AcceptedRequestsSection = () => {
               </div>
             </div>
           )}
+
+          {/* Show fulfillment requests */}
+          {fulfillmentsByRequest[request.id] && fulfillmentsByRequest[request.id].length > 0 && (
+            <div className={`mt-3 p-3 rounded-lg ${
+              theme === "light" ? "bg-green-50 border border-green-200" : "bg-green-900/20 border border-green-700"
+            }`}>
+              <p className={`text-xs font-semibold mb-2 ${
+                theme === "light" ? "text-green-800" : "text-green-300"
+              }`}>
+                <Truck className="w-4 h-4 inline mr-1" />
+                Supply Requests ({fulfillmentsByRequest[request.id].length}):
+              </p>
+              {fulfillmentsByRequest[request.id].map((fulfillment, idx) => (
+                <div key={idx} className={`mb-2 last:mb-0 p-2 rounded ${
+                  theme === "light" ? "bg-white" : "bg-gray-800"
+                }`}>
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <p className={`text-xs font-medium ${
+                        theme === "light" ? "text-gray-900" : "text-gray-100"
+                      }`}>
+                        {fulfillment.supplier?.name || 'Supplier'}
+                      </p>
+                      <p className={`text-xs ${
+                        theme === "light" ? "text-gray-600" : "text-gray-400"
+                      }`}>
+                        {fulfillment.inventoryItem?.itemName} - {fulfillment.requestedQuantity} {fulfillment.inventoryItem?.unit}
+                      </p>
+                      {fulfillment.dispatchDetails?.trackingInfo && (
+                        <p className={`text-xs mt-1 ${
+                          theme === "light" ? "text-gray-500" : "text-gray-500"
+                        }`}>
+                          📦 Tracking: {fulfillment.dispatchDetails.trackingInfo}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                        fulfillment.status === 'Delivered' 
+                          ? 'bg-green-100 text-green-800'
+                          : fulfillment.status === 'Dispatched'
+                          ? 'bg-blue-100 text-blue-800'
+                          : fulfillment.status === 'Accepted'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : fulfillment.status === 'Rejected'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {fulfillment.status}
+                      </span>
+                      {fulfillment.status === 'Dispatched' && (
+                        <button
+                          onClick={() => handleMarkReceived(fulfillment._id, request.id)}
+                          className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition flex items-center gap-1"
+                        >
+                          <CheckCircle className="w-3 h-3" />
+                          Mark Received
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div className="flex flex-col items-end gap-2">
           <span
@@ -210,6 +340,18 @@ const AcceptedRequestsSection = () => {
             Open Chat
           </button>
         )}
+
+        {/* Request Supplies Button */}
+        <button 
+          onClick={() => {
+            setSelectedRequestForSupplier(request);
+            setIsSupplierModalOpen(true);
+          }}
+          className="px-3 sm:px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition flex items-center gap-2"
+        >
+          <Package className="w-4 h-4" />
+          Request Supplies
+        </button>
 
         <button className="px-3 sm:px-4 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700">
           View Details
@@ -263,6 +405,28 @@ const AcceptedRequestsSection = () => {
           onClose={handleCloseChat}
           requestId={selectedRequest.id}
           theme={theme} // Pass theme prop
+        />
+      )}
+
+      {/* Supplier Selection Modal */}
+      {selectedRequestForSupplier && (
+        <SupplierSelectionModal
+          isOpen={isSupplierModalOpen}
+          onClose={() => {
+            setIsSupplierModalOpen(false);
+            setSelectedRequestForSupplier(null);
+          }}
+          theme={theme}
+          requestId={selectedRequestForSupplier.id}
+          itemType={selectedRequestForSupplier.type}
+          ngoLocation={
+            ngoProfile?.ngoLatitude && ngoProfile?.ngoLongitude
+              ? {
+                  lat: parseFloat(ngoProfile.ngoLatitude),
+                  lng: parseFloat(ngoProfile.ngoLongitude),
+                }
+              : null
+          }
         />
       )}
     </div>

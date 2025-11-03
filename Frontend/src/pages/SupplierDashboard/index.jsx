@@ -94,13 +94,13 @@ export default function SupplierDashboard() {
       case 'home':
         return <HomeSection theme={theme} supplierProfile={supplierProfile} orders={orders} inventory={inventory} />;
       case 'inventory':
-        return <ManageInventorySection theme={theme} inventory={inventory} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />;
+        return <ManageInventorySection theme={theme} onNavigateToProfile={() => setActiveSection('profile')} />;
       case 'orders':
-        return <ViewOrdersSection theme={theme} orders={orders} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />;
+        return <ViewOrdersSection theme={theme} />;
       case 'deliveries':
         return <ManageDeliveriesSection theme={theme} deliveries={deliveries} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />;
       case 'profile':
-        return <ProfileSection theme={theme} supplierProfile={supplierProfile} />;
+        return <ProfileSection theme={theme} />;
       case 'communications':
         return <CommunicationsSection />;
       default:

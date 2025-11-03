@@ -10,6 +10,9 @@ import chatRoutes from "./routes/chat.js";
 import passport from "passport";
 import cors from "cors";
 import ngoRoutes from "./routes/ngo.js";
+import supplierRoutes from "./routes/supplier.js";
+import inventoryRoutes from "./routes/inventory.js";
+import fulfillmentRoutes from "./routes/fulfillment.js";
 import cookieParser from "cookie-parser";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -86,6 +89,9 @@ app.use("/auth", authRoutes);
 app.use("/ngo", ngoRoutes);
 app.use("/request", requestRoutes);
 app.use("/chat", chatRoutes);
+app.use("/supplier", supplierRoutes);
+app.use("/inventory", inventoryRoutes);
+app.use("/fulfillment", fulfillmentRoutes);
 
 app.get("/" , (req,res) =>{
   res.send("Welcome to Disaster Relief Coordination Platform API")
