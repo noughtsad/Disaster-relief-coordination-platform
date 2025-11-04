@@ -100,7 +100,7 @@ export default function SupplierDashboard() {
       case 'deliveries':
         return <ManageDeliveriesSection theme={theme} deliveries={deliveries} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />;
       case 'profile':
-        return <ProfileSection theme={theme} />;
+        return <ProfileSection />;
       case 'communications':
         return <CommunicationsSection />;
       default:

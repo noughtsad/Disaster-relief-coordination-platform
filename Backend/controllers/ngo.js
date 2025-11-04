@@ -63,6 +63,34 @@ export async function updateNgo(req, res) {
   }
 }
 
+export async function updateMyNgo(req, res) {
+  try {
+    const { ngoName, ngoLatitude, ngoLongitude, ngoContact, ngoDescription } = req.body;
+    
+    const ngo = await Ngo.findOne({ owner: req.user.id });
+    if (!ngo) {
+      return res.status(404).json({ message: "NGO not found for this user" });
+    }
+
+    // Update fields if provided
+    if (ngoName) ngo.ngoName = ngoName;
+    if (ngoLatitude) ngo.ngoLatitude = ngoLatitude;
+    if (ngoLongitude) ngo.ngoLongitude = ngoLongitude;
+    if (ngoContact) ngo.ngoContact = ngoContact;
+    if (ngoDescription !== undefined) ngo.ngoDescription = ngoDescription;
+
+    await ngo.save();
+
+    return res.status(200).json({ 
+      message: "NGO profile updated successfully",
+      ngo 
+    });
+  } catch (error) {
+    console.error("Error updating NGO:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+}
+
 export async function deleteNgo(req, res) {
   try {
     const ngo = await Ngo.findById(req.params.id);

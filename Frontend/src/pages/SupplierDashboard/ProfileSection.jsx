@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Edit, MapPin, Phone, Mail, Clock, Star, Save, X } from 'lucide-react';
+import React, { useState, useEffect, useContext } from 'react';
+import { useSelector } from 'react-redux';
+import { Edit, Save } from 'lucide-react';
 import axios from 'axios';
+import { ThemeContext } from '../../context/ThemeContext';
 
-export default function ProfileSection({ theme }) {
+export default function ProfileSection() {
+  const { theme } = useContext(ThemeContext);
+  const { user } = useSelector((state) => state.app);
   const [supplierProfile, setSupplierProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -124,194 +128,141 @@ export default function ProfileSection({ theme }) {
 
   return (
     <div className="space-y-6">
-      <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Supplier Profile</h2>
+      <div className="flex items-center justify-between">
+        <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Supplier Profile</h2>
+        {!isEditing ? (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="flex items-center px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+          >
+            <Edit className="mr-2 h-4 w-4" />
+            Edit Profile
+          </button>
+        ) : (
+          <button
+            onClick={handleUpdateProfile}
+            disabled={loading}
+            className="flex items-center px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+          >
+            <Save className="mr-2 h-4 w-4" />
+            Save Profile
+          </button>
+        )}
+      </div>
       
       <div className={`p-6 rounded-lg shadow-sm border ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
-        <div className="flex items-center justify-between mb-6">
-          <h3 className={`text-lg font-semibold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Company Information</h3>
-          {!isEditing ? (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="flex items-center px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-            >
-              <Edit className="mr-2 h-4 w-4" />
-              Edit Profile
-            </button>
-          ) : (
-            <div className="flex space-x-2">
-              <button
-                onClick={handleUpdateProfile}
-                disabled={loading}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                <Save className="mr-2 h-4 w-4" />
-                Save
-              </button>
-              <button
-                onClick={() => {
-                  setIsEditing(false);
-                  fetchProfile();
-                }}
-                className={`flex items-center px-4 py-2 border rounded-lg ${
-                  theme === 'light' ? 'border-gray-300 hover:bg-gray-50' : 'border-gray-600 hover:bg-gray-700 text-white'
-                }`}
-              >
-                <X className="mr-2 h-4 w-4" />
-                Cancel
-              </button>
-            </div>
-          )}
-        </div>
+        <h3 className={`text-lg font-semibold mb-4 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Company Information</h3>
 
-        {isEditing ? (
-          <form onSubmit={handleUpdateProfile}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Company Name <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
-                  }`}
-                />
-              </div>
-              
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Email <span className="text-red-500">*</span></label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
-                  }`}
-                />
-              </div>
-              
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Phone</label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
-                  }`}
-                />
-              </div>
-              
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Delivery Time (hours)</label>
-                <input
-                  type="number"
-                  value={formData.deliveryTimeEstimate}
-                  onChange={(e) => setFormData({ ...formData, deliveryTimeEstimate: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
-                  }`}
-                  min="1"
-                />
-              </div>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Company Name <span className="text-red-500">*</span></label>
+            <input
+              type="text"
+              value={isEditing ? formData.name : (supplierProfile?.name || '')}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              readOnly={!isEditing}
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
+              }`}
+            />
+          </div>
+          
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Email <span className="text-red-500">*</span></label>
+            <input
+              type="email"
+              value={isEditing ? formData.email : (supplierProfile?.contact.email || '')}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              readOnly={!isEditing}
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
+              }`}
+            />
+          </div>
+          
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Phone</label>
+            <input
+              type="tel"
+              value={isEditing ? formData.phone : (supplierProfile?.contact.phone || '')}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              readOnly={!isEditing}
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
+              }`}
+            />
+          </div>
+          
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Delivery Time (hours)</label>
+            <input
+              type="number"
+              value={isEditing ? formData.deliveryTimeEstimate : (supplierProfile?.deliveryTimeEstimate || '')}
+              onChange={(e) => setFormData({ ...formData, deliveryTimeEstimate: e.target.value })}
+              readOnly={!isEditing}
+              min="1"
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
+              }`}
+            />
+          </div>
 
-            <div className="mt-6">
-              <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Address</label>
-              <textarea
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                rows="2"
+          {!isEditing && supplierProfile?.rating && (
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Rating</label>
+              <input
+                type="text"
+                value={`${supplierProfile.rating.average.toFixed(1)}/5 ${supplierProfile.rating.count > 0 ? `(${supplierProfile.rating.count} ratings)` : ''}`}
+                readOnly
                 className={`w-full px-3 py-2 border rounded-lg ${
                   theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
                 }`}
               />
             </div>
+          )}
+        </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-6">
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Latitude</label>
-                <input
-                  type="number"
-                  step="any"
-                  value={formData.lat}
-                  onChange={(e) => setFormData({ ...formData, lat: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
-                  }`}
-                />
-              </div>
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Longitude</label>
-                <input
-                  type="number"
-                  step="any"
-                  value={formData.lng}
-                  onChange={(e) => setFormData({ ...formData, lng: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
-                  }`}
-                />
-              </div>
-            </div>
-          </form>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Company Name</label>
-                <p className={`${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{supplierProfile?.name}</p>
-              </div>
-              
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Email</label>
-                <div className="flex items-center">
-                  <Mail className="mr-2 h-4 w-4 text-gray-500" />
-                  <p className={`${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{supplierProfile?.contact.email}</p>
-                </div>
-              </div>
-              
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Phone</label>
-                <div className="flex items-center">
-                  <Phone className="mr-2 h-4 w-4 text-gray-500" />
-                  <p className={`${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{supplierProfile?.contact.phone}</p>
-                </div>
-              </div>
-              
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Rating</label>
-                <div className="flex items-center">
-                  <Star className="mr-2 h-4 w-4 text-yellow-500" />
-                  <p className={`${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
-                    {supplierProfile?.rating.average.toFixed(1)}/5
-                    {supplierProfile?.rating.count > 0 && (
-                      <span className={`text-sm ml-2 ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}>
-                        ({supplierProfile?.rating.count} ratings)
-                      </span>
-                    )}
-                  </p>
-                </div>
-              </div>
+        <div className="mt-6">
+          <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Address</label>
+          <textarea
+            value={isEditing ? formData.address : (supplierProfile?.location.address || '')}
+            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+            readOnly={!isEditing}
+            rows="2"
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
+            }`}
+          />
+        </div>
 
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Delivery Time</label>
-                <div className="flex items-center">
-                  <Clock className="mr-2 h-4 w-4 text-gray-500" />
-                  <p className={`${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{supplierProfile?.deliveryTimeEstimate} hours</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Address</label>
-              <div className="flex items-start">
-                <MapPin className="mr-2 h-4 w-4 text-gray-500 mt-1" />
-                <p className={`${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{supplierProfile?.location.address}</p>
-              </div>
-            </div>
-          </>
-        )}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Latitude</label>
+            <input
+              type="number"
+              step="any"
+              value={isEditing ? formData.lat : (supplierProfile?.location.coordinates?.[1] || '')}
+              onChange={(e) => setFormData({ ...formData, lat: e.target.value })}
+              readOnly={!isEditing}
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
+              }`}
+            />
+          </div>
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Longitude</label>
+            <input
+              type="number"
+              step="any"
+              value={isEditing ? formData.lng : (supplierProfile?.location.coordinates?.[0] || '')}
+              onChange={(e) => setFormData({ ...formData, lng: e.target.value })}
+              readOnly={!isEditing}
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
+              }`}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
