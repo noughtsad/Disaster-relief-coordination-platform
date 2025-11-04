@@ -9,6 +9,8 @@ const UserSchema = new Schema(
         password: { type: String, required: true },
         userType: { type: String, enum: ['Survivor', 'Volunteer', 'NGO', 'Supplier', null] },
         phone: { type: String },
+        address: { type: String },
+        emergencyContact: { type: String },
         projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
         tasks: [{ type: Schema.Types.ObjectId, ref: 'Task' }],
     },

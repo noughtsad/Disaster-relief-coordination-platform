@@ -187,6 +187,53 @@ export async function updateUserType(req, res) {
   });
 }
 
+export async function updateUserProfile(req, res) {
+  const userId = req.user.id;
+  const { name, phone, address, emergencyContact } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update fields if provided
+    if (name) user.name = name;
+    if (phone) user.phone = phone;
+    if (address !== undefined) user.address = address;
+    if (emergencyContact !== undefined) user.emergencyContact = emergencyContact;
+
+    await user.save();
+
+    // Generate new token with updated info
+    const token = signJwt({
+      id: user._id.toString(),
+      email: user.email,
+      name: user.name,
+      userType: user.userType,
+      phone: user.phone,
+    });
+
+    res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
+    
+    return res.json({
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        userType: user.userType,
+        phone: user.phone,
+        address: user.address,
+        emergencyContact: user.emergencyContact,
+      },
+    });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    return res.status(500).json({ message: "Failed to update profile" });
+  }
+}
+
 export async function validateDashboardAccess(req, res) {
   const { dashboardType } = req.params;
   const user = req.user;

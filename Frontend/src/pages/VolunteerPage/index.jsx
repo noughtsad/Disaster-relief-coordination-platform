@@ -32,19 +32,19 @@ export default function VolunteerPage() {
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Volunteer profile state
-  const [volunteerProfile, setVolunteerProfile] = useState({
-    name: "Alex Johnson",
-    email: "alex.johnson@email.com",
-    phone: "+1 (555) 987-6543",
-    address: "456 Volunteer Street, Helper City, HC 67890",
-    skills: ["First Aid", "Communication", "Event Planning", "Languages"],
-    availability: ["Weekends", "Evenings"],
-    experience: "2 years",
-    totalHours: 156,
-    rating: 4.8,
-    completedTasks: 23
-  });
+  // Volunteer profile state - use actual user data from Redux
+  const volunteerProfile = {
+    name: user?.name || "Volunteer",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    address: user?.address || "",
+    skills: user?.skills || ["First Aid", "Communication", "Event Planning", "Languages"],
+    availability: user?.availability || ["Weekends", "Evenings"],
+    experience: user?.experience || "2 years",
+    totalHours: user?.totalHours || 156,
+    rating: user?.rating || 4.8,
+    completedTasks: user?.completedTasks || 23
+  };
 
   // Mock data for opportunities
   const [opportunities, setOpportunities] = useState([
@@ -261,7 +261,7 @@ export default function VolunteerPage() {
               </div>
               <div>
                 <p className={`font-semibold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
-                  {volunteerProfile.name}
+                  {user?.name || 'Volunteer'}
                 </p>
                 <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
                   Volunteer

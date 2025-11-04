@@ -140,12 +140,12 @@ const LoginPage = () => {
         <div className="text-center mt-6">
           <span className="text-sm text-gray-600">
             Don't have an account?{" "}
-            <a
-              href="/signup"
+            <button
+              onClick={() => navigate("/signup")}
               className="text-slate-700 hover:text-slate-900 font-semibold underline decoration-slate-300 hover:decoration-slate-500 transition-all"
             >
               Sign Up
-            </a>
+            </button>
           </span>
         </div>
       </div>

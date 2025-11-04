@@ -167,7 +167,7 @@ export default function ProfileSection({ theme }) {
           <form onSubmit={handleUpdateProfile}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Company Name</label>
+                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Company Name <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   value={formData.name}
@@ -179,7 +179,7 @@ export default function ProfileSection({ theme }) {
               </div>
               
               <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Email</label>
+                <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>Email <span className="text-red-500">*</span></label>
                 <input
                   type="email"
                   value={formData.email}

@@ -198,30 +198,30 @@ const AboutPage = () => {
         {/* Footer Links */}
         <footer className={`pt-12 border-t ${theme === 'light' ? 'border-gray-200' : 'border-gray-700'}`}>
           <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8 mb-8">
-            <a
-              href="/privacy"
+            <button
+              onClick={() => navigate("/feedback")}
               className={`transition-colors ${
                 theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'
               }`}
             >
-              Privacy Policy
-            </a>
-            <a
-              href="/terms"
+              Feedback
+            </button>
+            <button
+              onClick={() => navigate("/donate")}
               className={`transition-colors ${
                 theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'
               }`}
             >
-              Terms of Service
-            </a>
-            <a
-              href="/contact"
+              Donate
+            </button>
+            <button
+              onClick={() => navigate("/")}
               className={`transition-colors ${
                 theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'
               }`}
             >
-              Contact Us
-            </a>
+              Home
+            </button>
           </div>
           
           <div className="text-center">

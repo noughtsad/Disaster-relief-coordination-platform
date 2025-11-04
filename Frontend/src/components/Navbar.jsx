@@ -12,16 +12,8 @@ const Navbar = ({ user, isAuthenticated }) => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Check if user is on dashboard pages where logo shouldn't navigate away
-  const isDashboardPage =
-    location.pathname === "/volunteer" ||
-    location.pathname === "/survivorDashboard" ||
-    location.pathname === "/ngoDashboard";
-
   const handleLogoClick = () => {
-    if (!isDashboardPage) {
-      navigate("/");
-    }
+    navigate("/");
   };
 
   return (
@@ -32,11 +24,7 @@ const Navbar = ({ user, isAuthenticated }) => {
     >
       <h1
         onClick={handleLogoClick}
-        className={`text-xl md:text-3xl font-bold ${
-          isDashboardPage
-            ? "cursor-default"
-            : "cursor-pointer hover:text-blue-600 transition-colors"
-        }`}
+        className="text-xl md:text-3xl font-bold cursor-pointer hover:text-blue-600 transition-colors"
       >
         CrisisConnect
       </h1>
@@ -110,6 +98,20 @@ const Navbar = ({ user, isAuthenticated }) => {
                     }`}
                   >
                     Volunteer
+                  </button>
+                )}
+
+                {(user?.userType === "Supplier" ||
+                  location.pathname === "/supplierDashboard") && (
+                  <button
+                    onClick={() => navigate("/supplierDashboard")}
+                    className={`px-3 lg:px-6 py-2 lg:py-3 font-medium transition-colors text-sm lg:text-base ${
+                      theme === "light"
+                        ? "text-gray-700 hover:text-gray-900"
+                        : "text-gray-300 hover:text-white"
+                    }`}
+                  >
+                    Dashboard
                   </button>
                 )}
                 <button
@@ -270,6 +272,23 @@ const Navbar = ({ user, isAuthenticated }) => {
                         }`}
                       >
                         Volunteer
+                      </button>
+                    )}
+
+                    {(user?.userType === "Supplier" ||
+                      location.pathname === "/supplierDashboard") && (
+                      <button
+                        onClick={() => {
+                          navigate("/supplierDashboard");
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-lg font-medium transition-colors ${
+                          theme === "light"
+                            ? "hover:bg-gray-100 text-gray-700"
+                            : "hover:bg-gray-800 text-gray-300"
+                        }`}
+                      >
+                        Dashboard
                       </button>
                     )}
                     <button

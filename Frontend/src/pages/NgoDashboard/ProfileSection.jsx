@@ -38,7 +38,7 @@ const ProfileSection = () => {
                   theme === "light" ? "text-gray-700" : "text-gray-300"
                 }`}
               >
-                Organization Name
+                Organization Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -57,7 +57,7 @@ const ProfileSection = () => {
                   theme === "light" ? "text-gray-700" : "text-gray-300"
                 }`}
               >
-                Owner Name
+                Owner Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -76,7 +76,7 @@ const ProfileSection = () => {
                   theme === "light" ? "text-gray-700" : "text-gray-300"
                 }`}
               >
-                Owner Email
+                Owner Email <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"

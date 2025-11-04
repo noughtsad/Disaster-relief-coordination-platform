@@ -205,12 +205,12 @@ const SignupPage = () => {
         <div className="text-center mt-6">
           <span className="text-sm text-gray-600">
             Already have an account?{" "}
-            <a
-              href="/login"
+            <button
+              onClick={() => navigate("/login")}
               className="text-slate-700 hover:text-slate-900 font-semibold underline decoration-slate-300 hover:decoration-slate-500 transition-all"
             >
               Login
-            </a>
+            </button>
           </span>
         </div>
       </div>

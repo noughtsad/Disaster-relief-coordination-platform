@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { Edit, Save } from "lucide-react";
+import axios from 'axios';
 import { ThemeContext } from "../../context/ThemeContext";
 import { updateProfile, setLoading, setError, clearError } from '../../store/appSlice';
 
@@ -16,17 +17,27 @@ const ProfileSection = () => {
     setEditProfile(profile);
   }, [profile]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     dispatch(setLoading(true));
     dispatch(clearError());
     try {
-      // Simulate API call for saving profile
-      new Promise(resolve => setTimeout(resolve, 500)); 
-      dispatch(updateProfile(editProfile));
+      const response = await axios.put(
+        'http://localhost:5000/auth/updateProfile',
+        {
+          name: editProfile.name,
+          phone: editProfile.phone,
+          address: editProfile.address,
+          emergencyContact: editProfile.emergencyContact,
+        },
+        { withCredentials: true }
+      );
+      
+      dispatch(updateProfile(response.data.user));
       setIsEditing(false);
       alert('Profile updated successfully!');
     } catch (err) {
-      dispatch(setError(err.message));
+      dispatch(setError(err.response?.data?.message || 'Failed to update profile'));
+      alert(err.response?.data?.message || 'Failed to update profile');
     } finally {
       dispatch(setLoading(false));
     }
@@ -58,7 +69,7 @@ const ProfileSection = () => {
           <div className="space-y-4">
             <div>
               <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>
-                Full Name
+                Full Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -74,7 +85,7 @@ const ProfileSection = () => {
             </div>
             <div>
               <label className={`block text-sm font-medium mb-1 ${theme === "light" ? "text-gray-700" : "text-gray-300"}`}>
-                Email Address
+                Email Address <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
