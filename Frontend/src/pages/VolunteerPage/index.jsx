@@ -207,7 +207,7 @@ export default function VolunteerPage() {
       case 'schedule':
         return <ScheduleSection schedule={schedule} />;
       case 'training':
-        return <TrainingSection trainingModules={trainingModules} />;
+        return <TrainingSection trainingModules={trainingModules} setTrainingModules={setTrainingModules} />;
       case 'profile':
         return <ProfileSection volunteerProfile={volunteerProfile} />;
       case 'communications':
