@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Sun, Moon, Menu, X } from "lucide-react";
+import { Sun, Moon, Menu, X, Home } from "lucide-react";
 import { ThemeContext } from "../context/ThemeContext";
 import { useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -51,6 +51,21 @@ const Navbar = ({ user, isAuthenticated }) => {
 
       {/* Desktop Navigation */}
       <div className="hidden md:flex items-center gap-4 lg:gap-6">
+        {/* Home Button */}
+        {location.pathname !== "/" && (
+          <button
+            onClick={() => navigate("/")}
+            className={`flex items-center gap-2 px-3 lg:px-4 py-2 rounded-lg font-medium transition-colors text-sm lg:text-base ${
+              theme === "light"
+                ? "text-gray-700 hover:bg-gray-100"
+                : "text-gray-300 hover:bg-gray-800"
+            }`}
+          >
+            <Home size={18} />
+            <span>Home</span>
+          </button>
+        )}
+        
         {/* Navigation Buttons */}
         {isAuthenticated ? (
           <>
@@ -184,6 +199,24 @@ const Navbar = ({ user, isAuthenticated }) => {
           theme === "light" ? "bg-white border-gray-200 shadow-black/20" : "bg-gray-900 border-gray-700 shadow-black/60"
         }`}>
           <div className="flex flex-col p-4 space-y-2">
+            {/* Home Button for Mobile */}
+            {location.pathname !== "/" && (
+              <button
+                onClick={() => {
+                  navigate("/");
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`w-full text-left px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-3 ${
+                  theme === "light"
+                    ? "hover:bg-gray-100 text-gray-700"
+                    : "hover:bg-gray-800 text-gray-300"
+                }`}
+              >
+                <Home size={18} />
+                <span>Home</span>
+              </button>
+            )}
+            
             {/* Navigation Buttons */}
             {isAuthenticated ? (
               <>

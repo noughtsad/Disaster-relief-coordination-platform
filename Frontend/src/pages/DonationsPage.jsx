@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { motion } from 'framer-motion';
+import { useNavigate } from "react-router-dom";
 import { 
   Heart, 
   CreditCard, 
@@ -14,11 +15,13 @@ import {
   TrendingUp,
   Gift,
   Star,
-  Download
+  Download,
+  ArrowLeft
 } from "lucide-react";
 
 const DonationsPage = () => {
   const { theme } = useContext(ThemeContext);
+  const navigate = useNavigate();
   
   const [selectedAmount, setSelectedAmount] = useState(500);
   const [customAmount, setCustomAmount] = useState("");
@@ -77,9 +80,21 @@ const DonationsPage = () => {
       className={`min-h-screen ${bgMain}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.6 }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className={`flex items-center gap-2 mb-6 px-4 py-2 rounded-lg font-medium transition-colors ${
+            theme === "light"
+              ? "text-gray-700 hover:bg-gray-200 bg-white"
+              : "text-gray-300 hover:bg-gray-700 bg-gray-800"
+          }`}
+        >
+          <ArrowLeft size={20} />
+          <span>Back</span>
+        </button>
         {/* Header */}
         <motion.div 
           className="text-center mb-8 sm:mb-12"

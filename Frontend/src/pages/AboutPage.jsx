@@ -1,9 +1,12 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const AboutPage = () => {
   const { theme } = useContext(ThemeContext);
+  const navigate = useNavigate();
 
   const teamMembers = [
     {
@@ -41,6 +44,18 @@ const AboutPage = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
       >
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className={`flex items-center gap-2 mb-6 px-4 py-2 rounded-lg font-medium transition-colors ${
+            theme === "light"
+              ? "text-gray-700 hover:bg-gray-200 bg-gray-100"
+              : "text-gray-300 hover:bg-gray-700 bg-gray-800"
+          }`}
+        >
+          <ArrowLeft size={20} />
+          <span>Back</span>
+        </button>
 
         {/* Our Mission */}
         <motion.section 

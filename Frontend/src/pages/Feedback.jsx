@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Send, User, MessageSquare, CheckCircle, Mail, Star } from 'lucide-react';
+import { Send, User, MessageSquare, CheckCircle, Mail, Star, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function FeedbackPage() {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [text, setText] = useState('');
@@ -67,6 +69,15 @@ export default function FeedbackPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 max-w-md w-full">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg font-medium transition-colors text-gray-700 hover:bg-gray-100"
+        >
+          <ArrowLeft size={20} />
+          <span>Back</span>
+        </button>
+        
         <div className="text-center mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">We Value Your Feedback</h1>
           <p className="text-sm sm:text-base text-gray-600">Help us improve by sharing your thoughts</p>

@@ -9,7 +9,7 @@ import {
 } from "../store/appSlice";
 import { setNgoProfile } from '../store/ngoSlice';
 import { ThemeContext } from "../context/ThemeContext";
-import { User, Building, HandHeart, Package } from "lucide-react";
+import { User, Building, HandHeart, Package, ArrowLeft } from "lucide-react";
 import axios from "axios";
 
 export default function UserTypeSelectionPage() {
@@ -223,6 +223,19 @@ export default function UserTypeSelectionPage() {
               : "bg-gray-900/95 border-gray-700"
           }`}
         >
+          {/* Back Button */}
+          <button
+            onClick={() => navigate(-1)}
+            className={`flex items-center gap-2 mb-4 px-3 py-2 rounded-lg font-medium transition-colors ${
+              theme === "light"
+                ? "text-gray-700 hover:bg-gray-200"
+                : "text-gray-300 hover:bg-gray-700"
+            }`}
+          >
+            <ArrowLeft size={20} />
+            <span>Back</span>
+          </button>
+          
           <h2
             className={`text-3xl font-bold text-center mb-8 ${
               theme === "light" ? "text-black" : "text-white"
