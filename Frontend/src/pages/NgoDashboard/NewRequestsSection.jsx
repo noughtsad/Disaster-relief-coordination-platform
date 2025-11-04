@@ -145,13 +145,6 @@ const NewRequestsSection = () => {
             {request.description} {/* Using description from requestSlice */}
           </p>
 
-          {/* Show coordinates if available */}
-          {request.latitude && request.longitude && (
-            <div className={`text-xs ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>
-              📍 Coordinates: {request.latitude}, {request.longitude}
-              {request.address && <div className="mt-1">📮 {request.address}</div>}
-            </div>
-          )}
 
           {/* Show responders */}
           {request.responders && request.responders.length > 0 && (
@@ -239,9 +232,6 @@ const NewRequestsSection = () => {
           </button>
         )} */}
 
-        <button className="px-3 sm:px-4 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700">
-          View Details
-        </button>
       </div>
     </div>
   );

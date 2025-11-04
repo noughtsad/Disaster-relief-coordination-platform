@@ -6,7 +6,6 @@ export default function ProfileSection({ theme }) {
   const [supplierProfile, setSupplierProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -38,63 +37,12 @@ export default function ProfileSection({ theme }) {
       });
     } catch (error) {
       if (error.response?.status === 404) {
-        setShowCreateForm(true);
+        // Profile not found - this shouldn't happen as profile is created during registration
+        console.error('Supplier profile not found. Please contact support or try logging in again.');
+        alert('Supplier profile not found. Please try logging out and logging in again to complete setup.');
       } else {
         console.error('Error fetching profile:', error);
       }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCreateProfile = async (e) => {
-    e.preventDefault();
-    
-    // Validate form data
-    if (!formData.name || !formData.phone || !formData.email || !formData.address) {
-      alert('Please fill in all required fields (Name, Email, Phone, Address)');
-      return;
-    }
-    
-    if (!formData.lat || !formData.lng) {
-      alert('Please provide location coordinates. You can use "Use my current location" button or enter them manually.');
-      return;
-    }
-    
-    setLoading(true);
-    try {
-      const payload = {
-        name: formData.name,
-        contact: {
-          phone: formData.phone,
-          email: formData.email,
-          address: formData.address,
-        },
-        location: {
-          lat: parseFloat(formData.lat),
-          lng: parseFloat(formData.lng),
-          address: formData.address,
-        },
-        deliveryTimeEstimate: parseInt(formData.deliveryTimeEstimate) || 24,
-      };
-      
-      console.log('Creating supplier profile with data:', payload);
-      
-      const response = await axios.post(
-        'http://localhost:5000/supplier/create',
-        payload,
-        { withCredentials: true }
-      );
-      
-      console.log('Profile created successfully:', response.data);
-      await fetchProfile();
-      setShowCreateForm(false);
-      alert('Supplier profile created successfully!');
-    } catch (error) {
-      console.error('Error creating profile:', error);
-      console.error('Error response:', error.response?.data);
-      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Error creating profile';
-      alert(`Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -151,7 +99,7 @@ export default function ProfileSection({ theme }) {
     }
   };
 
-  if (loading && !showCreateForm) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <p className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>Loading profile...</p>
@@ -159,151 +107,17 @@ export default function ProfileSection({ theme }) {
     );
   }
 
-  if (showCreateForm) {
+  if (!supplierProfile) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
-            Create Supplier Profile
-          </h2>
-          <p className={`mt-2 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
-            Set up your supplier profile to start managing inventory and receiving orders from NGOs.
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className={`text-lg font-semibold mb-2 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+            Profile Not Found
+          </p>
+          <p className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
+            Please try logging out and logging in again to complete your profile setup.
           </p>
         </div>
-
-        <form onSubmit={handleCreateProfile} className={`p-6 rounded-lg shadow-sm border ${
-          theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'
-        }`}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>
-                Company Name *
-              </label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
-                }`}
-                required
-              />
-            </div>
-
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>
-                Email *
-              </label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
-                }`}
-                required
-              />
-            </div>
-
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>
-                Phone *
-              </label>
-              <input
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
-                }`}
-                required
-              />
-            </div>
-
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>
-                Delivery Time Estimate (hours) *
-              </label>
-              <input
-                type="number"
-                value={formData.deliveryTimeEstimate}
-                onChange={(e) => setFormData({ ...formData, deliveryTimeEstimate: e.target.value })}
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
-                }`}
-                min="1"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>
-              Address *
-            </label>
-            <textarea
-              value={formData.address}
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              rows="2"
-              className={`w-full px-3 py-2 border rounded-lg ${
-                theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
-              }`}
-              required
-            />
-          </div>
-
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>
-                Latitude *
-              </label>
-              <input
-                type="number"
-                step="any"
-                value={formData.lat}
-                onChange={(e) => setFormData({ ...formData, lat: e.target.value })}
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
-                }`}
-                required
-              />
-            </div>
-
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>
-                Longitude *
-              </label>
-              <input
-                type="number"
-                step="any"
-                value={formData.lng}
-                onChange={(e) => setFormData({ ...formData, lng: e.target.value })}
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === 'light' ? 'bg-white border-gray-300 text-gray-900' : 'bg-gray-700 border-gray-600 text-white'
-                }`}
-                required
-              />
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={getCurrentLocation}
-            className="mt-2 text-sm text-blue-600 hover:text-blue-700"
-          >
-            Use my current location
-          </button>
-
-          <div className="mt-6 flex space-x-3">
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-            >
-              {loading ? 'Creating...' : 'Create Profile'}
-            </button>
-          </div>
-        </form>
       </div>
     );
   }

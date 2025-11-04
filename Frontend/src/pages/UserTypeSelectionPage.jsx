@@ -26,6 +26,15 @@ export default function UserTypeSelectionPage() {
     ngoContact: "",
     ngoDescription: "",
   });
+  const [supplierDetails, setSupplierDetails] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    latitude: "",
+    longitude: "",
+    deliveryTimeEstimate: "24",
+  });
 
   const handleUserTypeSelect = (type) => {
     setSelectedUserType(type);
@@ -35,6 +44,33 @@ export default function UserTypeSelectionPage() {
   const handleNgoChange = (e) => {
     const { name, value } = e.target;
     setNgoDetails({ ...ngoDetails, [name]: value });
+  };
+
+  const handleSupplierChange = (e) => {
+    const { name, value } = e.target;
+    setSupplierDetails({ ...supplierDetails, [name]: value });
+  };
+
+  const handleGetCurrentLocation = (isNgo = true) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude.toFixed(6);
+          const lng = position.coords.longitude.toFixed(6);
+          if (isNgo) {
+            setNgoDetails({ ...ngoDetails, ngoLatitude: lat, ngoLongitude: lng });
+          } else {
+            setSupplierDetails({ ...supplierDetails, latitude: lat, longitude: lng });
+          }
+        },
+        (error) => {
+          alert("Unable to retrieve your location. Please enter manually.");
+          console.error("Geolocation error:", error);
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser.");
+    }
   };
 
   const handleSubmit = async () => {
@@ -108,7 +144,20 @@ export default function UserTypeSelectionPage() {
         );
         navigate("/volunteer");
       } else if (selectedUserType === "Supplier") {
-        const response = await axios.post(
+        if (
+          !supplierDetails.name ||
+          !supplierDetails.phone ||
+          !supplierDetails.email ||
+          !supplierDetails.address ||
+          !supplierDetails.latitude ||
+          !supplierDetails.longitude
+        ) {
+          dispatch(setError("Please fill in all required supplier details."));
+          return;
+        }
+        
+        // Update user type first
+        const userTypeUpdateResponse = await axios.post(
           import.meta.env.VITE_BACKEND_URL + "/auth/updateUserType",
           { userId: user._id, userType: "Supplier" },
           {
@@ -117,8 +166,32 @@ export default function UserTypeSelectionPage() {
           }
         );
         dispatch(
-          updateProfile({ ...user, userType: response.data.user.userType })
+          updateProfile({ ...user, userType: userTypeUpdateResponse.data.user.userType })
         );
+
+        // Create supplier profile
+        const supplierProfileResponse = await axios.post(
+          import.meta.env.VITE_BACKEND_URL + "/supplier/create",
+          {
+            name: supplierDetails.name,
+            contact: {
+              phone: supplierDetails.phone,
+              email: supplierDetails.email,
+              address: supplierDetails.address,
+            },
+            location: {
+              lat: parseFloat(supplierDetails.latitude),
+              lng: parseFloat(supplierDetails.longitude),
+              address: supplierDetails.address,
+            },
+            deliveryTimeEstimate: parseInt(supplierDetails.deliveryTimeEstimate) || 24,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+        
         navigate("/supplierDashboard");
       }
     } catch (err) {
@@ -258,7 +331,7 @@ export default function UserTypeSelectionPage() {
                   theme === "light" ? "text-black" : "text-white"
                 }`}
               >
-                {selectedUserType === "NGO" ? "NGO Details" : "Confirm Role"}
+                {selectedUserType === "NGO" ? "NGO Details" : selectedUserType === "Supplier" ? "Supplier Details" : "Confirm Role"}
               </h3>
 
               {selectedUserType === "NGO" && (
@@ -293,7 +366,7 @@ export default function UserTypeSelectionPage() {
                     >
                       Location (Latitude & Longitude) *
                     </label>
-                    <div className="flex gap-4 justify-between">
+                    <div className="flex gap-4 justify-between mb-2">
                       <input
                         type="text"
                         name="ngoLatitude"
@@ -321,6 +394,17 @@ export default function UserTypeSelectionPage() {
                         required
                       />
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => handleGetCurrentLocation(true)}
+                      className={`text-sm px-3 py-1 rounded ${
+                        theme === "light"
+                          ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                          : "bg-blue-900 text-blue-300 hover:bg-blue-800"
+                      }`}
+                    >
+                      📍 Use my current location
+                    </button>
                   </div>
                   <div>
                     <label
@@ -363,6 +447,169 @@ export default function UserTypeSelectionPage() {
                           : "border-gray-600 bg-gray-800 text-white"
                       }`}
                       placeholder="Briefly describe your NGO's mission and services."
+                    />
+                  </div>
+                </>
+              )}
+
+              {selectedUserType === "Supplier" && (
+                <>
+                  <div>
+                    <label
+                      className={`block text-sm font-medium mb-2 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}
+                    >
+                      Company/Business Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={supplierDetails.name}
+                      onChange={handleSupplierChange}
+                      className={`w-full px-3 py-2 border rounded-lg ${
+                        theme === "light"
+                          ? "border-gray-300 bg-white"
+                          : "border-gray-600 bg-gray-800 text-white"
+                      }`}
+                      placeholder="e.g., ABC Supplies Ltd."
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className={`block text-sm font-medium mb-2 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}
+                    >
+                      Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={supplierDetails.phone}
+                      onChange={handleSupplierChange}
+                      className={`w-full px-3 py-2 border rounded-lg ${
+                        theme === "light"
+                          ? "border-gray-300 bg-white"
+                          : "border-gray-600 bg-gray-800 text-white"
+                      }`}
+                      placeholder="e.g., +1234567890"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className={`block text-sm font-medium mb-2 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}
+                    >
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={supplierDetails.email}
+                      onChange={handleSupplierChange}
+                      className={`w-full px-3 py-2 border rounded-lg ${
+                        theme === "light"
+                          ? "border-gray-300 bg-white"
+                          : "border-gray-600 bg-gray-800 text-white"
+                      }`}
+                      placeholder="e.g., contact@abcsupplies.com"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className={`block text-sm font-medium mb-2 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}
+                    >
+                      Business Address *
+                    </label>
+                    <input
+                      type="text"
+                      name="address"
+                      value={supplierDetails.address}
+                      onChange={handleSupplierChange}
+                      className={`w-full px-3 py-2 border rounded-lg ${
+                        theme === "light"
+                          ? "border-gray-300 bg-white"
+                          : "border-gray-600 bg-gray-800 text-white"
+                      }`}
+                      placeholder="e.g., 123 Main St, City, Country"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className={`block text-sm font-medium mb-2 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}
+                    >
+                      Location (Latitude & Longitude) *
+                    </label>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        name="latitude"
+                        value={supplierDetails.latitude}
+                        onChange={handleSupplierChange}
+                        className={`flex-1 px-3 py-2 border rounded-lg ${
+                          theme === "light"
+                            ? "border-gray-300 bg-white"
+                            : "border-gray-600 bg-gray-800 text-white"
+                        }`}
+                        placeholder="Latitude"
+                        required
+                      />
+                      <input
+                        type="text"
+                        name="longitude"
+                        value={supplierDetails.longitude}
+                        onChange={handleSupplierChange}
+                        className={`flex-1 px-3 py-2 border rounded-lg ${
+                          theme === "light"
+                            ? "border-gray-300 bg-white"
+                            : "border-gray-600 bg-gray-800 text-white"
+                        }`}
+                        placeholder="Longitude"
+                        required
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleGetCurrentLocation(false)}
+                      className={`text-sm px-3 py-1 rounded ${
+                        theme === "light"
+                          ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                          : "bg-blue-900 text-blue-300 hover:bg-blue-800"
+                      }`}
+                    >
+                      📍 Use my current location
+                    </button>
+                  </div>
+                  <div>
+                    <label
+                      className={`block text-sm font-medium mb-2 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}
+                    >
+                      Estimated Delivery Time (hours)
+                    </label>
+                    <input
+                      type="number"
+                      name="deliveryTimeEstimate"
+                      value={supplierDetails.deliveryTimeEstimate}
+                      onChange={handleSupplierChange}
+                      className={`w-full px-3 py-2 border rounded-lg ${
+                        theme === "light"
+                          ? "border-gray-300 bg-white"
+                          : "border-gray-600 bg-gray-800 text-white"
+                      }`}
+                      placeholder="24"
+                      min="1"
                     />
                   </div>
                 </>
