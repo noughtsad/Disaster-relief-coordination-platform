@@ -89,10 +89,12 @@ export async function login(req, res) {
 export async function logout(req, res) {
   res.clearCookie(COOKIE_NAME, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: true,
+    secure: true,         
+    sameSite: "none",
+    path: "/",
   });
-  return res.json({ message: "Logged out" });
+
+  return res.status(200).json({ message: "Logged out successfully" });
 }
 
 export async function me(req, res) {
