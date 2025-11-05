@@ -1,12 +1,14 @@
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import { signJwt, verifyJwt } from "../utils/jwt.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const COOKIE_NAME = process.env.COOKIE_NAME || "token";
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: true,
-  sameSite: "none",
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   maxAge: 1000 * 60 * 60 * 24 * 7,
 };
 
