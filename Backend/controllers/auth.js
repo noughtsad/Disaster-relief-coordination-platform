@@ -6,9 +6,9 @@ dotenv.config();
 
 const COOKIE_NAME = process.env.COOKIE_NAME || "token";
 const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    httpOnly: true,
+      secure: true, // For local testing change to false
+  sameSite: "none", // For local testing change to lax
   maxAge: 1000 * 60 * 60 * 24 * 7,
 };
 
