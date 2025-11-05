@@ -5,8 +5,8 @@ import { signJwt, verifyJwt } from "../utils/jwt.js";
 const COOKIE_NAME = process.env.COOKIE_NAME || "token";
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: true,
+  sameSite: "none",
   maxAge: 1000 * 60 * 60 * 24 * 7,
 };
 
