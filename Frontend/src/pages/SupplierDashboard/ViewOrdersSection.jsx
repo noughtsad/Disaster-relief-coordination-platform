@@ -84,7 +84,7 @@ export default function ViewOrdersSection({ theme }) {
       setShowDispatchModal(false);
       setSelectedFulfillment(null);
       setDispatchData({ trackingInfo: '', expectedDeliveryHours: '' });
-      alert('Order dispatched successfully!');
+      alert('Order dispatched successfully! Check the "Manage Deliveries" section to track this delivery.');
     } catch (error) {
       console.error('Error dispatching order:', error);
       alert(error.response?.data?.message || 'Error dispatching order');

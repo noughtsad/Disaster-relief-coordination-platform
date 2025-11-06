@@ -83,12 +83,6 @@ export default function SupplierDashboard() {
     },
   ]);
 
-  // Mock data for deliveries
-  const [deliveries] = useState([
-    { id: 1, orderId: 1, destination: "Downtown Relief Center", scheduled: "2025-10-05", status: "Scheduled", driver: "John Doe" },
-    { id: 2, orderId: 2, destination: "Community Center", scheduled: "2025-10-02", status: "Completed", driver: "Jane Smith" },
-  ]);
-
   const renderContent = () => {
     switch (activeSection) {
       case 'home':
@@ -98,7 +92,7 @@ export default function SupplierDashboard() {
       case 'orders':
         return <ViewOrdersSection theme={theme} />;
       case 'deliveries':
-        return <ManageDeliveriesSection theme={theme} deliveries={deliveries} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />;
+        return <ManageDeliveriesSection theme={theme} />;
       case 'profile':
         return <ProfileSection />;
       case 'communications':
