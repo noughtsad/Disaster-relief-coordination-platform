@@ -41,6 +41,34 @@ const CommunicationsSection = () => {
     setSelectedRequestId(null);
   };
 
+  const getStatusClasses = (status) => {
+    switch (status) {
+      case 'Active':
+        return 'bg-green-100 text-green-800';
+      case 'In Transit':
+        return 'bg-blue-100 text-blue-800';
+      case 'Pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Completed':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getUrgencyClasses = (urgency) => {
+    switch (urgency) {
+      case 'High':
+        return 'bg-red-100 text-red-800';
+      case 'Medium':
+        return 'bg-orange-100 text-orange-800';
+      case 'Low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -167,14 +195,31 @@ const CommunicationsSection = () => {
                         theme === "light" ? "text-gray-900" : "text-white"
                       }`}
                     >
-                      Chat for Request: {request.title || request._id}
+                      Request Type: {request.type}
                     </h4>
                     <p
-                      className={`text-sm ${
-                        theme === "light" ? "text-gray-600" : "text-gray-400"
-                      }`}
-                    >
-                      Survivor: {request.survivorId?.name || 'N/A'}
+                      className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                      Description: {request.description}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusClasses(request.status)}`}>
+                        Status: {request.status}
+                      </span>
+                      <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getUrgencyClasses(request.urgency)}`}>
+                        Urgency: {request.urgency}
+                      </span>
+                    </div>
+                    <p
+                      className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'} mt-2`}>
+                      Survivor: {request.survivorName || 'N/A'}
+                    </p>
+                    <p
+                      className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                      Address: {request.address}
+                    </p>
+                    <p
+                      className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                      Location: {request.latitude}, {request.longitude}
                     </p>
                   </div>
                 </div>
