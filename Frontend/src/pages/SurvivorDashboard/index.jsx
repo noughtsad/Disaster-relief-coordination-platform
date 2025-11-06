@@ -66,7 +66,7 @@ export default function SurvivorDashboard() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className={`fixed top-4 left-4 z-50 lg:hidden p-2 rounded-lg shadow-lg ${
+          className={`fixed top-6 left-4 z-50 lg:hidden p-2 rounded-lg shadow-lg ${
             theme === "light" ? "bg-white" : "bg-gray-900"
           }`}
         >

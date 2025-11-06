@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+ import { useContext, useState } from "react";
 import { Sun, Moon, Menu, X, Home } from "lucide-react";
 import { ThemeContext } from "../context/ThemeContext";
 import { useDispatch } from "react-redux";
@@ -12,8 +12,38 @@ const Navbar = ({ user, isAuthenticated }) => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Function to get dashboard route based on user type
+  const getDashboardRoute = () => {
+    if (!user) return "/";
+    
+    const userType = user.userType?.toLowerCase(); // Handle case sensitivity
+    
+    switch (userType) {
+      case "survivor":
+        return "/survivorDashboard";
+      case "ngo":
+        return "/ngoDashboard";
+      case "volunteer":
+        return "/volunteer";
+      case "supplier":
+        return "/supplierDashboard";
+      default:
+        return "/";
+    }
+  };
+
   const handleLogoClick = () => {
-    navigate("/");
+    console.log("Logo clicked! User:", user); // Debug log
+    console.log("isAuthenticated:", isAuthenticated); // Debug log
+    
+    if (isAuthenticated && user) {
+      const route = getDashboardRoute();
+      console.log("Navigating to:", route); // Debug log
+      navigate(route);
+    } else {
+      console.log("Navigating to landing page"); // Debug log
+      navigate("/");
+    }
   };
 
   return (
@@ -22,19 +52,19 @@ const Navbar = ({ user, isAuthenticated }) => {
         theme === "light" ? "bg-white text-gray-800" : "bg-gray-900 text-white"
       }`}
     >
-      <img onClick={handleLogoClick} src="/logo_name.png" alt="CrisisConnect Logo" className="h-12 cursor-pointer" />
+      <img onClick={handleLogoClick} src="/logo_name.png" alt="CrisisConnect Logo" className="h-12 cursor-pointer z-10" />
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors z-10"
       >
         {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
       {/* Desktop Navigation */}
       <div className="hidden md:flex items-center gap-4 lg:gap-6">
-        {/* Home Button */}
-        {location.pathname !== "/" && (
+        {/* Home Button - Only show if NOT logged in and not on landing page */}
+        {!isAuthenticated && location.pathname !== "/" && (
           <button
             onClick={() => navigate("/")}
             className={`flex items-center gap-2 px-3 lg:px-4 py-2 rounded-lg font-medium transition-colors text-sm lg:text-base ${
@@ -195,8 +225,8 @@ const Navbar = ({ user, isAuthenticated }) => {
           theme === "light" ? "bg-white border-gray-200 shadow-black/20" : "bg-gray-900 border-gray-700 shadow-black/60"
         }`}>
           <div className="flex flex-col p-4 space-y-2">
-            {/* Home Button for Mobile */}
-            {location.pathname !== "/" && (
+            {/* Home Button for Mobile - Only show if NOT logged in and not on landing page */}
+            {!isAuthenticated && location.pathname !== "/" && (
               <button
                 onClick={() => {
                   navigate("/");
