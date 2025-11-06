@@ -22,7 +22,7 @@ const ProfileSection = ({ volunteerProfile }) => {
     dispatch(clearError());
     try {
       const response = await axios.put(
-        'http://localhost:5000/auth/updateProfile',
+        `${import.meta.env.VITE_BACKEND_URL}/auth/updateProfile`,
         {
           name: editProfile.name,
           phone: editProfile.phone,
