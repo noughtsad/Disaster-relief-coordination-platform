@@ -1,7 +1,7 @@
 
 const Card = ({ title, img, className = "" }) => {
   return (
-    <div className={`relative rounded-3xl overflow-hidden shadow-xl cursor-pointer hover:scale-105 hover:shadow-2xl transition-all duration-300 ${className}`}>
+    <div className={`relative rounded-3xl overflow-hidden shadow-xl cursor-pointer transition-shadow duration-300 ${className}`}>
       <img 
         src={img} 
         alt={title} 

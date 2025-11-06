@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import Card from "../components/Card";
+import PixelCard from "../components/PixelCard";
 
 // Main Landing Page Component
 const LandingPage = () => {
@@ -82,8 +83,6 @@ const LandingPage = () => {
                   animate="visible"
                 >
                    <motion.div 
-                    onClick={() => handleCardClick('survivor')}
-                    className="cursor-pointer"
                     variants={{
                       hidden: { y: 50, opacity: 0 },
                       visible: { y: 0, opacity: 1 }
@@ -94,16 +93,16 @@ const LandingPage = () => {
                     }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <Card 
-                      title="Survivor" 
-                      img="https://www.shutterstock.com/image-photo/survivors-hatay-turkey-stories-miracles-600nw-2265953343.jpg"
-                      className="h-64 sm:h-80"
-                    />
+                    <PixelCard variant="default" onClick={() => handleCardClick('survivor')} className="cursor-pointer">
+                      <Card 
+                        title="Survivor" 
+                        img="https://www.shutterstock.com/image-photo/survivors-hatay-turkey-stories-miracles-600nw-2265953343.jpg"
+                        className="h-64 sm:h-80"
+                      />
+                    </PixelCard>
                   </motion.div>
 
                   <motion.div 
-                    onClick={() => handleCardClick('survivor')}
-                    className="cursor-pointer"
                     variants={{
                       hidden: { y: 50, opacity: 0 },
                       visible: { y: 0, opacity: 1 }
@@ -114,16 +113,16 @@ const LandingPage = () => {
                     }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <Card 
-                      title="Supplier" 
-                      img="https://www.manutan.com/blog/medias/files/thumbsSource/A00233P2_1110x555.jpeg"
-                      className="h-64 sm:h-80"
-                    />
+                    <PixelCard variant="default" onClick={() => handleCardClick('survivor')} className="cursor-pointer">
+                      <Card 
+                        title="Supplier" 
+                        img="https://www.manutan.com/blog/medias/files/thumbsSource/A00233P2_1110x555.jpeg"
+                        className="h-64 sm:h-80"
+                      />
+                    </PixelCard>
                   </motion.div>
                  
                   <motion.div 
-                    onClick={() => handleCardClick('volunteer')}
-                    className="cursor-pointer"
                     variants={{
                       hidden: { y: 50, opacity: 0 },
                       visible: { y: 0, opacity: 1 }
@@ -134,16 +133,16 @@ const LandingPage = () => {
                     }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <Card 
-                      title="Volunteers" 
-                      img="https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=800&q=80"
-                      className="h-56 sm:h-64"
-                    />
+                    <PixelCard variant="default" onClick={() => handleCardClick('volunteer')} className="cursor-pointer">
+                      <Card 
+                        title="Volunteers" 
+                        img="https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=800&q=80"
+                        className="h-56 sm:h-64"
+                      />
+                    </PixelCard>
                   </motion.div>
                   
                   <motion.div 
-                    onClick={() => handleCardClick('ngo')}
-                    className="cursor-pointer"
                     variants={{
                       hidden: { y: 50, opacity: 0 },
                       visible: { y: 0, opacity: 1 }
@@ -154,11 +153,13 @@ const LandingPage = () => {
                     }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <Card 
-                      title="NGOs" 
-                      img="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80"
-                      className="h-56 sm:h-64"
-                    />
+                    <PixelCard variant="default" onClick={() => handleCardClick('ngo')} className="cursor-pointer">
+                      <Card 
+                        title="NGOs" 
+                        img="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80"
+                        className="h-56 sm:h-64"
+                      />
+                    </PixelCard>
                   </motion.div>
                 </motion.div>
               </motion.div>
