@@ -22,13 +22,7 @@ const Navbar = ({ user, isAuthenticated }) => {
         theme === "light" ? "bg-white text-gray-800" : "bg-gray-900 text-white"
       }`}
     >
-      <h1
-        onClick={handleLogoClick}
-        className="text-xl md:text-3xl font-bold cursor-pointer hover:text-blue-600 transition-colors"
-      >
-        CrisisConnect
-      </h1>
-
+      <img onClick={handleLogoClick} src="/logo_name.png" alt="CrisisConnect Logo" className="h-12 cursor-pointer" />
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
