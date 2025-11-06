@@ -26,7 +26,7 @@ export default function ProfileSection() {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/supplier/profile', {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/supplier/profile`, {
         withCredentials: true,
       });
       setSupplierProfile(response.data.supplier);
@@ -57,7 +57,7 @@ export default function ProfileSection() {
     setLoading(true);
     try {
       await axios.put(
-        'http://localhost:5000/supplier/update',
+        `${import.meta.env.VITE_BACKEND_URL}/supplier/update`,
         {
           name: formData.name,
           contact: {

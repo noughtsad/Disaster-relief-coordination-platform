@@ -20,7 +20,7 @@ export default function ViewOrdersSection({ theme }) {
 
   const fetchFulfillments = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/fulfillment/my-fulfillments', {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/fulfillment/my-fulfillments`, {
         withCredentials: true,
       });
       setFulfillments(response.data.fulfillments);
@@ -36,7 +36,7 @@ export default function ViewOrdersSection({ theme }) {
     setLoading(true);
     try {
       await axios.put(
-        `http://localhost:5000/fulfillment/accept/${fulfillmentId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/fulfillment/accept/${fulfillmentId}`,
         { fulfilledQuantity },
         { withCredentials: true }
       );
@@ -57,7 +57,7 @@ export default function ViewOrdersSection({ theme }) {
     setLoading(true);
     try {
       await axios.put(
-        `http://localhost:5000/fulfillment/reject/${fulfillmentId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/fulfillment/reject/${fulfillmentId}`,
         { rejectionReason: reason },
         { withCredentials: true }
       );
@@ -76,7 +76,7 @@ export default function ViewOrdersSection({ theme }) {
     setLoading(true);
     try {
       await axios.put(
-        `http://localhost:5000/fulfillment/dispatch/${selectedFulfillment._id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/fulfillment/dispatch/${selectedFulfillment._id}`,
         dispatchData,
         { withCredentials: true }
       );

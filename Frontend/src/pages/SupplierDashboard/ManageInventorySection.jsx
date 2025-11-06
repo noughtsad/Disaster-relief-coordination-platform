@@ -30,7 +30,7 @@ export default function ManageInventorySection({ theme, onNavigateToProfile }) {
   const checkProfileAndFetchInventory = async () => {
     try {
       // First check if supplier profile exists
-      await axios.get('http://localhost:5000/supplier/profile', {
+      await axios.get(`${import.meta.env.VITE_BACKEND_URL}/supplier/profile`, {
         withCredentials: true,
       });
       setHasProfile(true);
@@ -47,7 +47,7 @@ export default function ManageInventorySection({ theme, onNavigateToProfile }) {
 
   const fetchInventory = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/inventory/my-inventory', {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/inventory/my-inventory`, {
         withCredentials: true,
       });
       setInventory(response.data.inventory);
@@ -64,7 +64,7 @@ export default function ManageInventorySection({ theme, onNavigateToProfile }) {
     setLoading(true);
     try {
       await axios.post(
-        'http://localhost:5000/inventory/add',
+        `${import.meta.env.VITE_BACKEND_URL}/inventory/add`,
         formData,
         { withCredentials: true }
       );
@@ -84,7 +84,7 @@ export default function ManageInventorySection({ theme, onNavigateToProfile }) {
     setLoading(true);
     try {
       await axios.put(
-        `http://localhost:5000/inventory/update/${editingItem._id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/inventory/update/${editingItem._id}`,
         formData,
         { withCredentials: true }
       );
@@ -104,7 +104,7 @@ export default function ManageInventorySection({ theme, onNavigateToProfile }) {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
     
     try {
-      await axios.delete(`http://localhost:5000/inventory/delete/${itemId}`, {
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/inventory/delete/${itemId}`, {
         withCredentials: true,
       });
       await fetchInventory();
