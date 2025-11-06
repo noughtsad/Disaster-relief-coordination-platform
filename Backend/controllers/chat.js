@@ -1,21 +1,37 @@
 import Request from "../models/Request.js";
+import FulfillmentRequest from "../models/FulfillmentRequest.js";
+import Supplier from "../models/Supplier.js";
 
 export const getChatMessages = async (req, res) => {
   try {
     const { requestId } = req.params;
-    const userId = req.user.id; // Assuming user ID is available from authentication middleware
+    const userId = req.user.id;
 
     const request = await Request.findById(requestId);
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
     }
 
-    const isParticipant = 
+    // Check if user is a direct participant (survivor, acceptedBy, or responder)
+    const isDirectParticipant = 
       request.survivorId.toString() === userId ||
       (request.acceptedBy && request.acceptedBy.toString() === userId) ||
       (request.responders && request.responders.some(r => r.userId.toString() === userId));
 
-    if (!isParticipant) {
+    // Check if user is a supplier with a fulfillment request for this survivor request
+    let isSupplierParticipant = false;
+    if (!isDirectParticipant) {
+      const supplier = await Supplier.findOne({ owner: userId });
+      if (supplier) {
+        const fulfillment = await FulfillmentRequest.findOne({
+          survivorRequest: requestId,
+          supplier: supplier._id
+        });
+        isSupplierParticipant = !!fulfillment;
+      }
+    }
+
+    if (!isDirectParticipant && !isSupplierParticipant) {
       return res.status(403).json({ message: "User not authorized to view this chat" });
     }
 

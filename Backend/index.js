@@ -2,6 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import Feedback from "./models/Feedback.js";
 import Request from "./models/Request.js";
+import FulfillmentRequest from "./models/FulfillmentRequest.js";
+import Supplier from "./models/Supplier.js";
 import * as math from "./mathModule.js";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
@@ -111,12 +113,26 @@ io.on("connection", (socket) => {
         return;
       }
 
-      const isParticipant = 
+      // Check if user is a direct participant (survivor, acceptedBy, or responder)
+      const isDirectParticipant = 
         request.survivorId.toString() === userId ||
         (request.acceptedBy && request.acceptedBy.toString() === userId) ||
         request.responders.some(r => r.userId.toString() === userId);
 
-      if (!isParticipant) {
+      // Check if user is a supplier with a fulfillment request for this survivor request
+      let isSupplierParticipant = false;
+      if (!isDirectParticipant && userRole === 'Supplier') {
+        const supplier = await Supplier.findOne({ owner: userId });
+        if (supplier) {
+          const fulfillment = await FulfillmentRequest.findOne({
+            survivorRequest: requestId,
+            supplier: supplier._id
+          });
+          isSupplierParticipant = !!fulfillment;
+        }
+      }
+
+      if (!isDirectParticipant && !isSupplierParticipant) {
         socket.emit("error", "User not authorized for this room");
         return;
       }

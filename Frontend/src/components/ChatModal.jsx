@@ -90,7 +90,7 @@ const ChatModal = ({ isOpen, onClose, requestId, theme }) => {
       const messagePayload = {
         requestId,
         sender: user._id,
-        onModel: user.userType === 'NGO' ? 'Ngo' : 'User',
+        onModel: user.userType === 'NGO' ? 'Ngo' : user.userType === 'Supplier' ? 'Supplier' : 'User',
         messageContent: newMessage,
       };
 
@@ -103,7 +103,7 @@ const ChatModal = ({ isOpen, onClose, requestId, theme }) => {
           name: user.name || user.email || 'Unknown',
           userType: user.userType,
         },
-        onModel: user.userType === 'NGO' ? 'Ngo' : 'User',
+        onModel: user.userType === 'NGO' ? 'Ngo' : user.userType === 'Supplier' ? 'Supplier' : 'User',
         messageContent: newMessage,
         createdAt: new Date().toISOString(),
       };

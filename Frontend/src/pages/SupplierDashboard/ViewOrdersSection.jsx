@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Calendar, Truck, CheckCircle, XCircle, MapPin, User, Package, X } from 'lucide-react';
+import { Search, Filter, Calendar, Truck, CheckCircle, XCircle, MapPin, User, Package, X, MessageCircle } from 'lucide-react';
 import axios from 'axios';
+import ChatModal from '../../components/ChatModal';
 
 export default function ViewOrdersSection({ theme }) {
   const [fulfillments, setFulfillments] = useState([]);
@@ -9,6 +10,8 @@ export default function ViewOrdersSection({ theme }) {
   const [loading, setLoading] = useState(false);
   const [selectedFulfillment, setSelectedFulfillment] = useState(null);
   const [showDispatchModal, setShowDispatchModal] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState(null);
   const [dispatchData, setDispatchData] = useState({
     trackingInfo: '',
     expectedDeliveryHours: '',
@@ -96,6 +99,16 @@ export default function ViewOrdersSection({ theme }) {
   const openDispatchModal = (fulfillment) => {
     setSelectedFulfillment(fulfillment);
     setShowDispatchModal(true);
+  };
+
+  const handleOpenChat = (fulfillment) => {
+    setSelectedRequestId(fulfillment.survivorRequest?._id || fulfillment.survivorRequest);
+    setIsChatOpen(true);
+  };
+
+  const handleCloseChat = () => {
+    setIsChatOpen(false);
+    setSelectedRequestId(null);
   };
 
   const filteredFulfillments = fulfillments.filter(f => {
@@ -225,36 +238,50 @@ export default function ViewOrdersSection({ theme }) {
                 )}
               </div>
 
-              <div className="flex justify-end space-x-2">
-                {fulfillment.status === 'Pending' && (
-                  <>
+              <div className="flex justify-between items-center space-x-2">
+                <button
+                  onClick={() => handleOpenChat(fulfillment)}
+                  className={`flex items-center px-3 py-1 text-sm border rounded-lg transition-colors ${
+                    theme === 'light' 
+                      ? 'border-indigo-600 text-indigo-600 hover:bg-indigo-50' 
+                      : 'border-indigo-400 text-indigo-400 hover:bg-indigo-900/30'
+                  }`}
+                  title="Chat with NGO and Survivor"
+                >
+                  <MessageCircle className="mr-1 h-4 w-4" />
+                  Chat
+                </button>
+                <div className="flex space-x-2">
+                  {fulfillment.status === 'Pending' && (
+                    <>
+                      <button
+                        onClick={() => handleAccept(fulfillment._id)}
+                        disabled={loading}
+                        className="flex items-center px-3 py-1 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                      >
+                        <CheckCircle className="mr-1 h-4 w-4" />
+                        Accept
+                      </button>
+                      <button
+                        onClick={() => handleReject(fulfillment._id)}
+                        disabled={loading}
+                        className="flex items-center px-3 py-1 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                      >
+                        <XCircle className="mr-1 h-4 w-4" />
+                        Reject
+                      </button>
+                    </>
+                  )}
+                  {fulfillment.status === 'Accepted' && (
                     <button
-                      onClick={() => handleAccept(fulfillment._id)}
-                      disabled={loading}
-                      className="flex items-center px-3 py-1 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                      onClick={() => openDispatchModal(fulfillment)}
+                      className="flex items-center px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                     >
-                      <CheckCircle className="mr-1 h-4 w-4" />
-                      Accept
+                      <Truck className="mr-1 h-4 w-4" />
+                      Dispatch
                     </button>
-                    <button
-                      onClick={() => handleReject(fulfillment._id)}
-                      disabled={loading}
-                      className="flex items-center px-3 py-1 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
-                    >
-                      <XCircle className="mr-1 h-4 w-4" />
-                      Reject
-                    </button>
-                  </>
-                )}
-                {fulfillment.status === 'Accepted' && (
-                  <button
-                    onClick={() => openDispatchModal(fulfillment)}
-                    className="flex items-center px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    <Truck className="mr-1 h-4 w-4" />
-                    Dispatch
-                  </button>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           ))
@@ -350,6 +377,16 @@ export default function ViewOrdersSection({ theme }) {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Chat Modal */}
+      {selectedRequestId && isChatOpen && (
+        <ChatModal
+          isOpen={isChatOpen}
+          onClose={handleCloseChat}
+          requestId={selectedRequestId}
+          theme={theme}
+        />
       )}
     </div>
   );

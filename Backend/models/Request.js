@@ -107,7 +107,7 @@ const RequestSchema = new Schema(
         onModel: {
           type: String,
           required: true,
-          enum: ['User', 'Ngo'],
+          enum: ['User', 'Ngo', 'Supplier'],
         },
         messageContent: {
           type: String,

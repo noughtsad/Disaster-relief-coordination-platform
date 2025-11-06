@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, Truck, MapPin, Package, Calendar, CheckCircle2, Clock } from 'lucide-react';
+import { Plus, Search, Filter, Truck, MapPin, Package, Calendar, CheckCircle2, Clock, MessageCircle } from 'lucide-react';
 import axios from 'axios';
+import ChatModal from '../../components/ChatModal';
 
 export default function ManageDeliveriesSection({ theme }) {
   const [activeTab, setActiveTab] = useState('active'); // 'active' or 'past'
@@ -9,6 +10,8 @@ export default function ManageDeliveriesSection({ theme }) {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState(null);
 
   useEffect(() => {
     fetchDeliveries();
@@ -58,6 +61,16 @@ export default function ManageDeliveriesSection({ theme }) {
       console.error('Error updating delivery status:', error);
       alert(error.response?.data?.message || 'Error updating delivery status');
     }
+  };
+
+  const handleOpenChat = (delivery) => {
+    setSelectedRequestId(delivery.survivorRequest?._id || delivery.survivorRequest);
+    setIsChatOpen(true);
+  };
+
+  const handleCloseChat = () => {
+    setIsChatOpen(false);
+    setSelectedRequestId(null);
   };
 
   const currentOrders = activeTab === 'active' ? deliveries : pastOrders;
@@ -246,50 +259,86 @@ export default function ManageDeliveriesSection({ theme }) {
               )}
 
               {activeTab === 'active' ? (
-                <div className="flex gap-3">
+                <div className="space-y-3">
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => handleUpdateStatus(delivery._id)}
+                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Package className="w-4 h-4" />
+                      Mark as Delivered
+                    </button>
+                    <button
+                      onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${delivery.ngo?.ngoLatitude},${delivery.ngo?.ngoLongitude}`, '_blank')}
+                      className={`flex-1 px-4 py-2 border rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                        theme === 'light' 
+                          ? 'border-gray-300 hover:bg-gray-50 text-gray-700' 
+                          : 'border-gray-600 hover:bg-gray-700 text-gray-300'
+                      }`}
+                    >
+                      <MapPin className="w-4 h-4" />
+                      View Route
+                    </button>
+                  </div>
                   <button
-                    onClick={() => handleUpdateStatus(delivery._id)}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
-                  >
-                    <Package className="w-4 h-4" />
-                    Mark as Delivered
-                  </button>
-                  <button
-                    onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${delivery.ngo?.ngoLatitude},${delivery.ngo?.ngoLongitude}`, '_blank')}
-                    className={`px-4 py-2 border rounded-lg transition-colors flex items-center gap-2 ${
+                    onClick={() => handleOpenChat(delivery)}
+                    className={`w-full px-4 py-2 border rounded-lg transition-colors flex items-center justify-center gap-2 ${
                       theme === 'light' 
-                        ? 'border-gray-300 hover:bg-gray-50 text-gray-700' 
-                        : 'border-gray-600 hover:bg-gray-700 text-gray-300'
+                        ? 'border-indigo-600 text-indigo-600 hover:bg-indigo-50' 
+                        : 'border-indigo-400 text-indigo-400 hover:bg-indigo-900/30'
                     }`}
                   >
-                    <MapPin className="w-4 h-4" />
-                    View Route
+                    <MessageCircle className="w-4 h-4" />
+                    Chat with NGO & Survivor
                   </button>
                 </div>
               ) : (
-                <div className={`p-3 rounded-lg ${theme === 'light' ? 'bg-green-50 border border-green-200' : 'bg-green-900/20 border border-green-800'}`}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle2 className="w-5 h-5 text-green-600" />
-                    <p className={`font-medium ${theme === 'light' ? 'text-green-800' : 'text-green-300'}`}>
-                      Delivered Successfully
-                    </p>
-                  </div>
-                  {delivery.deliveryDetails?.deliveredAt && (
-                    <p className={`text-sm ${theme === 'light' ? 'text-green-700' : 'text-green-400'}`}>
-                      Completed on {new Date(delivery.deliveryDetails.deliveredAt).toLocaleDateString()}
-                    </p>
-                  )}
-                  {delivery.rating && (
-                    <div className="mt-2 flex items-center gap-1">
-                      <span className={`text-sm ${theme === 'light' ? 'text-green-700' : 'text-green-400'}`}>Rating:</span>
-                      <span className="text-yellow-500">{'⭐'.repeat(delivery.rating)}</span>
+                <div className="space-y-3">
+                  <div className={`p-3 rounded-lg ${theme === 'light' ? 'bg-green-50 border border-green-200' : 'bg-green-900/20 border border-green-800'}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle2 className="w-5 h-5 text-green-600" />
+                      <p className={`font-medium ${theme === 'light' ? 'text-green-800' : 'text-green-300'}`}>
+                        Delivered Successfully
+                      </p>
                     </div>
-                  )}
+                    {delivery.deliveryDetails?.deliveredAt && (
+                      <p className={`text-sm ${theme === 'light' ? 'text-green-700' : 'text-green-400'}`}>
+                        Completed on {new Date(delivery.deliveryDetails.deliveredAt).toLocaleDateString()}
+                      </p>
+                    )}
+                    {delivery.rating && (
+                      <div className="mt-2 flex items-center gap-1">
+                        <span className={`text-sm ${theme === 'light' ? 'text-green-700' : 'text-green-400'}`}>Rating:</span>
+                        <span className="text-yellow-500">{'⭐'.repeat(delivery.rating)}</span>
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => handleOpenChat(delivery)}
+                    className={`w-full px-4 py-2 border rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                      theme === 'light' 
+                        ? 'border-indigo-600 text-indigo-600 hover:bg-indigo-50' 
+                        : 'border-indigo-400 text-indigo-400 hover:bg-indigo-900/30'
+                    }`}
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    View Chat History
+                  </button>
                 </div>
               )}
             </div>
           ))}
         </div>
+      )}
+
+      {/* Chat Modal */}
+      {selectedRequestId && isChatOpen && (
+        <ChatModal
+          isOpen={isChatOpen}
+          onClose={handleCloseChat}
+          requestId={selectedRequestId}
+          theme={theme}
+        />
       )}
     </div>
   );
