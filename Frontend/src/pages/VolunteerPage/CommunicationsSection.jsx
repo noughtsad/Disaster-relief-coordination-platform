@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useSelector } from 'react-redux';
 import {
   Send,
@@ -8,12 +8,28 @@ import {
 } from "lucide-react";
 import { ThemeContext } from "../../context/ThemeContext";
 import ChatModal from "../../components/ChatModal";
+import axios from 'axios';
 
 const CommunicationsSection = () => {
   const { theme } = useContext(ThemeContext);
-  const { communications } = useSelector((state) => state.communications);
+  const user = useSelector((state) => state.app.user);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
   const [selectedRequestId, setSelectedRequestId] = useState(null);
+  const [allRequests, setAllRequests] = useState([]); // New state for all requests
+
+  useEffect(() => {
+    const fetchAllRequests = async () => {
+      if (user && user.userType === 'Volunteer') {
+        try {
+          const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/request/all`, { withCredentials: true });
+          setAllRequests(response.data.requests);
+        } catch (error) {
+          console.error("Error fetching all requests:", error);
+        }
+      }
+    };
+    fetchAllRequests();
+  }, [user]);
 
   const openChatModal = (requestId) => {
     setSelectedRequestId(requestId);
@@ -33,15 +49,8 @@ const CommunicationsSection = () => {
             theme === "light" ? "text-gray-900" : "text-white"
           }`}
         >
-          Communications
+          All Chats
         </h1>
-        <button
-          onClick={() => openChatModal("654321098765432109876543")}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-        >
-          <Send className="w-4 h-4" />
-          Open Chat
-        </button>
       </div>
 
       {/* Communication Types */}
@@ -138,66 +147,50 @@ const CommunicationsSection = () => {
               theme === "light" ? "text-gray-900" : "text-white"
             }`}
           >
-            Recent Communications
+            Available Chat Rooms
           </h3>
         </div>
         <div className="divide-y divide-gray-200">
-          {communications.map((comm) => (
-            <div
-              key={comm.id}
-              className={`p-6 flex justify-between items-center ${
-                theme === "light" ? "" : "divide-gray-700"
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                {comm.type === "Email" && (
-                  <Mail className="w-5 h-5 text-blue-500" />
-                )}
-                {comm.type === "SMS" && (
-                  <MessageSquare className="w-5 h-5 text-green-500" />
-                )}
-                {comm.type === "Newsletter" && (
-                  <Users className="w-5 h-5 text-purple-500" />
-                )}
+          {allRequests.length > 0 ? (
+            allRequests.map((request) => (
+              <div
+                key={request._id}
+                className={`p-6 flex justify-between items-center ${
+                  theme === "light" ? "" : "divide-gray-700"
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  <MessageSquare className="w-5 h-5 text-blue-500" />
+                  <div>
+                    <h4
+                      className={`font-medium ${
+                        theme === "light" ? "text-gray-900" : "text-white"
+                      }`}
+                    >
+                      Chat for Request: {request.title || request._id}
+                    </h4>
+                    <p
+                      className={`text-sm ${
+                        theme === "light" ? "text-gray-600" : "text-gray-400"
+                      }`}
+                    >
+                      Survivor: {request.survivorId?.name || 'N/A'}
+                    </p>
+                  </div>
+                </div>
                 <div>
-                  <h4
-                    className={`font-medium ${
-                      theme === "light" ? "text-gray-900" : "text-white"
-                    }`}
+                  <button
+                    onClick={() => openChatModal(request._id)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
-                    {comm.subject}
-                  </h4>
-                  <p
-                    className={`text-sm ${
-                      theme === "light" ? "text-gray-600" : "text-gray-400"
-                    }`}
-                  >
-                    To: {comm.recipient}
-                  </p>
+                    Open Chat
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                <span
-                  className={`text-sm ${
-                    theme === "light" ? "text-gray-500" : "text-gray-400"
-                  }`}
-                >
-                  {comm.date}
-                </span>
-                <span
-                  className={`px-2 py-1 text-xs rounded-full ${
-                    comm.status === "Sent"
-                      ? "bg-green-100 text-green-800"
-                      : comm.status === "Scheduled"
-                      ? "bg-blue-100 text-blue-800"
-                      : "bg-yellow-100 text-yellow-800"
-                  }`}
-                >
-                  {comm.status}
-                </span>
-              </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className={`p-6 text-center ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>No chat rooms available.</p>
+          )}
         </div>
       </div>
 

@@ -12,13 +12,25 @@ export const getChatMessages = async (req, res) => {
       return res.status(404).json({ message: "Request not found" });
     }
 
+    // Allow volunteers to view all chats
+    if (req.user.userType === 'Volunteer') {
+      const messages = await Request.findById(requestId)
+        .select("chatMessages")
+        .populate({
+          path: 'chatMessages.sender',
+          model: 'User',
+          select: 'name username userType'
+        });
+      return res.status(200).json(messages.chatMessages);
+    }
+
     // Check if user is a direct participant (survivor, acceptedBy, or responder)
     const isDirectParticipant = 
       request.survivorId.toString() === userId ||
       (request.acceptedBy && request.acceptedBy.toString() === userId) ||
-      (request.responders && request.responders.some(r => r.userId.toString() === userId));
+      (request.responders && request.responders.some(r => r.userId.toString() === userId)) ||
+      req.user.userType === 'Volunteer';
 
-    // Check if user is a supplier with a fulfillment request for this survivor request
     let isSupplierParticipant = false;
     if (!isDirectParticipant) {
       const supplier = await Supplier.findOne({ owner: userId });

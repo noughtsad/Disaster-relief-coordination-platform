@@ -117,7 +117,8 @@ io.on("connection", (socket) => {
       const isDirectParticipant = 
         request.survivorId.toString() === userId ||
         (request.acceptedBy && request.acceptedBy.toString() === userId) ||
-        request.responders.some(r => r.userId.toString() === userId);
+        request.responders.some(r => r.userId.toString() === userId) ||
+        userRole === 'Volunteer';
 
       // Check if user is a supplier with a fulfillment request for this survivor request
       let isSupplierParticipant = false;
