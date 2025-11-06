@@ -30,7 +30,7 @@ export default function SupplierSelectionModal({
     setLoading(true);
     try {
       const response = await axios.get(
-        'http://localhost:5000/supplier/with-item',
+        `${import.meta.env.VITE_BACKEND_URL}/supplier/with-item`,
         {
           params: {
             itemType,
@@ -68,7 +68,7 @@ export default function SupplierSelectionModal({
     setLoading(true);
     try {
       await axios.post(
-        'http://localhost:5000/fulfillment/create',
+        `${import.meta.env.VITE_BACKEND_URL}/fulfillment/create`,
         {
           survivorRequestId: requestId,
           supplierId: selectedSupplier.supplier._id,

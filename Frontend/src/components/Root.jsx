@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 import { fetchUser } from '../store/appSlice';
-import Navbar from './Navbar';
+import PillNavbar from './PillNavbar';
 import Footer from './Footer';
 
 const Root = () => {
@@ -16,7 +16,7 @@ const Root = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar user={user} isAuthenticated={isAuthenticated} />
+      <PillNavbar user={user} isAuthenticated={isAuthenticated} />
       <div className="flex-1">
         <Outlet />
       </div>

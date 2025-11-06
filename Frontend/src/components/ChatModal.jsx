@@ -4,7 +4,7 @@ import axios from 'axios';
 import { X, Send, User, Paperclip, Smile } from 'lucide-react';
 import { useSelector } from 'react-redux';
 
-const socket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'); // Connect to your backend URL
+const socket = io(import.meta.env.VITE_BACKEND_URL); // Connect to your backend URL
 
 const ChatModal = ({ isOpen, onClose, requestId, theme }) => {
   const [messages, setMessages] = useState([]);
@@ -66,7 +66,7 @@ const ChatModal = ({ isOpen, onClose, requestId, theme }) => {
     const fetchChatHistory = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/chat/${requestId}`,
+          `${import.meta.env.VITE_BACKEND_URL}/chat/${requestId}`,
           { withCredentials: true } // Add withCredentials
         );
         setMessages(response.data);

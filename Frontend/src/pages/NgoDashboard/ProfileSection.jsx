@@ -43,7 +43,7 @@ const ProfileSection = () => {
   const handleSave = async () => {
     try {
       const response = await axios.put(
-        'http://localhost:5000/ngo/updateProfile',
+        `${import.meta.env.VITE_BACKEND_URL}/ngo/updateProfile`,
         editProfile,
         { withCredentials: true }
       );
