@@ -180,11 +180,11 @@ export default function VolunteerPage() {
 
   const sidebarItems = [
     { id: 'home', label: 'Home', icon: Home, count: null },
-    { id: 'opportunities', label: 'Opportunities', icon: Heart, count: opportunities.length },
+    // { id: 'opportunities', label: 'Opportunities', icon: Heart, count: opportunities.length },
+    { id: 'communications', label: 'Opportunities', icon: MessageSquare, count: null },
     { id: 'schedule', label: 'My Schedule', icon: Calendar, count: schedule.length },
     { id: 'training', label: 'Training', icon: BookOpen, count: trainingModules.filter(m => !m.completed).length },
     { id: 'profile', label: 'Profile', icon: User, count: null },
-    { id: 'communications', label: 'Communications', icon: MessageSquare, count: null },
   ];
 
   const renderContent = () => {

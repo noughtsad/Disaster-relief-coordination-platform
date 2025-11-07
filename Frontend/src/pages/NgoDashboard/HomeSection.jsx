@@ -47,7 +47,7 @@ const HomeSection = () => {
           theme === "light" ? "text-gray-900" : "text-white"
         }`}
       >
-        Welcome back, {ngoProfile.ngoName || 'NGO'}
+        Welcome, {ngoProfile.ngoName || 'NGO'}
       </h1>
 
       {/* Quick Stats */}

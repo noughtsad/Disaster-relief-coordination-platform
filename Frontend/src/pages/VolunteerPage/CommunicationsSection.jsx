@@ -114,7 +114,7 @@ const CommunicationsSection = () => {
       </div>
 
       {/* Communication Types */}
-      <div className="grid grid-cols-3 gap-6 mb-8">
+      {/* <div className="grid grid-cols-3 gap-6 mb-8">
         <div
           className={`p-6 rounded-xl shadow text-center ${
             theme === "light" ? "bg-white" : "bg-gray-900"
@@ -189,7 +189,7 @@ const CommunicationsSection = () => {
             Post Update
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Recent Communications */}
       <div
