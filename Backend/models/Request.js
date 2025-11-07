@@ -150,9 +150,19 @@ const RequestSchema = new Schema(
     }
   },
   { 
-    timestamps: true 
+    timestamps: true,
+    toJSON: { virtuals: true }, // Ensure virtuals are included when converting to JSON
+    toObject: { virtuals: true } // Ensure virtuals are included when converting to object
   }
 );
+
+// Virtual to populate fulfillment requests associated with this request
+RequestSchema.virtual('fulfillmentRequests', {
+  ref: 'FulfillmentRequest',
+  localField: '_id',
+  foreignField: 'survivorRequest',
+  justOne: false // There can be multiple fulfillment requests for one survivor request
+});
 
 // Index for geospatial queries (optional, for future map features)
 RequestSchema.index({ latitude: 1, longitude: 1 });

@@ -64,6 +64,13 @@ export async function getAllRequests(req, res) {
       .populate('survivorId', 'name phone email')
       .populate('acceptedBy', 'name userType')
       .populate('responders.userId', 'name userType')
+      .populate({
+        path: 'fulfillmentRequests',
+        populate: [
+          { path: 'supplier', select: 'name' },
+          { path: 'inventoryItem', select: 'name' }
+        ]
+      })
       .sort({ createdAt: -1 });
 
     return res.json({ requests });

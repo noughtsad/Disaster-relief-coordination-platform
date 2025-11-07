@@ -4,7 +4,12 @@ import {
   Send,
   Mail,
   MessageSquare,
-  Users
+  Users,
+  MapPin,
+  Calendar,
+  Package,
+  Truck,
+  CheckCircle
 } from "lucide-react";
 import { ThemeContext } from "../../context/ThemeContext";
 import ChatModal from "../../components/ChatModal";
@@ -43,29 +48,43 @@ const CommunicationsSection = () => {
 
   const getStatusClasses = (status) => {
     switch (status) {
-      case 'Active':
-        return 'bg-green-100 text-green-800';
-      case 'In Transit':
-        return 'bg-blue-100 text-blue-800';
-      case 'Pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'Completed':
-        return 'bg-gray-100 text-gray-800';
+      case "Verified":
+        return theme === "light"
+          ? "bg-green-100 text-green-700"
+          : "bg-green-900/50 text-green-400";
+      case "Complete":
+        return theme === "light"
+          ? "bg-blue-100 text-blue-700"
+          : "bg-blue-900/50 text-blue-400";
+      case "Ongoing":
+        return theme === "light"
+          ? "bg-yellow-100 text-yellow-700"
+          : "bg-yellow-900/50 text-yellow-400";
+      case "Pending":
+        return theme === "light"
+          ? "bg-gray-100 text-gray-700"
+          : "bg-gray-700 text-gray-300";
+      case "In Transit":
+        return theme === "light"
+          ? "bg-blue-100 text-blue-700"
+          : "bg-blue-900/50 text-blue-400";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return theme === "light"
+          ? "bg-gray-100 text-gray-700"
+          : "bg-gray-700 text-gray-300";
     }
   };
 
   const getUrgencyClasses = (urgency) => {
     switch (urgency) {
-      case 'High':
-        return 'bg-red-100 text-red-800';
-      case 'Medium':
-        return 'bg-orange-100 text-orange-800';
-      case 'Low':
-        return 'bg-green-100 text-green-800';
+      case "High":
+        return "bg-red-100 text-red-700";
+      case "Medium":
+        return "bg-orange-100 text-orange-700";
+      case "Low":
+        return "bg-green-100 text-green-700";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-700";
     }
   };
 
@@ -138,7 +157,7 @@ const CommunicationsSection = () => {
             theme === "light" ? "bg-white" : "bg-gray-900"
           }`}
         >
-          <Users className="w-12 h-12 text-purple-500 mx-auto mb-3" />
+          <Users className="w-12 h-12 text-green-500 mx-auto mb-3" />
           <h3
             className={`text-lg font-semibold mb-2 ${
               theme === "light" ? "text-gray-900" : "text-white"
@@ -153,7 +172,7 @@ const CommunicationsSection = () => {
           >
             Share updates and campaigns
           </p>
-          <button className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+          <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
             Post Update
           </button>
         </div>
@@ -210,17 +229,119 @@ const CommunicationsSection = () => {
                       </span>
                     </div>
                     <p
-                      className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'} mt-2`}>
+                      className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
                       Survivor: {request.survivorName || 'N/A'}
                     </p>
                     <p
                       className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
-                      Address: {request.address}
+                      Contact Info: {request.contactInfo || 'N/A'}
                     </p>
                     <p
                       className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
-                      Location: {request.latitude}, {request.longitude}
+                      Survivor Phone: {request.survivorPhone || 'N/A'}
                     </p>
+                    <div className="flex items-center gap-1 mt-1">
+                      <MapPin className="w-4 h-4 text-gray-400" />
+                      <p
+                        className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                        Address: {request.address}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Calendar className="w-4 h-4 text-gray-400" />
+                      <p
+                        className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                        Created At: {new Date(request.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+
+                    {/* Show responders */}
+                    {request.responders && request.responders.length > 0 && (
+                      <div className={`mt-3 p-2 rounded-lg ${
+                        theme === "light" ? "bg-blue-50 border border-blue-200" : "bg-blue-900/20 border border-blue-700"
+                      }`}>
+                        <p className={`text-xs font-semibold mb-1 ${
+                          theme === "light" ? "text-blue-800" : "text-blue-300"
+                        }`}>
+                          {request.responders.length} Helper{request.responders.length > 1 ? 's' : ''} Assigned:
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {request.responders.map((responder, idx) => (
+                            <span
+                              key={idx}
+                              className={`px-2 py-0.5 rounded text-xs ${
+                                responder.userRole === "NGO"
+                                  ? "bg-blue-100 text-blue-700"
+                                  : responder.userRole === "Volunteer"
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-purple-100 text-purple-700"
+                              }`}
+                            >
+                              {responder.userName} ({responder.userRole})
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Show Supply Requests */}
+                    {request.fulfillmentRequests && request.fulfillmentRequests.length > 0 && (
+                      <div className={`mt-3 p-3 rounded-lg ${
+                        theme === "light" ? "bg-green-50 border border-green-200" : "bg-green-900/20 border border-green-700"
+                      }`}>
+                        <p className={`text-xs font-semibold mb-2 ${
+                          theme === "light" ? "text-green-800" : "text-green-300"
+                        }`}>
+                          <Truck className="w-4 h-4 inline mr-1" />
+                          Supply Requests ({request.fulfillmentRequests.length}):
+                        </p>
+                        {
+                          request.fulfillmentRequests.map((fulfillment, idx) => (
+                            <div key={idx} className={`mb-2 last:mb-0 p-2 rounded ${
+                              theme === "light" ? "bg-white" : "bg-gray-800"
+                            }`}>
+                              <div className="flex justify-between items-start">
+                                <div className="flex-1">
+                                  <p className={`text-xs font-medium ${
+                                    theme === "light" ? "text-gray-900" : "text-gray-100"
+                                  }`}>
+                                    {fulfillment.supplier?.name || 'Supplier'}
+                                  </p>
+                                  <p className={`text-xs ${
+                                    theme === "light" ? "text-gray-600" : "text-gray-400"
+                                  }`}>
+                                    {fulfillment.inventoryItem?.name || 'Item'} - {fulfillment.requestedQuantity}
+                                  </p>
+                                  {fulfillment.dispatchDetails?.trackingInfo && (
+                                    <p className={`text-xs mt-1 ${
+                                      theme === "light" ? "text-gray-500" : "text-gray-500"
+                                    }`}>
+                                      <Package className="w-3 h-3 inline mr-1" /> Tracking: {fulfillment.dispatchDetails.trackingInfo}
+                                    </p>
+                                  )}
+                                </div>
+                                <div className="flex flex-col items-end gap-1">
+                                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                    fulfillment.status === 'Delivered' 
+                                      ? 'bg-green-100 text-green-800'
+                                      : fulfillment.status === 'Dispatched'
+                                      ? 'bg-blue-100 text-blue-800'
+                                      : fulfillment.status === 'Accepted'
+                                      ? 'bg-yellow-100 text-yellow-800'
+                                      : fulfillment.status === 'Rejected'
+                                      ? 'bg-red-100 text-red-800'
+                                      : 'bg-gray-100 text-gray-800'
+                                  }`}>
+                                    {fulfillment.status}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        }
+                      </div>
+                    )}
+
                   </div>
                 </div>
                 <div>
