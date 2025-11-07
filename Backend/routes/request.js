@@ -1,39 +1,40 @@
-import { Router } from "express";
-import { 
-  createRequest, 
-  getAllRequests, 
-  getMyRequests, 
-  acceptRequest, 
+import express from 'express';
+import {
+  createRequest,
+  getAllRequests,
+  getMyRequests,
+  acceptRequest,
   markRequestComplete,
-  verifyRequestCompletion,
+  verifyRequestByVolunteer, // Import the new function
   updateRequestStatus,
   getRequestsByLocation,
   getRequestResponders,
   withdrawFromRequest,
   getMyAcceptedRequests,
   getRequestsForNgoMap
-} from "../controllers/request.js";
-import { isAuthenticated } from "../middlewares/isAuthenticated.js";
+} from '../controllers/request.js';
+import { isAuthenticated } from '../middlewares/isAuthenticated.js';
+import { checkUserType } from '../middlewares/checkUserType.js';
 
-const router = Router();
+const router = express.Router();
 
-// Create a new request (Survivors)
-router.post("/create", isAuthenticated, createRequest);
+// Create a new request (Survivor)
+router.post('/create', isAuthenticated, checkUserType(['Survivor']), createRequest);
 
-// Get all requests (NGOs/Volunteers/Suppliers)
-router.get("/all", isAuthenticated, getAllRequests);
+// Get all requests (NGO/Volunteer)
+router.get('/all', isAuthenticated, checkUserType(['NGO', 'Volunteer', 'Supplier']), getAllRequests);
 
 // Get requests for NGO map (pending + accepted by this NGO)
 router.get("/ngo-map", isAuthenticated, getRequestsForNgoMap);
 
-// Get my requests (Survivors)
-router.get("/my-requests", isAuthenticated, getMyRequests);
+// Get user's own requests (Survivor)
+router.get('/my-requests', isAuthenticated, checkUserType(['Survivor']), getMyRequests);
 
 // Get my accepted requests (NGOs/Volunteers/Suppliers)
 router.get("/my-accepted-requests", isAuthenticated, getMyAcceptedRequests);
 
-// Accept a request (NGOs/Volunteers/Suppliers)
-router.post("/accept/:requestId", isAuthenticated, acceptRequest);
+// Accept a request (NGO/Volunteer/Supplier)
+router.post('/accept/:requestId', isAuthenticated, checkUserType(['NGO', 'Volunteer', 'Supplier']), acceptRequest);
 
 // Withdraw from a request (NGOs/Volunteers/Suppliers)
 router.post("/withdraw/:requestId", isAuthenticated, withdrawFromRequest);
@@ -41,11 +42,11 @@ router.post("/withdraw/:requestId", isAuthenticated, withdrawFromRequest);
 // Get responders for a request
 router.get("/responders/:requestId", isAuthenticated, getRequestResponders);
 
-// Mark request as complete (NGOs/Volunteers/Suppliers)
-router.post("/complete/:requestId", isAuthenticated, markRequestComplete);
+// Mark request as complete (Supplier)
+router.put('/complete/:requestId', isAuthenticated, checkUserType(['Supplier']), markRequestComplete);
 
-// Verify request completion (Survivors only)
-router.post("/verify/:requestId", isAuthenticated, verifyRequestCompletion);
+// Verify request completion (Volunteer)
+router.put('/verify/:requestId', isAuthenticated, checkUserType(['Volunteer']), verifyRequestByVolunteer);
 
 // Update request status (generic)
 router.put("/status/:requestId", isAuthenticated, updateRequestStatus);

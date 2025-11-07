@@ -46,6 +46,19 @@ const CommunicationsSection = () => {
     setSelectedRequestId(null);
   };
 
+  const handleVerifyCompletion = async (requestId) => {
+    try {
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/request/verify/${requestId}`, {}, { withCredentials: true });
+      alert("Request verified successfully! Chat disabled.");
+      setAllRequests(prevRequests => prevRequests.map(req => 
+        req._id === requestId ? { ...req, status: "Verified", chatEnabled: false } : req
+      ));
+    } catch (error) {
+      console.error("Error verifying request:", error);
+      alert(error.response?.data?.message || "Error verifying request");
+    }
+  };
+
   const getStatusClasses = (status) => {
     switch (status) {
       case "Verified":
@@ -344,10 +357,20 @@ const CommunicationsSection = () => {
 
                   </div>
                 </div>
-                <div>
-                <button
+                <div className="flex flex-col items-end gap-2">
+                  {request.status === "Complete" && user.userType === "Volunteer" && (
+                    <button
+                      onClick={() => handleVerifyCompletion(request._id)}
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      Verify Completion
+                    </button>
+                  )}
+                  <button
                     onClick={() => openChatModal(request._id)}
                     className="flex items-center justify-center gap-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    disabled={!request.chatEnabled} // Disable if chat is not enabled
                   >
                     Chat
                     <Send className="w-4 h-4" />

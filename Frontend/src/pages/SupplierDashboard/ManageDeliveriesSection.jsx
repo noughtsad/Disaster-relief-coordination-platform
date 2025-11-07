@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, Truck, MapPin, Package, Calendar, CheckCircle2, Clock, MessageCircle } from 'lucide-react';
+import { Plus, Search, Filter, Truck, MapPin, Package, Calendar, CheckCircle2, Clock, MessageCircle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 import ChatModal from '../../components/ChatModal';
 
@@ -71,6 +71,31 @@ export default function ManageDeliveriesSection({ theme }) {
   const handleCloseChat = () => {
     setIsChatOpen(false);
     setSelectedRequestId(null);
+  };
+
+  const handleMarkComplete = async (requestId) => {
+    const confirmed = window.confirm('Mark this request as complete? This action cannot be undone.');
+    if (!confirmed) return;
+
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/request/complete/${requestId}`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      alert(response.data.message || 'Request marked as complete successfully. Awaiting volunteer verification.');
+      fetchDeliveries(); // Refresh the list of deliveries to update the status
+      fetchPastOrders();
+    } catch (err) {
+      console.error('Mark complete error:', err);
+      alert(err.response?.data?.message || 'Failed to mark request as complete');
+    }
   };
 
   const currentOrders = activeTab === 'active' ? deliveries : pastOrders;
@@ -280,6 +305,16 @@ export default function ManageDeliveriesSection({ theme }) {
                       View Route
                     </button>
                   </div>
+                  {/* Mark as Complete button for Supplier (if main request is Delivered) */}
+                  {delivery.survivorRequest?.status === 'Delivered' && user.userType === 'Supplier' && (
+                    <button
+                      onClick={() => handleMarkComplete(delivery.survivorRequest._id)}
+                      className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      Mark Request Complete
+                    </button>
+                  )}
                   <button
                     onClick={() => handleOpenChat(delivery)}
                     className={`w-full px-4 py-2 border rounded-lg transition-colors flex items-center justify-center gap-2 ${
@@ -287,6 +322,7 @@ export default function ManageDeliveriesSection({ theme }) {
                         ? 'border-indigo-600 text-indigo-600 hover:bg-indigo-50' 
                         : 'border-indigo-400 text-indigo-400 hover:bg-indigo-900/30'
                     }`}
+                    disabled={!delivery.survivorRequest?.chatEnabled}
                   >
                     <MessageCircle className="w-4 h-4" />
                     Chat with NGO & Survivor

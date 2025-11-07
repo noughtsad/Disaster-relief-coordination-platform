@@ -1,21 +1,21 @@
 import React, { useContext, useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from 'react-redux';
-import { 
-  Plus, 
-  MapPin, 
+import {
+  Plus,
+  MapPin,
   Calendar,
   MessageCircle,
   Package,
   Truck,
   CheckCircle
 } from "lucide-react";
-import { 
+import {
   fetchPendingRequests,
   fetchAcceptedRequests,
   acceptRequestAsync,
-  setLoading as setRequestLoading, 
-  setError as setRequestError, 
-  clearError as clearRequestError 
+  setLoading as setRequestLoading,
+  setError as setRequestError,
+  clearError as clearRequestError
 } from '../../store/requestSlice';
 import { ThemeContext } from "../../context/ThemeContext";
 import ChatModal from '../../components/ChatModal';
@@ -98,39 +98,6 @@ const AcceptedRequestsSection = () => {
     } catch (error) {
       console.error('Error marking supplies as received:', error);
       alert(error.response?.data?.message || 'Failed to mark supplies as received');
-    }
-  };
-
-  const handleMarkComplete = async (id) => {
-    const completionNotes = prompt('Optional: Add any notes about the completion (e.g., items delivered, services provided):');
-    
-    // User clicked cancel
-    if (completionNotes === null) return;
-    
-    dispatch(setRequestLoading(true));
-    dispatch(clearRequestError());
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/request/complete/${id}`,
-        { completionNotes },
-        {
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      
-      alert(response.data.message || 'Request marked as complete! Awaiting survivor verification.');
-      
-      // Refresh the requests list
-      loadRequests(); // Use loadRequests to refresh accepted list
-    } catch (err) {
-      console.error('Mark complete error:', err);
-      dispatch(setRequestError(err.response?.data?.message || 'Failed to mark request as complete'));
-      alert(err.response?.data?.message || 'Failed to mark request as complete');
-    } finally {
-      dispatch(setRequestLoading(false));
     }
   };
 
@@ -319,16 +286,6 @@ const AcceptedRequestsSection = () => {
       </div>
       <div className="flex flex-wrap gap-2">
         {/* Accept Button (ONLY for Accepted Requests) - Removed from here, now in NewRequestsSection */}
-        
-        {/* Mark Complete Button (only for Ongoing requests if user is a responder) */}
-        {request.status === 'Ongoing' && (
-          <button
-            onClick={() => handleMarkComplete(request.id)}
-            className="px-3 sm:px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition"
-          >
-            Mark as Complete
-          </button>
-        )}
         
         {/* Chat Button (only for Ongoing/Complete requests with chat enabled) */}
         {request.chatEnabled && (

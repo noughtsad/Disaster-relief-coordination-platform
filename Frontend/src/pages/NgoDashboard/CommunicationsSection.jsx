@@ -96,96 +96,13 @@ const CommunicationsSection = () => {
             theme === "light" ? "text-gray-900" : "text-white"
           }`}
         >
-          Communications
+          Available Chat Rooms
         </h1>
-        <button
-          onClick={() => openChatModal("654321098765432109876543")}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-        >
-          <Send className="w-4 h-4" />
-          Open Chat
-        </button>
       </div>
 
-      {/* Communication Types */}
-      <div className="grid grid-cols-3 gap-6 mb-8">
-        <div
-          className={`p-6 rounded-xl shadow text-center ${
-            theme === "light" ? "bg-white" : "bg-gray-900"
-          }`}
-        >
-          <Mail className="w-12 h-12 text-blue-500 mx-auto mb-3" />
-          <h3
-            className={`text-lg font-semibold mb-2 ${
-              theme === "light" ? "text-gray-900" : "text-white"
-            }`}
-          >
-            Email Campaigns
-          </h3>
-          <p
-            className={`text-sm mb-4 ${
-              theme === "light" ? "text-gray-600" : "text-gray-400"
-            }`}
-          >
-            Send newsletters and updates
-          </p>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            Create Email
-          </button>
-        </div>
-
-        <div
-          className={`p-6 rounded-xl shadow text-center ${
-            theme === "light" ? "bg-white" : "bg-gray-900"
-          }`}
-        >
-          <MessageSquare className="w-12 h-12 text-green-500 mx-auto mb-3" />
-          <h3
-            className={`text-lg font-semibold mb-2 ${
-              theme === "light" ? "text-gray-900" : "text-white"
-            }`}
-          >
-            SMS Alerts
-          </h3>
-          <p
-            className={`text-sm mb-4 ${
-              theme === "light" ? "text-gray-600" : "text-gray-400"
-            }`}
-          >
-            Quick notifications to volunteers
-          </p>
-          <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-            Send SMS
-          </button>
-        </div>
-
-        <div
-          className={`p-6 rounded-xl shadow text-center ${
-            theme === "light" ? "bg-white" : "bg-gray-900"
-          }`}
-        >
-          <Users className="w-12 h-12 text-purple-500 mx-auto mb-3" />
-          <h3
-            className={`text-lg font-semibold mb-2 ${
-              theme === "light" ? "text-gray-900" : "text-white"
-            }`}
-          >
-            Social Media
-          </h3>
-          <p
-            className={`text-sm mb-4 ${
-              theme === "light" ? "text-gray-600" : "text-gray-400"
-            }`}
-          >
-            Share updates and campaigns
-          </p>
-          <button className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
-            Post Update
-          </button>
-        </div>
-      </div>
-
-      {/* Recent Communications */}
+      {/* Communication Types - REMOVED */}
+      
+      {/* Available Chat Rooms */}
       <div
         className={`rounded-xl shadow overflow-hidden ${
           theme === "light" ? "bg-white" : "bg-gray-900"
@@ -201,7 +118,7 @@ const CommunicationsSection = () => {
               theme === "light" ? "text-gray-900" : "text-white"
             }`}
           >
-            Available Chat Rooms
+            All Chat Requests
           </h3>
         </div>
         <div className="divide-y divide-gray-200">
@@ -236,7 +153,7 @@ const CommunicationsSection = () => {
                       </span>
                     </div>
                     <p
-                      className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                      className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'} mt-2`}>
                       Survivor: {request.survivorName || 'N/A'}
                     </p>
                     <p
@@ -362,6 +279,7 @@ const CommunicationsSection = () => {
                   <button
                     onClick={() => openChatModal(request._id)}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    disabled={!request.chatEnabled} // Disable if chat is not enabled
                   >
                     Open Chat
                   </button>
