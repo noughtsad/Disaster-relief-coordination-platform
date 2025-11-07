@@ -91,6 +91,13 @@ export async function getMyRequests(req, res) {
     const requests = await Request.find({ survivorId: userId })
       .populate('acceptedBy', 'name userType')
       .populate('responders.userId', 'name userType')
+      .populate({
+        path: 'fulfillmentRequests',
+        populate: [
+          { path: 'supplier', select: 'name' },
+          { path: 'inventoryItem', select: 'name' }
+        ]
+      })
       .sort({ createdAt: -1 });
 
     return res.json({ requests });

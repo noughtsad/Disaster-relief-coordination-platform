@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
-import { PlusCircle, Edit, MessageCircle, MapPin } from "lucide-react";
+import { PlusCircle, Edit, MessageCircle, MapPin, Calendar, Package, Truck, CheckCircle } from "lucide-react";
 import { ThemeContext } from "../../context/ThemeContext";
 import ChatModal from '../../components/ChatModal';
 import { setRequests, setLoading, setError, clearError } from '../../store/requestSlice';
@@ -13,6 +13,48 @@ const RequestsSection = ({ setActiveSection }) => {
   const { user } = useSelector((state) => state.app);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const getStatusClasses = (status) => {
+    switch (status) {
+      case "Verified":
+        return theme === "light"
+          ? "bg-green-100 text-green-700"
+          : "bg-green-900/50 text-green-400";
+      case "Complete":
+        return theme === "light"
+          ? "bg-blue-100 text-blue-700"
+          : "bg-blue-900/50 text-blue-400";
+      case "Ongoing":
+        return theme === "light"
+          ? "bg-yellow-100 text-yellow-700"
+          : "bg-yellow-900/50 text-yellow-400";
+      case "Pending":
+        return theme === "light"
+          ? "bg-gray-100 text-gray-700"
+          : "bg-gray-700 text-gray-300";
+      case "In Transit":
+        return theme === "light"
+          ? "bg-blue-100 text-blue-700"
+          : "bg-blue-900/50 text-blue-400";
+      default:
+        return theme === "light"
+          ? "bg-gray-100 text-gray-700"
+          : "bg-gray-700 text-gray-300";
+    }
+  };
+
+  const getUrgencyClasses = (urgency) => {
+    switch (urgency) {
+      case "High":
+        return "bg-red-100 text-red-700";
+      case "Medium":
+        return "bg-orange-100 text-orange-700";
+      case "Low":
+        return "bg-green-100 text-green-700";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
 
   useEffect(() => {
     const fetchMyRequests = async () => {
@@ -42,9 +84,12 @@ const RequestsSection = ({ setActiveSection }) => {
           location: req.location,
           contactInfo: req.contactInfo,
           survivorId: req.survivorId,
+          survivorName: req.survivorName,
+          survivorPhone: req.survivorPhone,
           acceptedBy: req.acceptedBy,
           chatEnabled: req.chatEnabled,
           responders: req.responders || [],
+          fulfillmentRequests: req.fulfillmentRequests || [],
         }));
         
         dispatch(setRequests(formattedRequests));
@@ -194,43 +239,49 @@ const RequestsSection = ({ setActiveSection }) => {
                   >
                     {request.description}
                   </p>
+                  <p
+                    className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                    Contact Info: {request.contactInfo || 'N/A'}
+                  </p>
+                  <p
+                    className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                    Survivor Phone: {request.survivorPhone || 'N/A'}
+                  </p>
+                  
                   {/* Location Information */}
-                  {(request.latitude ||
-                    request.longitude ||
-                    request.address) && (
-                    <div
-                      className={`text-xs mt-2 space-y-1 ${
-                        theme === "light" ? "text-gray-500" : "text-gray-400"
-                      }`}
-                    >
-                      {request.latitude && request.longitude && (
-                        <div className="flex items-center gap-1">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          <span
-                            className={`text-sm ${
-                              theme === "light"
-                                ? "text-gray-600"
-                                : "text-gray-300"
-                            }`}
-                          >
-                            {request.latitude}, {request.longitude}
-                          </span>
-                        </div>
-                      )}
-                      {request.address && <div>📮 {request.address}</div>}
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1 mt-1">
+                    <MapPin className="w-4 h-4 text-gray-400" />
+                    <p
+                      className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                      Address: {request.address}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1 mt-1">
+                    <MapPin className="w-4 h-4 text-gray-400" />
+                    <p
+                      className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                      Location: {request.latitude}, {request.longitude}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1 mt-1">
+                    <Calendar className="w-4 h-4 text-gray-400" />
+                    <p
+                      className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                      Created At: {new Date(request.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+
                   {/* Responders List */}
                   {request.responders && request.responders.length > 0 && (
-                    <div className="mt-3">
-                      <p
-                        className={`text-xs font-semibold mb-2 ${
-                          theme === "light" ? "text-gray-700" : "text-gray-300"
-                        }`}
-                      >
-                        {request.responders.length} Helper(s) Assigned:
+                    <div className={`mt-3 p-2 rounded-lg ${
+                      theme === "light" ? "bg-blue-50 border border-blue-200" : "bg-blue-900/20 border border-blue-700"
+                    }`}>
+                      <p className={`text-xs font-semibold mb-1 ${
+                        theme === "light" ? "text-blue-800" : "text-blue-300"
+                      }`}>
+                        {request.responders.length} Helper{request.responders.length > 1 ? 's' : ''} Assigned:
                       </p>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1">
                         {request.responders.map((responder, index) => (
                           <span
                             key={index}
@@ -248,36 +299,77 @@ const RequestsSection = ({ setActiveSection }) => {
                       </div>
                     </div>
                   )}
+
+                  {/* Show fulfillment requests */}
+                  {request.fulfillmentRequests && request.fulfillmentRequests.length > 0 && (
+                    <div className={`mt-3 p-3 rounded-lg ${
+                      theme === "light" ? "bg-green-50 border border-green-200" : "bg-green-900/20 border border-green-700"
+                    }`}>
+                      <p className={`text-xs font-semibold mb-2 ${
+                        theme === "light" ? "text-green-800" : "text-green-300"
+                      }`}>
+                        <Truck className="w-4 h-4 inline mr-1" />
+                        Supply Requests ({request.fulfillmentRequests.length}):
+                      </p>
+                      {
+                        request.fulfillmentRequests.map((fulfillment, idx) => (
+                          <div key={idx} className={`mb-2 last:mb-0 p-2 rounded ${
+                            theme === "light" ? "bg-white" : "bg-gray-800"
+                          }`}>
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <p className={`text-xs font-medium ${
+                                  theme === "light" ? "text-gray-900" : "text-gray-100"
+                                }`}>
+                                  {fulfillment.supplier?.name || 'Supplier'}
+                                </p>
+                                <p className={`text-xs ${
+                                  theme === "light" ? "text-gray-600" : "text-gray-400"
+                                }`}>
+                                  {fulfillment.inventoryItem?.name || 'Item'} - {fulfillment.requestedQuantity}
+                                </p>
+                                {fulfillment.dispatchDetails?.trackingInfo && (
+                                  <p className={`text-xs mt-1 ${
+                                    theme === "light" ? "text-gray-500" : "text-gray-500"
+                                  }`}>
+                                    <Package className="w-3 h-3 inline mr-1" /> Tracking: {fulfillment.dispatchDetails.trackingInfo}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="flex flex-col items-end gap-1">
+                                <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                  fulfillment.status === 'Delivered' 
+                                    ? 'bg-green-100 text-green-800'
+                                    : fulfillment.status === 'Dispatched'
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : fulfillment.status === 'Accepted'
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : fulfillment.status === 'Rejected'
+                                    ? 'bg-red-100 text-red-800'
+                                    : 'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {fulfillment.status}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      }
+                    </div>
+                  )}
+
                 </div>
                 <div className="flex flex-col items-end gap-2">
                   <span
                     className={`px-3 py-1 text-xs rounded-full ${
-                      request.status === "Verified"
-                        ? theme === "light"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-green-900/50 text-green-400"
-                        : request.status === "Complete"
-                        ? theme === "light"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-blue-900/50 text-blue-400"
-                        : request.status === "Ongoing"
-                        ? theme === "light"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-yellow-900/50 text-yellow-400"
-                        : theme === "light"
-                        ? "bg-gray-100 text-gray-700"
-                        : "bg-gray-700 text-gray-300"
+                      getStatusClasses(request.status)
                     }`}
                   >
                     {request.status}
                   </span>
                   <span
                     className={`px-3 py-1 text-xs rounded-full ${
-                      request.urgency === "High"
-                        ? "bg-red-100 text-red-700"
-                        : request.urgency === "Medium"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-green-100 text-green-700"
+                      getUrgencyClasses(request.urgency)
                     }`}
                   >
                     {request.urgency} Priority
@@ -290,7 +382,7 @@ const RequestsSection = ({ setActiveSection }) => {
                     theme === "light" ? "text-gray-500" : "text-gray-400"
                   }`}
                 >
-                  Submitted: {request.date}
+                  Submitted: {new Date(request.createdAt).toLocaleDateString()}
                 </span>
                 <div className="flex gap-2">
                   {/* Verify Button (only for Complete status) */}
@@ -299,7 +391,8 @@ const RequestsSection = ({ setActiveSection }) => {
                       onClick={() => handleVerifyRequest(request.id)}
                       className="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition flex items-center gap-2"
                     >
-                      ✓ Verify Completion
+                      <CheckCircle className="w-4 h-4" />
+                      Verify Completion
                     </button>
                   )}
 
@@ -311,13 +404,6 @@ const RequestsSection = ({ setActiveSection }) => {
                     >
                       <MessageCircle className="w-4 h-4" />
                       Chat
-                    </button>
-                  )}
-
-                  {/* Edit Button (only for Pending requests) */}
-                  {request.status === "Pending" && (
-                    <button className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
-                      <Edit className="w-4 h-4" />
                     </button>
                   )}
                 </div>
