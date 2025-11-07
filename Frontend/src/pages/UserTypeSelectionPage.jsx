@@ -11,6 +11,7 @@ import { setNgoProfile } from '../store/ngoSlice';
 import { ThemeContext } from "../context/ThemeContext";
 import { User, Building, HandHeart, Package, ArrowLeft } from "lucide-react";
 import axios from "axios";
+import { NGO_FOUNDATIONS } from "../constants/ngoFoundations";
 
 export default function UserTypeSelectionPage() {
   const { theme } = useContext(ThemeContext);
@@ -355,10 +356,9 @@ export default function UserTypeSelectionPage() {
                         theme === "light" ? "text-gray-700" : "text-gray-300"
                       }`}
                     >
-                      NGO Name *
+                      Select Your NGO/Foundation *
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="ngoName"
                       value={ngoDetails.ngoName}
                       onChange={handleNgoChange}
@@ -367,9 +367,15 @@ export default function UserTypeSelectionPage() {
                           ? "border-gray-300 bg-white"
                           : "border-gray-600 bg-gray-800 text-white"
                       }`}
-                      placeholder="e.g., Red Cross"
                       required
-                    />
+                    >
+                      <option value="">Select your NGO/Foundation</option>
+                      {NGO_FOUNDATIONS.map((foundation) => (
+                        <option key={foundation} value={foundation}>
+                          {foundation}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label

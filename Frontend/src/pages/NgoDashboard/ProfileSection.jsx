@@ -4,6 +4,7 @@ import { Edit, Save } from "lucide-react";
 import axios from 'axios';
 import { ThemeContext } from "../../context/ThemeContext";
 import { setNgoProfile } from '../../store/ngoSlice';
+import { NGO_FOUNDATIONS } from '../../constants/ngoFoundations';
 
 const ProfileSection = () => {
   const { theme } = useContext(ThemeContext);
@@ -107,20 +108,38 @@ const ProfileSection = () => {
                   theme === "light" ? "text-gray-700" : "text-gray-300"
                 }`}
               >
-                Organization Name <span className="text-red-500">*</span>
+                NGO/Foundation Name <span className="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                name="ngoName"
-                value={isEditing ? editProfile.ngoName : ngoProfile.ngoName}
-                onChange={handleInputChange}
-                readOnly={!isEditing}
-                className={`w-full px-3 py-2 border rounded-lg ${
-                  theme === "light"
-                    ? "border-gray-200 bg-gray-50"
-                    : "border-gray-700 bg-gray-800 text-gray-300"
-                }`}
-              />
+              {isEditing ? (
+                <select
+                  name="ngoName"
+                  value={editProfile.ngoName}
+                  onChange={handleInputChange}
+                  className={`w-full px-3 py-2 border rounded-lg ${
+                    theme === "light"
+                      ? "border-gray-200 bg-gray-50"
+                      : "border-gray-700 bg-gray-800 text-gray-300"
+                  }`}
+                >
+                  <option value="">Select your NGO/Foundation</option>
+                  {NGO_FOUNDATIONS.map((foundation) => (
+                    <option key={foundation} value={foundation}>
+                      {foundation}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value={ngoProfile.ngoName || 'Not specified'}
+                  readOnly
+                  className={`w-full px-3 py-2 border rounded-lg ${
+                    theme === "light"
+                      ? "border-gray-200 bg-gray-50"
+                      : "border-gray-700 bg-gray-800 text-gray-300"
+                  }`}
+                />
+              )}
             </div>
             <div>
               <label
