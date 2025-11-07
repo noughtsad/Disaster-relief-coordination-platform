@@ -1,26 +1,23 @@
 import Request from "../models/Request.js";
 import User from "../models/User.js";
 
-// Create a new request
+
 export async function createRequest(req, res) {
   try {
     const { type, urgency, description, latitude, longitude, address, contactInfo } = req.body;
     const userId = req.user.id;
 
-    // Validate required fields
     if (!type || !urgency || !description || !latitude || !longitude) {
       return res.status(400).json({ 
         message: "Type, urgency, description, latitude, and longitude are required" 
       });
     }
 
-    // Get user details
     const user = await User.findById(userId).select('name phone');
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Create request
     const request = await Request.create({
       type,
       urgency,
@@ -34,7 +31,7 @@ export async function createRequest(req, res) {
       survivorName: user.name,
       survivorPhone: user.phone || contactInfo,
       status: 'Pending',
-      chatEnabled: true // Set chatEnabled to true by default for new requests
+      chatEnabled: true 
     });
 
     return res.status(201).json({
@@ -50,10 +47,9 @@ export async function createRequest(req, res) {
   }
 }
 
-// Get all requests (for NGOs/Volunteers)
 export async function getAllRequests(req, res) {
   try {
-    const { status } = req.query; // Get status from query parameters
+    const { status } = req.query;
     const filter = {};
 
     if (status) {
@@ -83,7 +79,7 @@ export async function getAllRequests(req, res) {
   }
 }
 
-// Get user's own requests (for Survivors)
+
 export async function getMyRequests(req, res) {
   try {
     const userId = req.user.id;
@@ -110,7 +106,6 @@ export async function getMyRequests(req, res) {
   }
 }
 
-// Accept a request (for NGOs/Volunteers/Suppliers)
 export async function acceptRequest(req, res) {
   try {
     const { requestId } = req.params;
@@ -130,7 +125,6 @@ export async function acceptRequest(req, res) {
       return res.status(404).json({ message: "Request not found" });
     }
 
-    // Check if user already accepted this request
     const alreadyAccepted = request.responders.some(
       responder => responder.userId.toString() === userId
     );
@@ -139,7 +133,6 @@ export async function acceptRequest(req, res) {
       return res.status(400).json({ message: "You have already accepted this request" });
     }
 
-    // Add responder to the list
     request.responders.push({
       userId: userId,
       userName: user.name,
@@ -148,7 +141,7 @@ export async function acceptRequest(req, res) {
       status: 'Active'
     });
 
-    // If this is the first responder, set as primary acceptedBy and change status to Ongoing
+
     if (!request.acceptedBy) {
       request.status = 'Ongoing';
       request.acceptedBy = userId;
@@ -173,7 +166,7 @@ export async function acceptRequest(req, res) {
   }
 }
 
-// Mark request as complete (by Survivor)
+
 export async function markRequestComplete(req, res) {
   try {
     const { requestId } = req.params;
@@ -185,7 +178,6 @@ export async function markRequestComplete(req, res) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Only Survivors can mark as complete
     if (user.userType !== 'Survivor') {
       return res.status(403).json({ message: "Only Survivors can mark requests as complete" });
     }
@@ -195,22 +187,18 @@ export async function markRequestComplete(req, res) {
       return res.status(404).json({ message: "Request not found" });
     }
 
-    // Check if this is their request
     if (request.survivorId.toString() !== userId) {
       return res.status(403).json({ message: "You can only mark your own requests as complete" });
     }
 
-    // Request must be in 'Delivered' status to be marked as complete by Survivor
     if (request.status !== 'Delivered') {
       return res.status(400).json({ message: "Request must be in 'Delivered' status to be marked as complete" });
     }
 
-    // Check if already completed or verified
     if (request.status === 'Complete' || request.status === 'Verified') {
       return res.status(400).json({ message: "This request has already been marked as complete or verified" });
     }
 
-    // Update request to Complete status
     request.status = 'Complete';
     request.completedBy = userId;
     request.completedByName = user.name;
@@ -233,7 +221,6 @@ export async function markRequestComplete(req, res) {
   }
 }
 
-// Verify request completion (by Volunteer only)
 export async function verifyRequestByVolunteer(req, res) {
   try {
     const { requestId } = req.params;
@@ -245,7 +232,6 @@ export async function verifyRequestByVolunteer(req, res) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Only Volunteers can verify
     if (user.userType !== 'Volunteer') {
       return res.status(403).json({ message: "Only Volunteers can verify request completion" });
     }
@@ -255,17 +241,15 @@ export async function verifyRequestByVolunteer(req, res) {
       return res.status(404).json({ message: "Request not found" });
     }
 
-    // Check if request is in Complete status
     if (request.status !== 'Complete') {
       return res.status(400).json({ message: "Request must be marked as complete before verification" });
     }
 
-    // Update request to Verified status and disable chat
     request.status = 'Verified';
     request.verifiedBy = userId;
     request.verifiedAt = new Date();
     request.verificationNotes = verificationNotes || '';
-    request.chatEnabled = false; // Disable chat after verification
+    request.chatEnabled = false;
 
     await request.save();
 
@@ -283,7 +267,6 @@ export async function verifyRequestByVolunteer(req, res) {
   }
 }
 
-// Update request status (generic - for admin use)
 export async function updateRequestStatus(req, res) {
   try {
     const { requestId } = req.params;
@@ -316,21 +299,20 @@ export async function updateRequestStatus(req, res) {
   }
 }
 
-// Get requests by location (within radius)
+
 export async function getRequestsByLocation(req, res) {
   try {
-    const { latitude, longitude, radius = 10 } = req.query; // radius in km
-
+    const { latitude, longitude, radius = 10 } = req.query;
     if (!latitude || !longitude) {
       return res.status(400).json({ message: "Latitude and longitude are required" });
     }
 
-    // Simple distance calculation (for more accurate, use MongoDB geospatial queries)
+
     const requests = await Request.find()
       .populate('survivorId', 'name phone email')
       .sort({ createdAt: -1 });
 
-    // Filter by distance (basic calculation)
+
     const filteredRequests = requests.filter(request => {
       const distance = calculateDistance(
         parseFloat(latitude),
@@ -351,7 +333,6 @@ export async function getRequestsByLocation(req, res) {
   }
 }
 
-// Get responders for a specific request
 export async function getRequestResponders(req, res) {
   try {
     const { requestId } = req.params;
@@ -376,7 +357,7 @@ export async function getRequestResponders(req, res) {
   }
 }
 
-// Withdraw from a request
+
 export async function withdrawFromRequest(req, res) {
   try {
     const { requestId } = req.params;
@@ -387,7 +368,7 @@ export async function withdrawFromRequest(req, res) {
       return res.status(404).json({ message: "Request not found" });
     }
 
-    // Find responder
+
     const responderIndex = request.responders.findIndex(
       responder => responder.userId.toString() === userId
     );
@@ -396,10 +377,10 @@ export async function withdrawFromRequest(req, res) {
       return res.status(400).json({ message: "You haven't accepted this request" });
     }
 
-    // Update responder status to withdrawn
+
     request.responders[responderIndex].status = 'Withdrawn';
 
-    // If this was the primary acceptedBy, reassign to next active responder
+
     if (request.acceptedBy && request.acceptedBy.toString() === userId) {
       const nextActiveResponder = request.responders.find(
         r => r.status === 'Active' && r.userId.toString() !== userId
@@ -410,7 +391,7 @@ export async function withdrawFromRequest(req, res) {
         request.acceptedByName = nextActiveResponder.userName;
         request.acceptedByRole = nextActiveResponder.userRole;
       } else {
-        // No other active responders, set back to pending
+
         request.status = 'Pending';
         request.acceptedBy = null;
         request.acceptedByName = null;
@@ -434,14 +415,14 @@ export async function withdrawFromRequest(req, res) {
   }
 }
 
-// Get my accepted requests (for NGOs/Volunteers/Suppliers)
+
 export async function getMyAcceptedRequests(req, res) {
   try {
     const userId = req.user.id;
     
     const requests = await Request.find({
-      acceptedBy: userId, // Filter by the primary acceptor
-      status: { $in: ['Ongoing', 'Awaiting Supplier', 'In Transit', 'Delivered', 'Complete'] } // Show all active statuses
+      acceptedBy: userId,
+      status: { $in: ['Ongoing', 'Awaiting Supplier', 'In Transit', 'Delivered', 'Complete'] } 
     })
       .populate('survivorId', 'name phone email')
       .populate('responders.userId', 'name userType')
@@ -457,16 +438,16 @@ export async function getMyAcceptedRequests(req, res) {
   }
 }
 
-// Get all requests for the current NGO (including verified ones)
+
 export async function getMyNgoRequests(req, res) {
   try {
     const userId = req.user.id;
 
     const requests = await Request.find({
       $or: [
-        { acceptedBy: userId }, // Requests primarily accepted by this NGO
-        { 'responders.userId': userId }, // Requests where this NGO is a responder
-        { status: 'Verified' } // All verified requests
+        { acceptedBy: userId }, 
+        { 'responders.userId': userId }, 
+        { status: 'Verified' } 
       ]
     })
       .populate('survivorId', 'name phone email')
@@ -491,9 +472,8 @@ export async function getMyNgoRequests(req, res) {
   }
 }
 
-// Helper function to calculate distance between two coordinates
 function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Radius of the Earth in km
+  const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = 
@@ -505,26 +485,21 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return distance;
 }
 
-// Get requests for NGO map display (pending and accepted by this NGO)
 export async function getRequestsForNgoMap(req, res) {
   try {
     const userId = req.user.id;
-
-    // Get pending requests (not accepted by anyone)
     const pendingRequests = await Request.find({ 
       status: 'Pending'
     })
       .populate('survivorId', 'name phone email')
       .select('type urgency description latitude longitude address contactInfo survivorId survivorName survivorPhone status createdAt')
-      .sort({ urgency: -1, createdAt: -1 }); // High urgency first
-
-    // Get requests accepted by this NGO
+      .sort({ urgency: -1, createdAt: -1 });
     const acceptedRequests = await Request.find({
       $or: [
-        { acceptedBy: userId }, // Primary responder
-        { 'responders.userId': userId } // Or in responders list
+        { acceptedBy: userId },
+        { 'responders.userId': userId }
       ],
-      status: { $in: ['Ongoing', 'Complete'] } // Exclude Verified and Rejected
+      status: { $in: ['Ongoing', 'Complete'] }
     })
       .populate('survivorId', 'name phone email')
       .populate('acceptedBy', 'name userType')
