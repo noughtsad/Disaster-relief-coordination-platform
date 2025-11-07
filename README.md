@@ -15,11 +15,7 @@ A comprehensive full-stack web application designed to streamline disaster relie
   - [Installation](#installation)
   - [Environment Variables](#environment-variables)
   - [Running the Application](#running-the-application)
-- [User Roles](#user-roles)
-- [API Documentation](#api-documentation)
-- [Contributing](#contributing)
 - [Team](#team)
-- [License](#license)
 
 ## 🌟 Overview
 
@@ -49,9 +45,10 @@ The platform features real-time communication, intelligent resource matching, an
 #### Survivor Dashboard
 - Report emergency needs
 - Track request status
-- View nearby camps
+- View nearby NGOs
 - Access emergency information
 - Real-time updates on aid delivery
+- Get access to a dedicated chat room for their requests
 
 #### NGO Dashboard
 - Manage donation requests
@@ -207,9 +204,6 @@ GOOGLE_CALLBACK_URL=http://localhost:5000/auth/google/callback
 
 # Frontend URL
 FRONTEND_URL=http://localhost:5173
-
-# Session Secret
-SESSION_SECRET=your_session_secret
 ```
 
 #### Frontend (.env)
@@ -255,110 +249,10 @@ VITE_SOCKET_URL=http://localhost:5000
    npm start
    ```
 
-## 👥 User Roles
-
-### 1. Survivor
-- Create emergency relief requests
-- Track request status
-- Access emergency information
-- View nearby relief camps
-- Communicate with NGOs
-
-### 2. NGO
-- Manage incoming requests
-- Coordinate with suppliers
-- Track donations and fulfillments
-- Monitor impact metrics
-- Communicate with all stakeholders
-
-### 3. Supplier
-- Manage inventory
-- Receive and fulfill orders
-- Track deliveries
-- Update stock levels
-- Communicate with NGOs
-
-### 4. Volunteer
-- View ongoing relief operations
-- Access resources and information
-- Participate in community efforts
-- Stay informed about needs
-
-## 📡 API Documentation
-
-### Authentication Endpoints
-- `POST /auth/signup` - Register a new user
-- `POST /auth/login` - Login user
-- `GET /auth/google` - Google OAuth login
-- `GET /auth/logout` - Logout user
-- `GET /auth/check-auth` - Verify authentication status
-
-### Request Management
-- `GET /requests` - Get all requests
-- `POST /requests` - Create new request
-- `PUT /requests/:id` - Update request
-- `DELETE /requests/:id` - Delete request
-
-### NGO Operations
-- `GET /ngo/requests` - Get NGO requests
-- `POST /ngo/requests` - Create NGO request
-- `PUT /ngo/requests/:id/status` - Update request status
-
-### Supplier Operations
-- `GET /supplier/orders` - Get supplier orders
-- `PUT /supplier/orders/:id` - Update order status
-- `GET /inventory` - Get inventory items
-- `POST /inventory` - Add inventory item
-
-### Fulfillment
-- `GET /fulfillment` - Get fulfillment requests
-- `POST /fulfillment` - Create fulfillment request
-- `PUT /fulfillment/:id` - Update fulfillment
-
-### Chat
-- `GET /chat/messages` - Get chat messages
-- `POST /chat/messages` - Send message
-
-## 🤝 Contributing
-
-We welcome contributions to improve the Disaster Relief Coordination Platform! Here's how you can help:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Contribution Guidelines
-- Follow the existing code style
-- Write meaningful commit messages
-- Add comments for complex logic
-- Update documentation as needed
-- Test your changes thoroughly
-
 ## 👨‍💻 Team
 
 - **Rudra** - [Profile](Frontend/public/Rudra.png)
 - **Saad** - [Profile](Frontend/public/Saad.jpg)
 - **Sambhav** - [Profile](Frontend/public/Sambhav.jpg)
 
-## 📄 License
-
-This project is licensed under the ISC License.
-
-## 🙏 Acknowledgments
-
-- Thanks to all contributors who have helped shape this platform
-- Inspired by the need for efficient disaster response coordination
-- Built with modern web technologies and best practices
-
-## 📞 Support
-
-For support, questions, or feedback:
-- Open an issue on GitHub
-- Contact the development team
-- Submit feedback through the application
-
 ---
-
-**Made with ❤️ for disaster relief efforts worldwide**
