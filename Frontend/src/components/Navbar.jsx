@@ -33,15 +33,10 @@ const Navbar = ({ user, isAuthenticated }) => {
   };
 
   const handleLogoClick = () => {
-    console.log("Logo clicked! User:", user); // Debug log
-    console.log("isAuthenticated:", isAuthenticated); // Debug log
-    
     if (isAuthenticated && user) {
       const route = getDashboardRoute();
-      console.log("Navigating to:", route); // Debug log
       navigate(route);
     } else {
-      console.log("Navigating to landing page"); // Debug log
       navigate("/");
     }
   };

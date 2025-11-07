@@ -5,6 +5,7 @@ const initialState = {
   requests: [], // Will be populated dynamically from backend API
   pendingRequests: [],
   acceptedRequests: [],
+  ngoRequests: [], // New state to hold all requests for the NGO
   loading: false,
   error: null,
 };
@@ -52,6 +53,22 @@ export const acceptRequestAsync = createAsyncThunk(
         { withCredentials: true }
       );
       return { ...response.data.request, id: response.data.request._id };
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+// Async thunk for fetching all requests for the current NGO
+export const fetchAllNgoRequests = createAsyncThunk(
+  'requests/fetchAllNgoRequests',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/request/my-ngo-requests`,
+        { withCredentials: true }
+      );
+      return response.data.requests.map(req => ({ ...req, id: req._id }));
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -134,6 +151,18 @@ const requestSlice = createSlice({
         state.acceptedRequests.push(action.payload);
       })
       .addCase(acceptRequestAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchAllNgoRequests.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllNgoRequests.fulfilled, (state, action) => {
+        state.loading = false;
+        state.ngoRequests = action.payload;
+      })
+      .addCase(fetchAllNgoRequests.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

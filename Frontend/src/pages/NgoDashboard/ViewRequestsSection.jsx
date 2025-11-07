@@ -10,22 +10,17 @@ import {
   CheckCircle
 } from "lucide-react";
 import {
-  fetchPendingRequests,
-  fetchAcceptedRequests,
-  acceptRequestAsync,
-  setLoading as setRequestLoading,
-  setError as setRequestError,
-  clearError as clearRequestError
+  fetchAllNgoRequests
 } from '../../store/requestSlice';
 import { ThemeContext } from "../../context/ThemeContext";
 import ChatModal from '../../components/ChatModal';
 import SupplierSelectionModal from '../../components/SupplierSelectionModal';
 import axios from 'axios';
 
-const AcceptedRequestsSection = () => {
+const ViewRequestsSection = () => {
   const { theme } = useContext(ThemeContext);
   const dispatch = useDispatch();
-  const { acceptedRequests, loading, error } = useSelector((state) => state.requests);
+  const { ngoRequests, loading, error } = useSelector((state) => state.requests);
   const { user } = useSelector((state) => state.app);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -36,7 +31,7 @@ const AcceptedRequestsSection = () => {
 
   const loadRequests = useCallback(() => {
     if (user && user.userType === 'NGO') {
-      dispatch(fetchAcceptedRequests());
+      dispatch(fetchAllNgoRequests());
     }
   }, [dispatch, user]);
 
@@ -47,11 +42,11 @@ const AcceptedRequestsSection = () => {
   // Fetch fulfillments for all accepted requests
   useEffect(() => {
     const fetchFulfillments = async () => {
-      if (acceptedRequests.length === 0) return;
+      if (ngoRequests.length === 0) return;
 
       const fulfillmentsMap = {};
       
-      for (const request of acceptedRequests) {
+      for (const request of ngoRequests) {
         try {
           const response = await axios.get(
             `${import.meta.env.VITE_BACKEND_URL}/fulfillment/request/${request.id}`,
@@ -68,7 +63,7 @@ const AcceptedRequestsSection = () => {
     };
 
     fetchFulfillments();
-  }, [acceptedRequests]);
+  }, [ngoRequests]);
 
   const handleMarkReceived = async (fulfillmentId, requestId) => {
     if (!window.confirm('Confirm that supplies have been received?')) return;
@@ -157,15 +152,6 @@ const AcceptedRequestsSection = () => {
             {request.description} {/* Using description from requestSlice */}
           </p>
 
-          {/* Show coordinates if available */}
-          {/* {request.latitude && request.longitude && (
-            <div className={`text-xs ${theme === "light" ? "text-gray-500" : "text-gray-400"}`}>
-              📍 Coordinates: {request.latitude}, {request.longitude}
-              {request.address && <div className="mt-1">📮 {request.address}</div>}
-            </div>
-          )} */}
-
-          {/* Show responders */}
           {request.responders && request.responders.length > 0 && (
             <div className={`mt-3 p-2 rounded-lg ${
               theme === "light" ? "bg-blue-50 border border-blue-200" : "bg-blue-900/20 border border-blue-700"
@@ -299,7 +285,7 @@ const AcceptedRequestsSection = () => {
         )}
 
         {/* Request Supplies Button */}
-        <button 
+        {request.chatEnabled && <button 
           onClick={() => {
             setSelectedRequestForSupplier(request);
             setIsSupplierModalOpen(true);
@@ -308,7 +294,7 @@ const AcceptedRequestsSection = () => {
         >
           <Package className="w-4 h-4" />
           Request Supplies
-        </button>
+        </button>}
 
       </div>
     </div>
@@ -337,18 +323,18 @@ const AcceptedRequestsSection = () => {
             theme === "light" ? "text-gray-900" : "text-white"
           }`}
         >
-          Accepted Requests
+          All Requests
         </h1>
       </div>
 
-      {/* Accepted Requests Section */}
+      {/* All Requests Section */}
       <div className="grid gap-4 sm:gap-6">
-        {acceptedRequests.length === 0 ? (
+        {ngoRequests.length === 0 ? (
           <p className={`text-center ${
             theme === "light" ? "text-gray-600" : "text-gray-400"
-          }`}>No accepted requests found.</p>
+          }`}>No requests found for your NGO.</p>
         ) : (
-          acceptedRequests.map(renderRequestCard)
+          ngoRequests.map(renderRequestCard)
         )}
       </div>
 
@@ -387,4 +373,4 @@ const AcceptedRequestsSection = () => {
   );
 };
 
-export default AcceptedRequestsSection;
+export default ViewRequestsSection;

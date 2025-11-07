@@ -30,7 +30,6 @@ const HomeSection = () => {
         );
         setPendingRequests(response.data.pendingRequests || []);
         setAcceptedRequests(response.data.acceptedRequests || []);
-        console.log('Fetched map requests:', response.data);
       } catch (error) {
         console.error('Error fetching map requests:', error);
       } finally {

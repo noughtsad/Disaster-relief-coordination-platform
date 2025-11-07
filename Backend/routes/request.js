@@ -11,7 +11,8 @@ import {
   getRequestResponders,
   withdrawFromRequest,
   getMyAcceptedRequests,
-  getRequestsForNgoMap
+  getRequestsForNgoMap,
+  getMyNgoRequests // Add this import
 } from '../controllers/request.js';
 import { isAuthenticated } from '../middlewares/isAuthenticated.js';
 import { checkUserType } from '../middlewares/checkUserType.js';
@@ -33,6 +34,9 @@ router.get('/my-requests', isAuthenticated, checkUserType(['Survivor']), getMyRe
 // Get my accepted requests (NGOs/Volunteers/Suppliers)
 router.get("/my-accepted-requests", isAuthenticated, getMyAcceptedRequests);
 
+// Get all requests for the current NGO
+router.get("/my-ngo-requests", isAuthenticated, checkUserType(['NGO']), getMyNgoRequests);
+
 // Accept a request (NGO/Volunteer/Supplier)
 router.post('/accept/:requestId', isAuthenticated, checkUserType(['NGO', 'Volunteer', 'Supplier']), acceptRequest);
 
@@ -42,8 +46,8 @@ router.post("/withdraw/:requestId", isAuthenticated, withdrawFromRequest);
 // Get responders for a request
 router.get("/responders/:requestId", isAuthenticated, getRequestResponders);
 
-// Mark request as complete (Supplier)
-router.put('/complete/:requestId', isAuthenticated, checkUserType(['Supplier']), markRequestComplete);
+// Mark request as complete (Survivor)
+router.put('/complete/:requestId', isAuthenticated, checkUserType(['Survivor']), markRequestComplete);
 
 // Verify request completion (Volunteer)
 router.put('/verify/:requestId', isAuthenticated, checkUserType(['Volunteer']), verifyRequestByVolunteer);

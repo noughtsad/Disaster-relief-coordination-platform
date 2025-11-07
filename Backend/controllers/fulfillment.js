@@ -59,14 +59,6 @@ export const createFulfillmentRequest = async (req, res) => {
 
     await fulfillmentRequest.save();
 
-    console.log('Created fulfillment request:', {
-      id: fulfillmentRequest._id,
-      supplier: supplierId,
-      ngo: ngo._id,
-      status: fulfillmentRequest.status
-    });
-
-    // Update survivor request status to "Awaiting Supplier"
     if (survivorRequest.status === 'Ongoing') {
       survivorRequest.status = 'Awaiting Supplier';
       await survivorRequest.save();
@@ -286,14 +278,10 @@ export const getMyFulfillments = async (req, res) => {
       return res.status(404).json({ message: 'Supplier profile not found' });
     }
 
-    console.log('Fetching fulfillments for supplier:', supplier._id);
-
     const filter = { supplier: supplier._id };
     if (status) {
       filter.status = status;
     }
-
-    console.log('Filter:', filter);
 
     const fulfillments = await FulfillmentRequest.find(filter)
       .populate('ngo', 'ngoName ngoContact ngoLatitude ngoLongitude')
@@ -303,8 +291,6 @@ export const getMyFulfillments = async (req, res) => {
         populate: { path: 'survivorId', select: 'name phone email' },
       })
       .sort({ createdAt: -1 });
-
-    console.log('Found fulfillments:', fulfillments.length);
 
     res.status(200).json({ fulfillments });
   } catch (error) {

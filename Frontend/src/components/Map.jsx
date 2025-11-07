@@ -31,14 +31,12 @@ export default function MapComponent({
 
     // Get user's location
     if (navigator.geolocation) {
-      console.log('Requesting user location...');
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const userPos = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-          console.log('User location obtained:', userPos);
           setUserLocation(userPos);
         },
         (error) => {
@@ -95,7 +93,6 @@ export default function MapComponent({
       script.async = true;
       script.defer = true;
       script.onload = () => {
-        console.log('Google Maps script loaded successfully');
         initMap();
       };
       script.onerror = () => {
@@ -160,7 +157,6 @@ export default function MapComponent({
           if (acceptedRequests.length > 0) addAcceptedRequestMarkers();
         }
 
-        console.log('Map initialized successfully at user location');
       } catch (error) {
         console.error('Error initializing map:', error);
       }
@@ -238,7 +234,6 @@ export default function MapComponent({
         ngoMarkersRef.current.push(ngoMarker);
       });
 
-      console.log(`Added ${ngoMarkersRef.current.length} NGO markers to map`);
     };
 
     const addPendingRequestMarkers = () => {
@@ -329,7 +324,6 @@ export default function MapComponent({
         pendingRequestMarkersRef.current.push(requestMarker);
       });
 
-      console.log(`Added ${pendingRequestMarkersRef.current.length} pending request markers to map`);
     };
 
     const addAcceptedRequestMarkers = () => {
@@ -424,8 +418,6 @@ export default function MapComponent({
 
         acceptedRequestMarkersRef.current.push(requestMarker);
       });
-
-      console.log(`Added ${acceptedRequestMarkersRef.current.length} accepted request markers to map`);
     };
 
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -538,7 +530,6 @@ export default function MapComponent({
         ngoMarkersRef.current.push(ngoMarker);
       });
 
-      console.log(`Updated ${ngoMarkersRef.current.length} NGO markers on map`);
     }
   }, [ngos, showNgoMarkers, userLocation]);
 
@@ -673,8 +664,6 @@ export default function MapComponent({
           acceptedRequestMarkersRef.current.push(requestMarker);
         });
       }
-
-      console.log(`Updated request markers: ${pendingRequestMarkersRef.current.length} pending, ${acceptedRequestMarkersRef.current.length} accepted`);
     }
   }, [pendingRequests, acceptedRequests, showRequestMarkers, userLocation]);
 

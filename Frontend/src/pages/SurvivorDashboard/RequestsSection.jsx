@@ -106,6 +106,68 @@ const RequestsSection = ({ setActiveSection }) => {
     }
   }, [dispatch, user]);
 
+  const handleMarkComplete = async (id) => {
+    const confirmed = window.confirm('Mark this request as complete? This action cannot be undone.');
+    if (!confirmed) return;
+    
+    dispatch(setLoading(true));
+    dispatch(clearError());
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/request/complete/${id}`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      alert(response.data.message || 'Request marked as complete successfully. Awaiting volunteer verification.');
+      
+      // Refresh the requests list
+      const refreshResponse = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/request/my-requests`,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      const formattedRequests = refreshResponse.data.requests.map(req => ({
+        id: req._id,
+        type: req.type,
+        status: req.status,
+        date: new Date(req.createdAt).toLocaleDateString(),
+        urgency: req.urgency,
+        description: req.description,
+        latitude: req.latitude,
+        longitude: req.longitude,
+        address: req.address,
+        location: req.location,
+        contactInfo: req.contactInfo,
+        survivorId: req.survivorId,
+        survivorName: req.survivorName,
+        survivorPhone: req.survivorPhone,
+        acceptedBy: req.acceptedBy,
+        chatEnabled: req.chatEnabled,
+        responders: req.responders || [],
+        fulfillmentRequests: req.fulfillmentRequests || [],
+      }));
+      
+      dispatch(setRequests(formattedRequests));
+    } catch (err) {
+      console.error('Mark complete error:', err);
+      dispatch(setError(err.response?.data?.message || 'Failed to mark request as complete'));
+      alert(err.response?.data?.message || 'Failed to mark request as complete');
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
   const handleVerifyRequest = async (id) => {
     const verificationNotes = prompt('Please confirm that your needs have been satisfied. Optional: Add any feedback:');
     
@@ -115,7 +177,7 @@ const RequestsSection = ({ setActiveSection }) => {
     dispatch(setLoading(true));
     dispatch(clearError());
     try {
-      const response = await axios.post(
+      const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/request/verify/${id}`,
         { verificationNotes },
         {
@@ -152,9 +214,12 @@ const RequestsSection = ({ setActiveSection }) => {
         location: req.location,
         contactInfo: req.contactInfo,
         survivorId: req.survivorId,
+        survivorName: req.survivorName,
+        survivorPhone: req.survivorPhone,
         acceptedBy: req.acceptedBy,
         chatEnabled: req.chatEnabled,
         responders: req.responders || [],
+        fulfillmentRequests: req.fulfillmentRequests || [],
       }));
       
       dispatch(setRequests(formattedRequests));
@@ -385,8 +450,19 @@ const RequestsSection = ({ setActiveSection }) => {
                   Submitted: {new Date(request.createdAt).toLocaleDateString()}
                 </span>
                 <div className="flex gap-2">
-                  {/* Verify Button (only for Complete status) */}
-                  {request.status === "Complete" && (
+                  {/* Mark as Complete Button (only for Delivered status) */}
+                  {request.status === "Delivered" && user.userType === "Survivor" && (
+                    <button
+                      onClick={() => handleMarkComplete(request.id)}
+                      className="px-3 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition flex items-center gap-2"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      Mark as Complete
+                    </button>
+                  )}
+
+                  {/* Verify Completion Button (only for Complete status) */}
+                  {request.status === "Complete" && user.userType === "Survivor" && (
                     <button
                       onClick={() => handleVerifyRequest(request.id)}
                       className="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition flex items-center gap-2"
@@ -396,7 +472,7 @@ const RequestsSection = ({ setActiveSection }) => {
                     </button>
                   )}
 
-                  {/* Chat Button (only for Ongoing/Complete/Verified requests with chat enabled) */}
+                  {/* Chat Button (only if chat is enabled) */}
                   {request.chatEnabled && (
                     <button
                       onClick={() => handleOpenChat(request)}

@@ -148,9 +148,6 @@ export async function acceptRequest(req, res) {
       status: 'Active'
     });
 
-    console.log('Added responder:', { userId, userName: user.name, userRole: user.userType });
-    console.log('Total responders before save:', request.responders.length);
-
     // If this is the first responder, set as primary acceptedBy and change status to Ongoing
     if (!request.acceptedBy) {
       request.status = 'Ongoing';
@@ -161,9 +158,6 @@ export async function acceptRequest(req, res) {
     }
     
     await request.save();
-    
-    console.log('Total responders after save:', request.responders.length);
-    console.log('Responders array:', JSON.stringify(request.responders, null, 2));
 
     return res.json({
       message: "Request accepted successfully",
@@ -179,7 +173,7 @@ export async function acceptRequest(req, res) {
   }
 }
 
-// Mark request as complete (by Supplier)
+// Mark request as complete (by Survivor)
 export async function markRequestComplete(req, res) {
   try {
     const { requestId } = req.params;
@@ -191,9 +185,9 @@ export async function markRequestComplete(req, res) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Only Suppliers can mark as complete
-    if (user.userType !== 'Supplier') {
-      return res.status(403).json({ message: "Only Suppliers can mark requests as complete" });
+    // Only Survivors can mark as complete
+    if (user.userType !== 'Survivor') {
+      return res.status(403).json({ message: "Only Survivors can mark requests as complete" });
     }
 
     const request = await Request.findById(requestId);
@@ -201,7 +195,12 @@ export async function markRequestComplete(req, res) {
       return res.status(404).json({ message: "Request not found" });
     }
 
-    // Request must be in 'Delivered' status to be marked as complete by Supplier
+    // Check if this is their request
+    if (request.survivorId.toString() !== userId) {
+      return res.status(403).json({ message: "You can only mark your own requests as complete" });
+    }
+
+    // Request must be in 'Delivered' status to be marked as complete by Survivor
     if (request.status !== 'Delivered') {
       return res.status(400).json({ message: "Request must be in 'Delivered' status to be marked as complete" });
     }
@@ -220,8 +219,6 @@ export async function markRequestComplete(req, res) {
     request.completionNotes = completionNotes || '';
 
     await request.save();
-
-    console.log(`Request ${requestId} marked as complete by ${user.name} (${user.userType})`);
 
     return res.json({
       message: "Request marked as complete successfully. Awaiting volunteer verification.",
@@ -272,7 +269,6 @@ export async function verifyRequestByVolunteer(req, res) {
 
     await request.save();
 
-    console.log(`Request ${requestId} verified by volunteer ${user.name}`);
 
     return res.json({
       message: "Request verified successfully. Chat disabled.",
@@ -457,6 +453,40 @@ export async function getMyAcceptedRequests(req, res) {
     return res.status(500).json({ 
       message: "Error fetching your accepted requests", 
       error: error.message 
+    });
+  }
+}
+
+// Get all requests for the current NGO (including verified ones)
+export async function getMyNgoRequests(req, res) {
+  try {
+    const userId = req.user.id;
+
+    const requests = await Request.find({
+      $or: [
+        { acceptedBy: userId }, // Requests primarily accepted by this NGO
+        { 'responders.userId': userId }, // Requests where this NGO is a responder
+        { status: 'Verified' } // All verified requests
+      ]
+    })
+      .populate('survivorId', 'name phone email')
+      .populate('acceptedBy', 'name userType')
+      .populate('responders.userId', 'name userType')
+      .populate({
+        path: 'fulfillmentRequests',
+        populate: [
+          { path: 'supplier', select: 'name' },
+          { path: 'inventoryItem', select: 'name' }
+        ]
+      })
+      .sort({ createdAt: -1 });
+
+    return res.json({ requests, total: requests.length });
+  } catch (error) {
+    console.error("Get my NGO requests error:", error);
+    return res.status(500).json({
+      message: "Error fetching all requests for your NGO",
+      error: error.message
     });
   }
 }

@@ -36,8 +36,6 @@ const PillNavbar = ({ user, isAuthenticated }) => {
   const hoveredPillTextColor = theme === "light" ? "#111827" : "#111827";
   const pillTextColor = theme === "light" ? "#f9fafb" : "#f9fafb";
 
-  console.log('PillNavbar rendering - isAuthenticated:', isAuthenticated, 'location:', location.pathname);
-
   // Build navigation items based on user state and location
   const getNavItems = () => {
     const items = [];

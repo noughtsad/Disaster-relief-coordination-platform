@@ -8,9 +8,7 @@ export const createSupplier = async (req, res) => {
     
     // JWT uses 'id' not '_id'
     const userId = req.user.id;
-    
-    console.log('Creating supplier profile for user:', userId);
-    console.log('Request body:', JSON.stringify(req.body, null, 2));
+  
 
     // Validate required fields
     if (!name || !contact || !location) {
@@ -46,14 +44,13 @@ export const createSupplier = async (req, res) => {
       contact,
       location: {
         type: 'Point',
-        coordinates: [location.lng, location.lat], // GeoJSON format: [lng, lat]
+        coordinates: [location.lng, location.lat],
         address: location.address,
       },
       deliveryTimeEstimate: deliveryTimeEstimate || 24,
     });
 
     await supplier.save();
-    console.log('Supplier profile created successfully:', supplier._id);
 
     res.status(201).json({
       message: 'Supplier profile created successfully',

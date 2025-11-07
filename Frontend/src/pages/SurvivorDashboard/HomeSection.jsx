@@ -25,7 +25,6 @@ const HomeSection = ({ setActiveSection, alerts = [] }) => {
           { withCredentials: true }
         );
         setNgos(response.data.ngos || []);
-        console.log('Fetched NGOs:', response.data.ngos);
       } catch (error) {
         console.error('Error fetching NGOs:', error);
       } finally {

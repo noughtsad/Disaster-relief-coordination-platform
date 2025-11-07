@@ -7,9 +7,9 @@ dotenv.config();
 const COOKIE_NAME = process.env.COOKIE_NAME || "token";
 const COOKIE_OPTIONS = {
     httpOnly: true,
-      secure: true, // For local testing change to false
-  sameSite: "none", // For local testing change to lax
-  maxAge: 1000 * 60 * 60 * 24 * 7,
+      secure: true,
+  sameSite: "none",
+  maxAge: 1000 * 60 * 60 * 24 * 30,
 };
 
 export async function signup(req, res) {

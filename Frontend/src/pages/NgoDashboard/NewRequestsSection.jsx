@@ -30,8 +30,6 @@ const NewRequestsSection = () => {
     if (user && user.userType === 'NGO') {
       dispatch(fetchPendingRequests());
     }
-    console.log('Pending Requests:', pendingRequests);
-    // console.log('Accepted Requests:', acceptedRequests); // Not needed here
   }, [dispatch, user]);
 
   useEffect(() => {

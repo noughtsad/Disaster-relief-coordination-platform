@@ -129,7 +129,7 @@ const RequestSchema = new Schema(
     },
     completedByRole: {
       type: String,
-      enum: ['NGO', 'Volunteer', 'Supplier', null]
+      enum: ['NGO', 'Volunteer', 'Supplier', 'Survivor', null]
     },
     completedAt: {
       type: Date

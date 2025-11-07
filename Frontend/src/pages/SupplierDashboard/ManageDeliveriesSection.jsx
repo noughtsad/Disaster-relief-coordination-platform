@@ -315,18 +315,6 @@ export default function ManageDeliveriesSection({ theme }) {
                       Mark Request Complete
                     </button>
                   )}
-                  <button
-                    onClick={() => handleOpenChat(delivery)}
-                    className={`w-full px-4 py-2 border rounded-lg transition-colors flex items-center justify-center gap-2 ${
-                      theme === 'light' 
-                        ? 'border-indigo-600 text-indigo-600 hover:bg-indigo-50' 
-                        : 'border-indigo-400 text-indigo-400 hover:bg-indigo-900/30'
-                    }`}
-                    disabled={!delivery.survivorRequest?.chatEnabled}
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    Chat with NGO & Survivor
-                  </button>
                 </div>
               ) : (
                 <div className="space-y-3">

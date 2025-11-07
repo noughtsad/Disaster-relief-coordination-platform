@@ -276,13 +276,14 @@ const CommunicationsSection = () => {
                   </div>
                 </div>
                 <div>
-                  <button
-                    onClick={() => openChatModal(request._id)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    disabled={!request.chatEnabled} // Disable if chat is not enabled
-                  >
-                    Open Chat
-                  </button>
+                  {request.chatEnabled && (
+                    <button
+                      onClick={() => openChatModal(request._id)}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                      Open Chat
+                    </button>
+                  )}
                 </div>
               </div>
             ))

@@ -367,14 +367,15 @@ const CommunicationsSection = () => {
                       Verify Completion
                     </button>
                   )}
-                  <button
-                    onClick={() => openChatModal(request._id)}
-                    className="flex items-center justify-center gap-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    disabled={!request.chatEnabled} // Disable if chat is not enabled
-                  >
-                    Chat
-                    <Send className="w-4 h-4" />
-                  </button>
+                  {request.chatEnabled && (
+                    <button
+                      onClick={() => openChatModal(request._id)}
+                      className="flex items-center justify-center gap-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                      Chat
+                      <Send className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
             ))
