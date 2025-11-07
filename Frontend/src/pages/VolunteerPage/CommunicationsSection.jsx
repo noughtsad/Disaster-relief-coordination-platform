@@ -194,7 +194,7 @@ const CommunicationsSection = () => {
               theme === "light" ? "text-gray-900" : "text-white"
             }`}
           >
-            Available Chat Rooms
+            Available Requests
           </h3>
         </div>
         <div className="divide-y divide-gray-200">
@@ -345,11 +345,12 @@ const CommunicationsSection = () => {
                   </div>
                 </div>
                 <div>
-                  <button
+                <button
                     onClick={() => openChatModal(request._id)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="flex items-center justify-center gap-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
-                    Open Chat
+                    Chat
+                    <Send className="w-4 h-4" />
                   </button>
                 </div>
               </div>
