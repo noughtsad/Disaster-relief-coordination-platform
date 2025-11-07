@@ -251,8 +251,8 @@ VITE_SOCKET_URL=http://localhost:5000
 
 ## 👨‍💻 Team
 
-- **Rudra** - [Profile](Frontend/public/Rudra.png)
-- **Saad** - [Profile](Frontend/public/Saad.jpg)
-- **Sambhav** - [Profile](Frontend/public/Sambhav.jpg)
+- **Rudra** - [Profile](https://github.com/rudralaheri)
+- **Saad** - [Profile](https://github.com/noughtsad)
+- **Sambhav** - [Profile](https://github.com/Sambhav-3010)
 
 ---
